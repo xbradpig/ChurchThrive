@@ -1,0 +1,147 @@
+MIT License
+MIT 라이선스
+
+Copyright (c) 2025 Xbradpig [박종영]
+저작권 (c) 2025 Xbradpig [박종영]
+
+---
+
+## 📌 Original Creator | 최초 저작권자
+
+**Xbradpig [박종영]**
+
+본 프로젝트는 누구나 자유롭게 사용, 수정, 재배포할 수 있습니다.
+하지만 어떤 형태로 변형되더라도, 최초 저작권자는 **Xbradpig [박종영]** 입니다.
+
+This project is free for anyone to use, modify, and redistribute.
+However, no matter how it is transformed, the original creator is **Xbradpig [박종영]**.
+
+---
+
+## 📧 Contact | 연락처
+
+**Email**: xbradpig@gmail.com
+
+질문, 제안, 협업 요청 등 언제든지 연락 주세요.
+Feel free to reach out for questions, suggestions, or collaboration requests.
+
+---
+
+## 📜 MIT License Terms | MIT 라이선스 조건
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+본 소프트웨어 및 관련 문서 파일(이하 "소프트웨어")의 복사본을 취득하는 모든 사람에게는
+아래 조건에 따라 소프트웨어를 제한 없이 다룰 수 있는 권한이 무료로 부여됩니다.
+여기에는 사용, 복사, 수정, 병합, 출판, 배포, 서브라이선싱 및/또는 판매할 수 있는 권리와
+소프트웨어를 제공받은 사람들이 그러한 권한을 행사할 수 있도록 허용하는 권리가
+제한 없이 포함됩니다. 단, 다음 조건을 준수해야 합니다:
+
+**Condition 1: Copyright Notice | 저작권 고지**
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+위 저작권 고지 및 본 허가 고지는 소프트웨어의 모든 복사본 또는 중요한 부분에 포함되어야 합니다.
+
+**Condition 2: Attribution | 출처 명시**
+
+Any modification, transformation, or redistribution of this Software in any form
+must clearly attribute the original developer as **Xbradpig [박종영]**.
+
+본 소프트웨어를 어떤 형태로든 수정, 변환 또는 재배포할 경우,
+반드시 최초 개발자인 **Xbradpig [박종영]**을 명시해야 합니다.
+
+**Disclaimer | 면책 조항**
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+소프트웨어는 "있는 그대로" 제공되며, 명시적이거나 묵시적인 어떠한 종류의 보증도 없이
+제공됩니다. 여기에는 상품성, 특정 목적에의 적합성 및 비침해에 대한 보증이 포함되지만
+이에 국한되지 않습니다. 계약, 불법 행위 또는 기타 행위로 인해 발생하는 어떠한 청구,
+손해 또는 기타 책임에 대해서도 소프트웨어의 사용 또는 기타 거래와 관련하여
+저작권자나 저작권 보유자는 책임을 지지 않습니다.
+
+---
+
+## 🌟 Project Philosophy | 프로젝트 철학
+
+본 라이선스는 **법적 권리와 의무**를 규정합니다.
+프로젝트의 목적, 사명, 비전에 대해 더 알고 싶으시다면 아래 문서를 참조하세요.
+
+This license defines **legal rights and obligations**.
+To learn more about the project's purpose, mission, and vision, please refer to the following documents:
+
+### 📚 Related Documents | 관련 문서 (Obsidian Vault)
+
+#### Core Philosophy | 핵심 철학
+- [[README]] - 프로젝트 소개 및 시작하기
+- [[ChurchThrive_MVC_Framework]] - 사명(Mission), 비전(Vision), 핵심 가치(Core Values)
+- [[ChurchThrive_브랜드_가이드북]] - 브랜드 철학과 정체성
+- [[교회_건강_진단_체크리스트]] - 프로젝트의 목적과 방향
+
+#### Getting Started | 시작하기
+- [[310.시작_가이드/빠른_시작_15분_가이드]] - 15분만에 시작하기
+- [[310.시작_가이드/교회_지식관리_3Layer_완벽_가이드]] - 전체 시스템 이해
+
+#### For Contributors | 기여자를 위한 문서
+- [[CLAUDE]] - 개발자를 위한 기술 문서
+- [[CONTRIBUTING]] - 기여 가이드라인 (생성 예정)
+
+---
+
+## 💡 How to Use This Project | 이 프로젝트 사용 방법
+
+### ✅ You Can (허용되는 것):
+- ✅ 개인 교회에서 자유롭게 사용
+- ✅ 자신의 교회에 맞게 수정 및 커스터마이징
+- ✅ 다른 교회와 공유
+- ✅ 상업적 목적으로 컨설팅에 활용
+- ✅ 교육 자료로 활용
+
+### ⚠️ You Must (필수 사항):
+- ⚠️ 최초 저작권자 **Xbradpig [박종영]** 명시
+- ⚠️ 이 LICENSE 파일을 복사본에 포함
+- ⚠️ 수정했다면 어떻게 변경했는지 표시 (권장)
+
+### 💬 We Encourage (권장 사항):
+- 💬 개선 아이디어가 있다면 xbradpig@gmail.com으로 공유
+- 💬 성공 사례를 알려주세요 (다른 교회에 도움이 됩니다)
+- 💬 버그나 오류를 발견하면 제보
+- 💬 GitHub에 기여 (Pull Request 환영)
+
+---
+
+## 🙏 Developer's Heart | 개발자의 마음
+
+> "건강한 교회, 성장하는 리더, 번영하는 공동체"
+
+이 프로젝트는 대한민국의 모든 교회가 체계적인 지식관리 시스템을 통해
+하나님 나라의 비전을 온전히 실현하도록 돕기 위해 만들어졌습니다.
+
+누구든지 자유롭게 사용하고, 수정하고, 공유할 수 있습니다.
+여러분의 교회가 이 시스템을 통해 성장하고 변화되기를 소망합니다.
+
+This project was created to help all churches in Korea fully realize
+the vision of God's Kingdom through systematic knowledge management.
+
+Anyone is free to use, modify, and share it.
+We hope your church grows and transforms through this system.
+
+**- Xbradpig [박종영]**
+
+---
+
+**Last Updated**: 2025-11-25
+**Version**: 1.0

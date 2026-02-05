@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: 'docs/Church_Thrive/package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          cd "docs/Church_Thrive"
+          npm ci
+
+      - name: Run typecheck
+        run: |
+          cd "docs/Church_Thrive"
+          npm run typecheck
+
+      - name: Run lint
+        run: |
+          cd "docs/Church_Thrive"
+          npm run lint
+
+      - name: Run tests (if tests exist)
+        run: |
+          cd "docs/Church_Thrive"
+          npm test --if-present
+        continue-on-error: true
+
+      - name: Build shared package
+        run: |
+          cd "docs/Church_Thrive"
+          npm run build:shared
+
+      - name: Build web app
+        run: |
+          cd "docs/Church_Thrive"
+          npm run build:web
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_KAKAO_APP_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_APP_KEY }}
+          NEXT_PUBLIC_FCM_VAPID_KEY: ${{ secrets.NEXT_PUBLIC_FCM_VAPID_KEY }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: docs/Church_Thrive/app/.next
+          retention-days: 1

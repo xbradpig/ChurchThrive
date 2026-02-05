@@ -1,0 +1,29 @@
+{
+  "name": "churchthrive",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "app",
+    "mobile"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=app",
+    "dev:mobile": "npm run dev --workspace=mobile",
+    "build:web": "npm run build --workspace=app",
+    "build:shared": "npm run build --workspace=@churchthrive/shared",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:unit": "vitest run --workspace=@churchthrive/shared",
+    "test:web": "vitest run --workspace=app",
+    "test:e2e": "playwright test --config=app/playwright.config.ts",
+    "test:integration": "vitest run supabase/tests/integration.test.ts",
+    "test:watch": "vitest --workspace=@churchthrive/shared",
+    "test:coverage": "vitest run --coverage --workspaces"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}
