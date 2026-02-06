@@ -1,3 +1,10 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '승인 대기',
+  description: '교회 가입 승인을 기다리는 중입니다.',
+};
+
 export default function PendingPage() {
   return (
     <div className="bg-white rounded-ct-xl shadow-ct-2 p-6 text-center">
