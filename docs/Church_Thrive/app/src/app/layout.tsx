@@ -3,7 +3,7 @@ import '@/styles/globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'ChurchThrive - 교회 총괄 관리',
+    default: 'ChurchThrive - 교회 혁신 성장 통합  SaaS 플랫폼',
     template: '%s | ChurchThrive',
   },
   description: '교회 교인관리, 말씀노트, 행정을 한 곳에서. 교회의 건강한 성장을 돕는 올인원 플랫폼.',
