@@ -6,7 +6,7 @@
 
 ```bash
 git clone https://github.com/xbradpig/ChurchThrive.git
-cd ChurchThrive/docs/Church_Thrive
+cd ChurchThrive/Church_Thrive
 npm install
 ```
 
@@ -57,7 +57,7 @@ EXPO_TOKEN
 2. Navigate to: Workers & Pages > Create application > Pages
 3. Connect your GitHub repository
 4. Configure build:
-   - **Build command**: `cd docs/Church_Thrive && npm run build:shared && npm run build:web`
+   - **Build command**: `cd Church_Thrive && npm run build:shared && npm run build:web`
    - **Build output directory**: `docs/Church_Thrive/app/.next`
    - **Root directory**: `/`
    - **Environment variables**: Add all secrets from step 1

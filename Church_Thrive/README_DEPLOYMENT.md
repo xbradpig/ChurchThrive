@@ -42,22 +42,21 @@ ChurchThrive/
 │   ├── deploy.yml             # Web deployment
 │   └── mobile-build.yml       # Mobile builds
 │
-├── docs/
-│   ├── Church_Thrive/
-│   │   ├── README_DEPLOYMENT.md           # This file
-│   │   ├── DEPLOYMENT_QUICK_START.md     # Quick reference
-│   │   ├── DEPLOYMENT_CHECKLIST.md       # Step-by-step checklist
-│   │   ├── DNS_CONFIGURATION.md          # DNS setup guide
-│   │   ├── PUBLISHING_SUMMARY.md         # Files created summary
-│   │   │
-│   │   ├── scripts/
-│   │   │   ├── README.md                 # Scripts documentation
-│   │   │   ├── setup-env.sh              # Environment setup
-│   │   │   └── deploy-web.sh             # Manual deployment
-│   │   │
-│   │   ├── wrangler.toml                 # Cloudflare config
-│   │   ├── Dockerfile                    # Container deployment
-│   │   └── .dockerignore                 # Docker exclusions
+├── Church_Thrive/
+│   ├── README_DEPLOYMENT.md           # This file
+│   ├── DEPLOYMENT_QUICK_START.md     # Quick reference
+│   ├── DEPLOYMENT_CHECKLIST.md       # Step-by-step checklist
+│   ├── DNS_CONFIGURATION.md          # DNS setup guide
+│   ├── PUBLISHING_SUMMARY.md         # Files created summary
+│   │
+│   ├── scripts/
+│   │   ├── README.md                 # Scripts documentation
+│   │   ├── setup-env.sh              # Environment setup
+│   │   └── deploy-web.sh             # Manual deployment
+│   │
+│   ├── wrangler.toml                 # Cloudflare config
+│   ├── Dockerfile                    # Container deployment
+│   └── .dockerignore                 # Docker exclusions
 │   │
 │   └── dev-agent/
 │       └── 07_publishing.md               # Full documentation (18KB)
@@ -74,7 +73,7 @@ For developers who want to deploy quickly:
 ```bash
 # 1. Clone and install
 git clone https://github.com/xbradpig/ChurchThrive.git
-cd ChurchThrive/docs/Church_Thrive
+cd ChurchThrive/Church_Thrive
 npm install
 
 # 2. Setup environment

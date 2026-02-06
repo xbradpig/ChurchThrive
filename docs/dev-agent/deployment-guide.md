@@ -44,7 +44,7 @@ This guide covers deploying ChurchThrive to production environments:
 ### Step 2: Run Database Migrations
 
 ```bash
-cd "docs/Church_Thrive"
+cd "Church_Thrive"
 
 # Link to your Supabase project
 supabase link --project-ref your-project-ref
@@ -205,7 +205,7 @@ bucket = "./app/.vercel/output/static"
 ### Step 3: Build Locally (Test)
 
 ```bash
-cd "docs/Church_Thrive"
+cd "Church_Thrive"
 
 # Install dependencies
 npm install

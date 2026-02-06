@@ -94,9 +94,9 @@ stages:
 # ChurchThrive 개발 파이프라인
 
 ## 프로젝트 개요
-- **서비스**: ChurchThrive App (교회 총괄 관리 SaaS)
+- **서비스**: ChurchThrive App (교회 혁신 성장 통합  SaaS 플랫폼)
 - **기술 스택**: Next.js 14 + React Native (Expo) + Supabase + TypeScript
-- **모노레포**: `docs/Church_Thrive/` (app/ + mobile/ + packages/shared/)
+- **모노레포**: `Church_Thrive/` (app/ + mobile/ + packages/shared/)
 
 ## 파이프라인 현황
 
@@ -143,8 +143,8 @@ stages:
 - `code-review.md` - 코드 리뷰 결과
 
 ## 핵심 파일
-- `docs/Church_Thrive/package.json` - 모노레포 루트
-- `docs/Church_Thrive/Dev_Plan/` - 기획 문서 13개
-- `docs/Church_Thrive/Dev_Plan/Design/` - 디자인 문서 7개
-- `docs/Church_Thrive/supabase/migrations/` - SQL 마이그레이션 17개
-- `docs/Church_Thrive/packages/shared/src/types/database.ts` - DB 타입
+- `Church_Thrive/package.json` - 모노레포 루트
+- `Church_Thrive/Dev_Plan/` - 기획 문서 13개
+- `Church_Thrive/Dev_Plan/Design/` - 디자인 문서 7개
+- `Church_Thrive/supabase/migrations/` - SQL 마이그레이션 17개
+- `Church_Thrive/packages/shared/src/types/database.ts` - DB 타입

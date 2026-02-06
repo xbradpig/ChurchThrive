@@ -30,18 +30,18 @@ ChurchThrive/
 │       ├── ci.yml              # Continuous Integration
 │       ├── deploy.yml          # Web deployment to Cloudflare Pages
 │       └── mobile-build.yml    # Mobile app builds via EAS
+├── Church_Thrive/
+│   ├── app/                # Next.js web application
+│   ├── mobile/             # React Native Expo app
+│   ├── packages/           # Shared packages
+│   ├── scripts/
+│   │   ├── deploy-web.sh  # Manual deployment script
+│   │   └── setup-env.sh   # Environment setup script
+│   ├── wrangler.toml      # Cloudflare Pages config
+│   ├── Dockerfile         # Container deployment option
+│   ├── .dockerignore
+│   └── DNS_CONFIGURATION.md
 ├── docs/
-│   ├── Church_Thrive/
-│   │   ├── app/                # Next.js web application
-│   │   ├── mobile/             # React Native Expo app
-│   │   ├── packages/           # Shared packages
-│   │   ├── scripts/
-│   │   │   ├── deploy-web.sh  # Manual deployment script
-│   │   │   └── setup-env.sh   # Environment setup script
-│   │   ├── wrangler.toml      # Cloudflare Pages config
-│   │   ├── Dockerfile         # Container deployment option
-│   │   ├── .dockerignore
-│   │   └── DNS_CONFIGURATION.md
 │   └── dev-agent/
 │       └── 07_publishing.md    # This file
 ```
@@ -50,7 +50,7 @@ ChurchThrive/
 
 ### 1. Cloudflare Pages Configuration
 
-**File**: `/docs/Church_Thrive/wrangler.toml`
+**File**: `/Church_Thrive/wrangler.toml`
 
 Created comprehensive Cloudflare Pages configuration:
 - Project name: `churchthrive`
@@ -148,7 +148,7 @@ Created comprehensive Cloudflare Pages configuration:
 
 #### a) Web Deployment Script (`deploy-web.sh`)
 
-**Location**: `/docs/Church_Thrive/scripts/deploy-web.sh`
+**Location**: `/Church_Thrive/scripts/deploy-web.sh`
 
 **Purpose**: Manual deployment script for local testing and emergency deployments
 
@@ -166,7 +166,7 @@ Created comprehensive Cloudflare Pages configuration:
 
 **Usage**:
 ```bash
-cd docs/Church_Thrive
+cd Church_Thrive
 ./scripts/deploy-web.sh
 ```
 
@@ -177,7 +177,7 @@ cd docs/Church_Thrive
 
 #### b) Environment Setup Script (`setup-env.sh`)
 
-**Location**: `/docs/Church_Thrive/scripts/setup-env.sh`
+**Location**: `/Church_Thrive/scripts/setup-env.sh`
 
 **Purpose**: Interactive script to set up environment variables
 
@@ -191,7 +191,7 @@ cd docs/Church_Thrive
 
 **Usage**:
 ```bash
-cd docs/Church_Thrive
+cd Church_Thrive
 ./scripts/setup-env.sh
 ```
 
@@ -205,7 +205,7 @@ cd docs/Church_Thrive
 
 ### 4. Next.js Configuration Updates
 
-**File**: `/docs/Church_Thrive/app/next.config.js`
+**File**: `/Church_Thrive/app/next.config.js`
 
 **Changes Made**:
 - Added conditional image optimization disabling for Cloudflare Pages
@@ -224,7 +224,7 @@ trailingSlash: true  // Better routing on static hosts
 
 #### a) Dockerfile
 
-**Location**: `/docs/Church_Thrive/Dockerfile`
+**Location**: `/Church_Thrive/Dockerfile`
 
 **Multi-Stage Build**:
 1. **Stage 1 (deps)**: Install dependencies only
@@ -251,7 +251,7 @@ docker run -p 3000:3000 \
 
 #### b) .dockerignore
 
-**Location**: `/docs/Church_Thrive/.dockerignore`
+**Location**: `/Church_Thrive/.dockerignore`
 
 Excludes unnecessary files from Docker builds:
 - Dependencies (node_modules)
@@ -262,7 +262,7 @@ Excludes unnecessary files from Docker builds:
 
 ### 6. DNS Configuration Documentation
 
-**File**: `/docs/Church_Thrive/DNS_CONFIGURATION.md`
+**File**: `/Church_Thrive/DNS_CONFIGURATION.md`
 
 **Comprehensive Guide Including**:
 
@@ -375,7 +375,7 @@ Set at: `Workers & Pages > churchthrive > Settings > Environment variables`
 
 1. **Setup Environment**:
    ```bash
-   cd docs/Church_Thrive
+   cd Church_Thrive
    ./scripts/setup-env.sh
    # Edit .env.local with actual values
    ```

@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'docs/Church_Thrive/app/**'
-      - 'docs/Church_Thrive/packages/**'
+      - 'Church_Thrive/app/**'
+      - 'Church_Thrive/packages/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -28,16 +28,16 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'docs/Church_Thrive/package-lock.json'
+          cache-dependency-path: 'Church_Thrive/package-lock.json'
 
       - name: Install dependencies
         run: |
-          cd "docs/Church_Thrive"
+          cd "Church_Thrive"
           npm ci
 
       - name: Build for Cloudflare Pages
         run: |
-          cd "docs/Church_Thrive/app"
+          cd "Church_Thrive/app"
           npx @cloudflare/next-on-pages
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -54,7 +54,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # Deploy from app directory - wrangler.toml specifies output dir
           command: pages deploy .vercel/output/static --project-name=churchthrive
-          workingDirectory: docs/Church_Thrive/app
+          workingDirectory: Church_Thrive/app
 
       - name: Get deployment URL
         id: deployment

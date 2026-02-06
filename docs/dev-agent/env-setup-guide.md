@@ -77,24 +77,24 @@ git clone https://github.com/your-org/ChurchThrive.git
 cd ChurchThrive
 
 # Navigate to project root
-cd "docs/Church_Thrive"
+cd "Church_Thrive"
 ```
 
 **Project Structure:**
 ```
 ChurchThrive/
-└── docs/
-    └── Church_Thrive/           # Monorepo root
-        ├── package.json         # Root package with workspaces
-        ├── app/                 # Next.js web app
-        ├── mobile/              # Expo mobile app
-        ├── packages/
-        │   └── shared/          # Shared TypeScript types
-        ├── supabase/
-        │   ├── migrations/      # SQL migrations
-        │   └── functions/       # Edge Functions
-        ├── .env.example         # Environment template
-        └── wrangler.toml        # Cloudflare config
+├── Church_Thrive/           # Monorepo root
+│   ├── package.json         # Root package with workspaces
+│   ├── app/                 # Next.js web app
+│   ├── mobile/              # Expo mobile app
+│   ├── packages/
+│   │   └── shared/          # Shared TypeScript types
+│   ├── supabase/
+│   │   ├── migrations/      # SQL migrations
+│   │   └── functions/       # Edge Functions
+│   ├── .env.example         # Environment template
+│   └── wrangler.toml        # Cloudflare config
+└── docs/                    # Documentation
 ```
 
 ---

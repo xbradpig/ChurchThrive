@@ -134,7 +134,7 @@ Set in Cloudflare Pages dashboard:
 
 - **Build command**: `npm run build:shared && npm run build:web`
 - **Build output directory**: `app/.next`
-- **Root directory**: `docs/Church_Thrive`
+- **Root directory**: `Church_Thrive`
 - **Node version**: `20`
 
 ### Environment Variables

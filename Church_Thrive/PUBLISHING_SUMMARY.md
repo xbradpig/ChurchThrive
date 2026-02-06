@@ -24,9 +24,9 @@
 
 | File | Size | Purpose |
 |------|------|---------|
-| `/docs/Church_Thrive/scripts/deploy-web.sh` | 1.5 KB | Manual deployment script |
-| `/docs/Church_Thrive/scripts/setup-env.sh` | 2.7 KB | Environment setup helper |
-| `/docs/Church_Thrive/scripts/README.md` | 3.5 KB | Scripts documentation |
+| `/Church_Thrive/scripts/deploy-web.sh` | 1.5 KB | Manual deployment script |
+| `/Church_Thrive/scripts/setup-env.sh` | 2.7 KB | Environment setup helper |
+| `/Church_Thrive/scripts/README.md` | 3.5 KB | Scripts documentation |
 
 **Total**: 3 script files (executable)
 
@@ -34,9 +34,9 @@
 
 | File | Size | Purpose |
 |------|------|---------|
-| `/docs/Church_Thrive/wrangler.toml` | 909 B | Cloudflare Pages configuration |
-| `/docs/Church_Thrive/Dockerfile` | 1.4 KB | Multi-stage Docker build |
-| `/docs/Church_Thrive/.dockerignore` | 500 B | Docker build exclusions |
+| `/Church_Thrive/wrangler.toml` | 909 B | Cloudflare Pages configuration |
+| `/Church_Thrive/Dockerfile` | 1.4 KB | Multi-stage Docker build |
+| `/Church_Thrive/.dockerignore` | 500 B | Docker build exclusions |
 
 **Total**: 3 configuration files
 
@@ -44,8 +44,8 @@
 
 | File | Size | Purpose |
 |------|------|---------|
-| `/docs/Church_Thrive/DNS_CONFIGURATION.md` | 7.5 KB | Complete DNS setup guide |
-| `/docs/Church_Thrive/DEPLOYMENT_QUICK_START.md` | 3.0 KB | Quick reference for developers |
+| `/Church_Thrive/DNS_CONFIGURATION.md` | 7.5 KB | Complete DNS setup guide |
+| `/Church_Thrive/DEPLOYMENT_QUICK_START.md` | 3.0 KB | Quick reference for developers |
 | `/docs/dev-agent/07_publishing.md` | 18 KB | Comprehensive publishing documentation |
 
 **Total**: 3 documentation files
@@ -54,7 +54,7 @@
 
 | File | Changes |
 |------|---------|
-| `/docs/Church_Thrive/app/next.config.js` | Added Cloudflare Pages compatibility settings |
+| `/Church_Thrive/app/next.config.js` | Added Cloudflare Pages compatibility settings |
 
 ---
 

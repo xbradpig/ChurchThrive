@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'docs/Church_Thrive/mobile/**'
-      - 'docs/Church_Thrive/packages/**'
+      - 'Church_Thrive/mobile/**'
+      - 'Church_Thrive/packages/**'
       - '.github/workflows/mobile-build.yml'
   workflow_dispatch:
     inputs:
@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'docs/Church_Thrive/package-lock.json'
+          cache-dependency-path: 'Church_Thrive/package-lock.json'
 
       - name: Setup Expo
         uses: expo/expo-github-action@v8
@@ -44,12 +44,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd "docs/Church_Thrive"
+          cd "Church_Thrive"
           npm ci
 
       - name: Build shared package
         run: |
-          cd "docs/Church_Thrive"
+          cd "Church_Thrive"
           npm run build:shared
 
       - name: Determine build profile
@@ -63,14 +63,14 @@ jobs:
 
       - name: Build Android app with EAS
         run: |
-          cd "docs/Church_Thrive/mobile"
+          cd "Church_Thrive/mobile"
           eas build --platform android --profile ${{ steps.profile.outputs.profile }} --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build iOS app with EAS
         run: |
-          cd "docs/Church_Thrive/mobile"
+          cd "Church_Thrive/mobile"
           eas build --platform ios --profile ${{ steps.profile.outputs.profile }} --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

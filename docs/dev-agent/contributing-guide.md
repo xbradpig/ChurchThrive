@@ -38,7 +38,7 @@ Before contributing, ensure you have:
 # Fork the repository on GitHub
 # Clone your fork
 git clone https://github.com/YOUR_USERNAME/ChurchThrive.git
-cd ChurchThrive/docs/Church_Thrive
+cd ChurchThrive/Church_Thrive
 
 # Add upstream remote
 git remote add upstream https://github.com/ORIGINAL_ORG/ChurchThrive.git
@@ -58,7 +58,7 @@ npm run dev:web
 ### Monorepo Architecture
 
 ```
-ChurchThrive/docs/Church_Thrive/
+ChurchThrive/Church_Thrive/
 ├── app/                          # Next.js 14 Web App
 │   ├── src/
 │   │   ├── app/                  # App Router pages

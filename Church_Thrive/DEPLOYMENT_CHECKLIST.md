@@ -38,8 +38,8 @@ Use this checklist to ensure all steps are completed for successful deployment.
   - [ ] Project name: `churchthrive`
   - [ ] Repository connected
   - [ ] Build settings configured:
-    - [ ] Build command: `cd docs/Church_Thrive && npm run build:shared && npm run build:web`
-    - [ ] Build output: `docs/Church_Thrive/app/.next`
+    - [ ] Build command: `cd Church_Thrive && npm run build:shared && npm run build:web`
+    - [ ] Build output: `Church_Thrive/app/.next`
     - [ ] Root directory: `/`
     - [ ] Node version: `20`
 - [ ] Environment variables added (Production):
