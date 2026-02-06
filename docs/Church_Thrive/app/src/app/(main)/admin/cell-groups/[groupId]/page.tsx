@@ -14,6 +14,7 @@ import { toast } from '@/components/organisms/CTToast';
 import { ROLE_LABELS } from '@churchthrive/shared';
 import type { CellGroup, Member } from '@churchthrive/shared';
 import {
+
   ArrowLeftIcon,
   TrashIcon,
   UserPlusIcon,
@@ -23,6 +24,8 @@ import {
   MapPinIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
+
+export const runtime = 'edge';
 
 export default function CellGroupDetailPage() {
   const router = useRouter();

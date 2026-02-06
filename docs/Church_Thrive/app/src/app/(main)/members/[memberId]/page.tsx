@@ -9,6 +9,8 @@ import { CTTabMenu } from '@/components/molecules/CTTabMenu';
 import { PencilIcon, PhoneIcon, EnvelopeIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
+export const runtime = 'edge';
+
 export async function generateMetadata({ params }: { params: { memberId: string } }) {
   return { title: '교인 상세' };
 }

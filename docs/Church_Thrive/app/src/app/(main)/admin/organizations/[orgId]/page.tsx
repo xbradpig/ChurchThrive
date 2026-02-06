@@ -15,6 +15,7 @@ import { toast } from '@/components/organisms/CTToast';
 import { ORG_TYPE_LABELS, ROLE_LABELS } from '@churchthrive/shared';
 import type { Organization, Member } from '@churchthrive/shared';
 import {
+
   ArrowLeftIcon,
   PencilIcon,
   TrashIcon,
@@ -22,6 +23,8 @@ import {
   XMarkIcon,
   BuildingOffice2Icon,
 } from '@heroicons/react/24/outline';
+
+export const runtime = 'edge';
 
 interface OrgMember {
   id: string;

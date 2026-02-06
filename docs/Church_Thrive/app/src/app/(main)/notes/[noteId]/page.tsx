@@ -13,6 +13,7 @@ import { CTInput } from '@/components/atoms/CTInput';
 import { CTAvatar } from '@/components/atoms/CTAvatar';
 import { toast } from '@/components/organisms/CTToast';
 import {
+
   ArrowLeftIcon,
   PencilIcon,
   ShareIcon,
@@ -24,6 +25,8 @@ import {
   UserIcon,
   BookOpenIcon,
 } from '@heroicons/react/24/outline';
+
+export const runtime = 'edge';
 
 interface ContentBlock {
   type: 'heading' | 'paragraph' | 'quote' | 'bible_verse' | 'highlight' | 'bullet' | 'numbered';

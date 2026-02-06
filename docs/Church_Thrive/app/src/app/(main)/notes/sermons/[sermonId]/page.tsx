@@ -12,6 +12,7 @@ import { CTSpinner } from '@/components/atoms/CTSpinner';
 import { CTAvatar } from '@/components/atoms/CTAvatar';
 import { CTEmptyState } from '@/components/molecules/CTEmptyState';
 import {
+
   ArrowLeftIcon,
   PencilIcon,
   CalendarDaysIcon,
@@ -21,6 +22,8 @@ import {
   PlusIcon,
   ShareIcon,
 } from '@heroicons/react/24/outline';
+
+export const runtime = 'edge';
 
 interface SermonDetail {
   id: string;

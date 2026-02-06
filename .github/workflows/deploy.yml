@@ -36,10 +36,10 @@ jobs:
           cd "docs/Church_Thrive"
           npm run build:shared
 
-      - name: Build Next.js app
+      - name: Build for Cloudflare Pages
         run: |
-          cd "docs/Church_Thrive"
-          npm run build:web
+          cd "docs/Church_Thrive/app"
+          npx @cloudflare/next-on-pages
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -53,7 +53,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy docs/Church_Thrive/app/.next --project-name=churchthrive
+          command: pages deploy docs/Church_Thrive/app/.vercel/output/static --project-name=churchthrive
           workingDirectory: .
 
       - name: Get deployment URL

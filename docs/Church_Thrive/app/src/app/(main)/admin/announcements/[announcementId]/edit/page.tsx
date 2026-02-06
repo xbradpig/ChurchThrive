@@ -18,6 +18,8 @@ import { CTSpinner } from '@/components/atoms/CTSpinner';
 import { toast } from '@/components/organisms/CTToast';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
+export const runtime = 'edge';
+
 const TARGET_GROUP_OPTIONS = [
   { value: 'all', label: '전체' },
   { value: 'admin', label: ROLE_LABELS.admin },

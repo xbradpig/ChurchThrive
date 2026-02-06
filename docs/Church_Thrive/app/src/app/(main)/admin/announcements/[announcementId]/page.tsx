@@ -12,6 +12,7 @@ import { toast } from '@/components/organisms/CTToast';
 import { formatDate, ROLE_LABELS } from '@churchthrive/shared';
 import type { Announcement, Member } from '@churchthrive/shared';
 import {
+
   ArrowLeftIcon,
   PencilIcon,
   TrashIcon,
@@ -19,6 +20,8 @@ import {
   CalendarIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
+
+export const runtime = 'edge';
 
 const TARGET_GROUP_LABELS: Record<string, string> = {
   all: '전체',

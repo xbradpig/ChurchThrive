@@ -14,6 +14,8 @@ import { CTSpinner } from '@/components/atoms/CTSpinner';
 import { toast } from '@/components/organisms/CTToast';
 import type { Member } from '@churchthrive/shared';
 
+export const runtime = 'edge';
+
 export default function EditMemberPage() {
   const router = useRouter();
   const params = useParams();

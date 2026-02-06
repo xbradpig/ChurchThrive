@@ -12,6 +12,8 @@ import { CTSelect } from '@/components/atoms/CTSelect';
 import { CTTextArea } from '@/components/atoms/CTTextArea';
 import { CTButton } from '@/components/atoms/CTButton';
 
+export const runtime = 'edge';
+
 export default function QrRegisterPage() {
   const params = useParams();
   const churchId = params.churchId as string;
