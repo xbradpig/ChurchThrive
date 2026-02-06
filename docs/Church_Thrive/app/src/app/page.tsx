@@ -102,10 +102,10 @@ const PARTNER_ROLES = [
 ];
 
 const NAV_ITEMS = [
-  { href: '#about', label: '소개' },
-  { href: '#mission', label: 'Mission' },
-  { href: '#services', label: '서비스' },
-  { href: '#join', label: '파트너 모집' },
+  { href: '/about', label: '소개' },
+  { href: '/mission', label: 'Mission' },
+  { href: '/services', label: '서비스' },
+  { href: '/join', label: '파트너 모집' },
 ];
 
 export default function LandingPage() {
@@ -125,13 +125,13 @@ export default function LandingPage() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-6">
               {NAV_ITEMS.map((item) => (
-                <a
+                <Link
                   key={item.href}
                   href={item.href}
                   className="text-sm font-medium text-gray-600 hover:text-ct-primary transition-colors"
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
             </div>
 
@@ -177,12 +177,12 @@ export default function LandingPage() {
             >
               무료로 시작하기
             </Link>
-            <a
-              href="#about"
+            <Link
+              href="/about"
               className="w-full sm:w-auto px-8 py-4 text-lg font-medium text-gray-700 bg-white rounded-xl hover:bg-gray-50 transition-colors border border-gray-200"
             >
               더 알아보기
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -558,15 +558,15 @@ export default function LandingPage() {
             <div>
               <h4 className="text-white font-semibold mb-4">서비스</h4>
               <ul className="space-y-2">
-                <li><a href="#about" className="text-gray-400 hover:text-white text-sm transition-colors">소개</a></li>
-                <li><a href="#services" className="text-gray-400 hover:text-white text-sm transition-colors">기능</a></li>
+                <li><Link href="/about" className="text-gray-400 hover:text-white text-sm transition-colors">소개</Link></li>
+                <li><Link href="/services" className="text-gray-400 hover:text-white text-sm transition-colors">기능</Link></li>
                 <li><Link href="/register" className="text-gray-400 hover:text-white text-sm transition-colors">시작하기</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">파트너</h4>
               <ul className="space-y-2">
-                <li><a href="#join" className="text-gray-400 hover:text-white text-sm transition-colors">파트너 모집</a></li>
+                <li><Link href="/join" className="text-gray-400 hover:text-white text-sm transition-colors">파트너 모집</Link></li>
                 <li><a href="mailto:partner@churchthrive.org" className="text-gray-400 hover:text-white text-sm transition-colors">지원하기</a></li>
               </ul>
             </div>
