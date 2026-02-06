@@ -48,8 +48,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy docs/Church_Thrive/app/.vercel/output/static --project-name=churchthrive
-          workingDirectory: .
+          # Deploy from app directory - wrangler.toml specifies output dir
+          command: pages deploy .vercel/output/static --project-name=churchthrive
+          workingDirectory: docs/Church_Thrive/app
 
       - name: Get deployment URL
         id: deployment
