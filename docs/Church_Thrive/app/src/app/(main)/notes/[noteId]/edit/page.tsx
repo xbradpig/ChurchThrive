@@ -14,8 +14,6 @@ import { CTSpinner } from '@/components/atoms/CTSpinner';
 import { toast } from '@/components/organisms/CTToast';
 import { saveAudioChunk, clearAudioChunks } from '@/lib/offline/audio-storage';
 import {
-
-export const runtime = 'edge';
   ArrowLeftIcon,
   BookmarkIcon,
   MicrophoneIcon,
@@ -23,6 +21,8 @@ export const runtime = 'edge';
   PauseIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline';
+
+export const runtime = 'edge';
 
 function ToolbarIcon({ label }: { label: string }) {
   return (
