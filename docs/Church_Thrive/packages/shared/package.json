@@ -5,6 +5,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
+    "build": "echo 'Shared package uses source files directly - no build needed'",
     "typecheck": "tsc --noEmit",
     "lint": "echo 'Lint skipped - eslint config needs setup'",
     "clean": "rm -rf dist"
