@@ -48,17 +48,9 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Debug: log cookies
-  const allCookies = request.cookies.getAll();
-  console.log('[Middleware] Cookies count:', allCookies.length);
-  console.log('[Middleware] Cookie names:', allCookies.map(c => c.name).join(', '));
-
   const {
     data: { user },
-    error: userError,
   } = await supabase.auth.getUser();
-
-  console.log('[Middleware] User:', user?.id || 'null', 'Error:', userError?.message || 'none');
 
   const pathname = request.nextUrl.pathname;
 

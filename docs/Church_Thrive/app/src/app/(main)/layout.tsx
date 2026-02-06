@@ -11,7 +11,9 @@ import {
   EllipsisHorizontalIcon,
   Bars3Icon,
   XMarkIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline';
+import { createClient } from '@/lib/supabase/client';
 import {
   HomeIcon as HomeIconSolid,
   UsersIcon as UsersIconSolid,
@@ -72,6 +74,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  }
+
   function isActive(href: string) {
     if (href === '/dashboard') return pathname === '/dashboard';
     return pathname.startsWith(href);
@@ -95,7 +103,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           {/* Nav */}
-          <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+          <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 flex flex-col">
+            <div className="flex-1 space-y-1">
             {SIDEBAR_ITEMS.map((item) => {
               if ('children' in item && item.children) {
                 const isParentActive = item.children.some(c => isActive(c.href));
@@ -138,6 +147,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 </Link>
               );
             })}
+            </div>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2 mt-4 text-ct-sm font-medium rounded-ct-md text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <ArrowRightOnRectangleIcon className="w-5 h-5" />
+              로그아웃
+            </button>
           </nav>
         </div>
       </aside>
@@ -191,6 +210,18 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                   </Link>
                 );
               })}
+
+              {/* Mobile Logout Button */}
+              <button
+                onClick={() => {
+                  setSidebarOpen(false);
+                  handleLogout();
+                }}
+                className="flex items-center gap-3 px-3 py-2 mt-4 text-ct-sm font-medium rounded-ct-md text-red-600 hover:bg-red-50 transition-colors w-full"
+              >
+                <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                로그아웃
+              </button>
             </nav>
           </div>
         </div>
