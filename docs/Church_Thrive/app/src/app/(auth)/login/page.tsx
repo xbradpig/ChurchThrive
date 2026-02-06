@@ -7,10 +7,28 @@ import { createClient } from '@/lib/supabase/client';
 
 type LoginMethod = 'email' | 'phone';
 
+// Roles that have admin access
+const ADMIN_ROLES = ['admin', 'pastor', 'staff'];
+
+// Get redirect destination based on role
+async function getRoleBasedRedirect(supabase: ReturnType<typeof createClient>, userId: string): Promise<string> {
+  const { data: member } = await supabase
+    .from('members')
+    .select('role')
+    .eq('user_id', userId)
+    .eq('status', 'active')
+    .single();
+
+  if (member?.role && ADMIN_ROLES.includes(member.role)) {
+    return '/dashboard';
+  }
+  return '/home';
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/dashboard';
+  const explicitRedirect = searchParams.get('redirect');
 
   const [method, setMethod] = useState<LoginMethod>('email');
   const [email, setEmail] = useState('');
@@ -26,7 +44,7 @@ function LoginForm() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -39,6 +57,8 @@ function LoginForm() {
         return;
       }
 
+      // Use explicit redirect if provided, otherwise use role-based redirect
+      const redirect = explicitRedirect || (data.user ? await getRoleBasedRedirect(supabase, data.user.id) : '/home');
       router.push(redirect);
       router.refresh();
     } catch {
@@ -50,10 +70,12 @@ function LoginForm() {
 
   async function handleKakaoLogin() {
     const supabase = createClient();
+    // For OAuth, let the callback handle role-based redirect
+    const callbackRedirect = explicitRedirect || 'role-based';
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?redirect=${redirect}`,
+        redirectTo: `${window.location.origin}/api/auth/callback?redirect=${callbackRedirect}`,
       },
     });
     if (error) {
@@ -77,8 +99,9 @@ function LoginForm() {
         return;
       }
 
-      // Navigate to OTP verification (simplified for now)
-      router.push(`/login/verify?phone=${phone}&redirect=${redirect}`);
+      // Navigate to OTP verification - use role-based redirect if no explicit redirect
+      const verifyRedirect = explicitRedirect || 'role-based';
+      router.push(`/login/verify?phone=${phone}&redirect=${verifyRedirect}`);
     } catch {
       setError('로그인 중 오류가 발생했습니다.');
     } finally {

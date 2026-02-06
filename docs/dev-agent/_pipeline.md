@@ -2,7 +2,7 @@
 project: ChurchThrive App
 type: full-pipeline
 created: 2026-02-05
-last_updated: 2026-02-05
+last_updated: 2026-02-06
 status: all_completed
 
 stages:
@@ -83,6 +83,12 @@ stages:
     status: completed
     doc: 12_documentation.md
     completed_at: 2026-02-05
+
+  - id: landing-routing
+    name: "소개 페이지 및 역할 기반 라우팅"
+    status: completed
+    doc: 13_landing-page-routing.md
+    completed_at: 2026-02-06
 ---
 
 # ChurchThrive 개발 파이프라인
@@ -108,6 +114,7 @@ stages:
 | 10 | Mobile | ✅ completed | 오프라인 동기화, 오디오, 푸시, 딥링킹 |
 | 11 | Testing | ✅ completed | Vitest, Playwright E2E, 보안/코드 리뷰 |
 | 12 | Documentation | ✅ completed | API 문서, 배포/환경 가이드, 기여 가이드 |
+| 13 | Landing & Routing | ✅ completed | 소개 페이지, 역할 기반 라우팅, 교인 홈페이지 |
 
 ## 산출물 요약
 
