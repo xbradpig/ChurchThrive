@@ -31,11 +31,6 @@ jobs:
           cd "docs/Church_Thrive"
           npm ci
 
-      - name: Build shared package
-        run: |
-          cd "docs/Church_Thrive"
-          npm run build:shared
-
       - name: Build for Cloudflare Pages
         run: |
           cd "docs/Church_Thrive/app"
