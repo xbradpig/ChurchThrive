@@ -46,7 +46,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Public routes that don't require auth (landing page included)
-  const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/church/new', '/api/auth/callback'];
+  const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/church/new', '/api/auth/callback', '/about', '/mission', '/services', '/join'];
   const isPublicRoute = publicRoutes.some(route =>
     route === '/' ? pathname === '/' : pathname.startsWith(route)
   );
@@ -91,6 +91,11 @@ export async function updateSession(request: NextRequest) {
       .eq('user_id', user.id)
       .single();
 
+    // 교회 등록 페이지는 로그인했지만 교회가 없는 사용자가 접근 가능
+    const isChurchNewRoute = pathname.startsWith('/church/new');
+    // 교회 검색 페이지도 로그인했지만 교회가 없는 사용자가 접근 가능
+    const isChurchSearchRoute = pathname.startsWith('/register/church-search');
+
     if (member?.status === 'pending') {
       if (!pathname.startsWith('/register/pending')) {
         const url = request.nextUrl.clone();
@@ -101,7 +106,14 @@ export async function updateSession(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = getRoleBasedRedirect(member.role);
       return NextResponse.redirect(url);
+    } else if (!member && !isChurchNewRoute && !isChurchSearchRoute && !pathname.startsWith('/register')) {
+      // 멤버 레코드가 없고, 교회 등록/검색 관련 페이지가 아닌 경우
+      // 교회 검색 페이지로 리디렉트
+      const url = request.nextUrl.clone();
+      url.pathname = '/register/church-search';
+      return NextResponse.redirect(url);
     }
+    // member가 없고 isChurchNewRoute 또는 isChurchSearchRoute면 접근 허용
   }
 
   // Role-based route protection for authenticated users
