@@ -1,6 +1,6 @@
 import type { Database } from './database';
 
-export type UserRole = 'admin' | 'pastor' | 'staff' | 'leader' | 'member';
+export type UserRole = 'superadmin' | 'admin' | 'pastor' | 'staff' | 'leader' | 'member';
 export type MemberStatus = 'pending' | 'active' | 'inactive' | 'transferred';
 
 export interface AuthUser {

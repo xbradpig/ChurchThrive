@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useAuthStore } from '@/stores/authStore';
 import { CTCard } from '@/components/molecules/CTCard';
 import { CTAvatar } from '@/components/atoms/CTAvatar';
 import { CTBadge } from '@/components/atoms/CTBadge';
@@ -11,14 +12,16 @@ import { CTButton } from '@/components/atoms/CTButton';
 import { CTSpinner } from '@/components/atoms/CTSpinner';
 import { CTModal } from '@/components/organisms/CTModal';
 import { toast } from '@/components/organisms/CTToast';
-import { ROLE_LABELS, ROLES } from '@churchthrive/shared';
+import { ROLE_LABELS, ROLES, ASSIGNABLE_ROLES, isSuperAdmin } from '@churchthrive/shared';
 import type { Member, UserRole } from '@churchthrive/shared';
 import {
   ShieldCheckIcon,
   UsersIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 
-const ROLE_COLORS: Record<string, 'red' | 'blue' | 'green' | 'yellow' | 'gray'> = {
+const ROLE_COLORS: Record<string, 'red' | 'blue' | 'green' | 'yellow' | 'gray' | 'purple'> = {
+  superadmin: 'purple',
   admin: 'red',
   pastor: 'blue',
   staff: 'green',
@@ -27,6 +30,7 @@ const ROLE_COLORS: Record<string, 'red' | 'blue' | 'green' | 'yellow' | 'gray'> 
 };
 
 const ROLE_DESCRIPTIONS: Record<string, string> = {
+  superadmin: '시스템 전체 관리 권한',
   admin: '교회 관리 전체 권한',
   pastor: '교인관리, 말씀노트 피드백',
   staff: '교인관리, 출석, 공지',
@@ -36,6 +40,7 @@ const ROLE_DESCRIPTIONS: Record<string, string> = {
 
 export default function RolesPage() {
   const supabase = createClient();
+  const { member: currentMember } = useAuthStore();
 
   const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +50,25 @@ export default function RolesPage() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [changingRole, setChangingRole] = useState<{ memberId: string; currentRole: string } | null>(null);
   const [newRole, setNewRole] = useState<UserRole>('member');
+
+  // Check if current user is superadmin
+  const isSuperAdminUser = currentMember?.role && isSuperAdmin(currentMember.role as UserRole);
+
+  // Get roles that current user can assign
+  const getAssignableRoles = useCallback(() => {
+    if (isSuperAdminUser) {
+      return ROLES; // Superadmin can assign all roles including superadmin
+    }
+    return ASSIGNABLE_ROLES; // Others can only assign regular roles
+  }, [isSuperAdminUser]);
+
+  // Get roles to display in the list
+  const getDisplayRoles = useCallback(() => {
+    if (isSuperAdminUser) {
+      return ROLES; // Superadmin sees all roles
+    }
+    return ASSIGNABLE_ROLES; // Others don't see superadmin role
+  }, [isSuperAdminUser]);
 
   const fetchMembers = useCallback(async () => {
     setIsLoading(true);
@@ -81,7 +105,7 @@ export default function RolesPage() {
 
   // Group members by role
   const membersByRole: Record<string, Member[]> = {};
-  ROLES.forEach(role => {
+  getDisplayRoles().forEach(role => {
     membersByRole[role] = members.filter(m => m.role === role);
   });
 
@@ -98,6 +122,12 @@ export default function RolesPage() {
   }
 
   async function handleChangeRole(memberId: string, role: UserRole) {
+    // Prevent non-superadmin from assigning superadmin role
+    if (role === 'superadmin' && !isSuperAdminUser) {
+      toast.error('시스템관리자 권한을 부여할 수 없습니다.');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('members')
@@ -115,6 +145,13 @@ export default function RolesPage() {
 
   async function handleBulkAssign() {
     if (selectedMembers.size === 0) return;
+
+    // Prevent non-superadmin from assigning superadmin role
+    if (bulkRole === 'superadmin' && !isSuperAdminUser) {
+      toast.error('시스템관리자 권한을 부여할 수 없습니다.');
+      return;
+    }
+
     setIsAssigning(true);
     try {
       const memberIds = Array.from(selectedMembers);
@@ -169,13 +206,18 @@ export default function RolesPage() {
 
       {/* Role Groups */}
       <div className="space-y-6">
-        {ROLES.map((role) => {
+        {getDisplayRoles().map((role) => {
           const roleMembers = membersByRole[role] || [];
+          const isSuperAdminRole = role === 'superadmin';
+
           return (
             <CTCard key={role} padding="sm">
               {/* Role header */}
               <div className="flex items-center justify-between px-2 py-2 mb-2">
                 <div className="flex items-center gap-3">
+                  {isSuperAdminRole && (
+                    <StarIcon className="w-4 h-4 text-purple-500" />
+                  )}
                   <CTBadge
                     label={ROLE_LABELS[role]}
                     color={ROLE_COLORS[role] || 'gray'}
@@ -205,32 +247,41 @@ export default function RolesPage() {
                       <CTCheckbox
                         checked={selectedMembers.has(m.id)}
                         onChange={() => toggleSelect(m.id)}
+                        disabled={m.role === 'superadmin' && !isSuperAdminUser}
                       />
                       <CTAvatar name={m.name} src={m.photo_url} size="sm" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-ct-sm font-medium text-gray-800 truncate">
-                          {m.name}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-ct-sm font-medium text-gray-800 truncate">
+                            {m.name}
+                          </p>
+                          {m.role === 'superadmin' && (
+                            <StarIcon className="w-3.5 h-3.5 text-purple-500" />
+                          )}
+                        </div>
                       </div>
                       <CTSelect
-                        options={ROLES.map(r => ({
+                        options={getAssignableRoles().map(r => ({
                           value: r,
                           label: ROLE_LABELS[r],
                         }))}
                         value={m.role}
                         onChange={(e) => {
+                          const targetRole = e.target.value as UserRole;
                           setChangingRole({ memberId: m.id, currentRole: m.role });
-                          setNewRole(e.target.value as UserRole);
-                          // Show confirmation if changing from/to admin
-                          if (m.role === 'admin' || e.target.value === 'admin') {
+                          setNewRole(targetRole);
+                          // Show confirmation if changing from/to admin or superadmin
+                          if (m.role === 'admin' || m.role === 'superadmin' ||
+                              targetRole === 'admin' || targetRole === 'superadmin') {
                             setChangingRole({ memberId: m.id, currentRole: m.role });
-                            setNewRole(e.target.value as UserRole);
+                            setNewRole(targetRole);
                           } else {
-                            handleChangeRole(m.id, e.target.value as UserRole);
+                            handleChangeRole(m.id, targetRole);
                           }
                         }}
+                        disabled={m.role === 'superadmin' && !isSuperAdminUser}
                         size="sm"
-                        className="w-28"
+                        className="w-32"
                       />
                     </div>
                   ))}
@@ -262,7 +313,7 @@ export default function RolesPage() {
             선택한 {selectedMembers.size}명의 역할을 일괄 변경합니다.
           </p>
           <CTSelect
-            options={ROLES.map(r => ({
+            options={getAssignableRoles().map(r => ({
               value: r,
               label: ROLE_LABELS[r],
             }))}
@@ -272,7 +323,7 @@ export default function RolesPage() {
         </div>
       </CTModal>
 
-      {/* Role Change Confirmation (for admin changes) */}
+      {/* Role Change Confirmation (for admin/superadmin changes) */}
       <CTModal
         isOpen={!!changingRole}
         onClose={() => setChangingRole(null)}
@@ -295,9 +346,19 @@ export default function RolesPage() {
           </>
         }
       >
-        <p className="text-ct-md text-gray-600">
-          이 교인의 역할을 &ldquo;{ROLE_LABELS[newRole]}&rdquo;(으)로 변경하시겠습니까?
-        </p>
+        <div className="space-y-3">
+          <p className="text-ct-md text-gray-600">
+            이 교인의 역할을 <strong>&ldquo;{ROLE_LABELS[newRole]}&rdquo;</strong>(으)로 변경하시겠습니까?
+          </p>
+          {(newRole === 'superadmin' || newRole === 'admin') && (
+            <div className="p-3 bg-yellow-50 rounded-ct-md border border-yellow-200">
+              <p className="text-ct-sm text-yellow-800">
+                <strong>주의:</strong> {newRole === 'superadmin' ? '시스템관리자' : '담임목사'} 권한은
+                {newRole === 'superadmin' ? ' 모든 교회의 시스템 설정을 변경' : ' 교회의 모든 설정을 변경'}할 수 있습니다.
+              </p>
+            </div>
+          )}
+        </div>
       </CTModal>
     </div>
   );

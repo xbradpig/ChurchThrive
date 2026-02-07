@@ -29,9 +29,26 @@ export type Permission =
   | 'cells:manage'
   // Settings
   | 'church:settings'
-  | 'church:members:manage';
+  | 'church:members:manage'
+  // System (superadmin only)
+  | 'system:churches:manage'
+  | 'system:users:manage'
+  | 'system:settings';
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
+  superadmin: [
+    // All permissions
+    'members:read', 'members:create', 'members:update', 'members:delete',
+    'members:import', 'members:export', 'members:approve',
+    'notes:read', 'notes:create', 'notes:update', 'notes:delete', 'notes:feedback',
+    'announcements:read', 'announcements:create', 'announcements:update', 'announcements:delete',
+    'attendance:read', 'attendance:check', 'attendance:manage',
+    'organization:read', 'organization:manage',
+    'cells:read', 'cells:manage',
+    'church:settings', 'church:members:manage',
+    // System-level permissions
+    'system:churches:manage', 'system:users:manage', 'system:settings',
+  ],
   admin: [
     'members:read', 'members:create', 'members:update', 'members:delete',
     'members:import', 'members:export', 'members:approve',

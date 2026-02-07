@@ -76,7 +76,7 @@ export type Database = {
           baptism_date: string | null;
           position: 'elder' | 'ordained_deacon' | 'deacon' | 'saint' | null;
           cell_group_id: string | null;
-          role: 'admin' | 'pastor' | 'staff' | 'leader' | 'member';
+          role: 'superadmin' | 'admin' | 'pastor' | 'staff' | 'leader' | 'member';
           status: 'pending' | 'active' | 'inactive' | 'transferred';
           photo_url: string | null;
           joined_at: string | null;
