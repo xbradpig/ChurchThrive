@@ -6,11 +6,11 @@ import { CTButton } from '@/components/atoms/CTButton';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useServiceWorker } from '@/hooks/useServiceWorker';
 import { useOffline } from '@/hooks/useOffline';
+import { useAuthStore } from '@/stores/authStore';
 import {
   UserCircleIcon,
   BellIcon,
   DevicePhoneMobileIcon,
-  ShieldCheckIcon,
   InformationCircleIcon,
   ChevronRightIcon,
   ArrowRightStartOnRectangleIcon,
@@ -54,12 +54,7 @@ export default function SettingsPage() {
   const { canInstall, isInstalled, install } = usePWAInstall();
   const { clearAllCaches } = useServiceWorker();
   const { isOnline, lastSyncedAt, sync } = useOffline();
-
-  // Notification toggles
-  const [pushEnabled, setPushEnabled] = useState(false);
-  const [announcementNotif, setAnnouncementNotif] = useState(true);
-  const [prayerNotif, setPrayerNotif] = useState(true);
-  const [eventNotif, setEventNotif] = useState(true);
+  const { member, church } = useAuthStore();
 
   // Offline mode toggle
   const [offlineMode, setOfflineMode] = useState(false);
@@ -73,20 +68,6 @@ export default function SettingsPage() {
     setTimeout(() => setCacheCleared(false), 3000);
   }, [clearAllCaches]);
 
-  const handleTogglePush = useCallback(async () => {
-    if (!pushEnabled) {
-      // Request notification permission
-      if ('Notification' in window) {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-          setPushEnabled(true);
-        }
-      }
-    } else {
-      setPushEnabled(false);
-    }
-  }, [pushEnabled]);
-
   const handleInstallPWA = useCallback(async () => {
     await install();
   }, [install]);
@@ -95,13 +76,13 @@ export default function SettingsPage() {
     await sync();
   }, [sync]);
 
-  // Mock user data
+  // User data from auth store
   const user = {
-    name: '김성도',
-    email: 'member@church.com',
-    role: '집사',
-    church: '새생명교회',
-    avatarUrl: null as string | null,
+    name: member?.name || '사용자',
+    email: member?.email || '',
+    role: member?.role || '',
+    church: church?.name || '',
+    avatarUrl: member?.photo_url || null,
   };
 
   const lastSyncText = lastSyncedAt
@@ -140,36 +121,12 @@ export default function SettingsPage() {
       icon: BellIcon,
       items: [
         {
-          id: 'push-notifications',
-          label: '푸시 알림',
-          description: '브라우저 푸시 알림을 허용합니다',
-          type: 'toggle',
-          value: pushEnabled,
-          onClick: handleTogglePush,
-        },
-        {
-          id: 'announcement-notif',
-          label: '공지사항 알림',
-          description: '새로운 공지사항이 등록되면 알림',
-          type: 'toggle',
-          value: announcementNotif,
-          onClick: () => setAnnouncementNotif(!announcementNotif),
-        },
-        {
-          id: 'prayer-notif',
-          label: '기도 요청 알림',
-          description: '새로운 기도 요청이 등록되면 알림',
-          type: 'toggle',
-          value: prayerNotif,
-          onClick: () => setPrayerNotif(!prayerNotif),
-        },
-        {
-          id: 'event-notif',
-          label: '일정 알림',
-          description: '교회 행사 시작 전 미리 알림',
-          type: 'toggle',
-          value: eventNotif,
-          onClick: () => setEventNotif(!eventNotif),
+          id: 'notification-settings',
+          label: '알림 설정',
+          description: '푸시 알림, 공지사항, 기도 요청, 일정 알림 관리',
+          type: 'link',
+          href: '/settings/notifications',
+          icon: BellIcon,
         },
       ],
     },
