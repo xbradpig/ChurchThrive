@@ -19,7 +19,7 @@ max_rows = 1000
 # Port to use for the local database URL.
 port = 54322
 # The database major version to use.
-major_version = 15
+major_version = 17
 
 [studio]
 # Port to use for Supabase Studio.
@@ -61,13 +61,13 @@ enable_confirmations = false
 # The maximum file size allowed (e.g. "5MB", "500KB").
 file_size_limit = "50MiB"
 
-[edge_functions]
+[functions]
 # Configure Edge Function runtime behavior
-[edge_functions.send-notification]
+[functions.send-notification]
 verify_jwt = false
 
-[edge_functions.process-stt]
+[functions.process-stt]
 verify_jwt = false
 
-[edge_functions.daily-digest]
+[functions.daily-digest]
 verify_jwt = false
