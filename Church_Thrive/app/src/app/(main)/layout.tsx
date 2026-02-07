@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -24,55 +24,32 @@ import {
 import { PWAInstallBanner } from '@/components/features/PWAInstallBanner';
 import { SWUpdateBanner } from '@/components/features/SWUpdateBanner';
 import { OfflineIndicator } from '@/components/features/OfflineIndicator';
+import { useNavigation } from '@/hooks/useNavigation';
+import { useAuthStore } from '@/stores/authStore';
+import type { MenuItem } from '@/lib/navigation/menu-config';
 
-const NAV_ITEMS = [
-  { href: '/dashboard', label: '홈', Icon: HomeIcon, ActiveIcon: HomeIconSolid },
-  { href: '/members', label: '교인', Icon: UsersIcon, ActiveIcon: UsersIconSolid },
-  { href: '/notes', label: '말씀노트', Icon: BookOpenIcon, ActiveIcon: BookOpenIconSolid },
-  { href: '/admin/announcements', label: '행정', Icon: ClipboardDocumentListIcon, ActiveIcon: ClipboardDocumentListIconSolid },
-  { href: '/settings', label: '더보기', Icon: EllipsisHorizontalIcon, ActiveIcon: EllipsisHorizontalIconSolid },
-];
-
-const SIDEBAR_ITEMS = [
-  { href: '/dashboard', label: '홈', Icon: HomeIcon },
-  {
-    label: '교인관리', Icon: UsersIcon,
-    children: [
-      { href: '/members', label: '교인 목록' },
-      { href: '/members/families', label: '가족 관리' },
-      { href: '/members/import', label: '임포트' },
-    ],
-  },
-  {
-    label: '말씀노트', Icon: BookOpenIcon,
-    children: [
-      { href: '/notes', label: '내 노트' },
-      { href: '/notes/new', label: '새 노트 작성' },
-      { href: '/notes/sermons', label: '설교 아카이브' },
-    ],
-  },
-  {
-    label: '교회행정', Icon: ClipboardDocumentListIcon,
-    children: [
-      { href: '/admin/announcements', label: '공지사항' },
-      { href: '/admin/organization', label: '조직도' },
-      { href: '/admin/attendance', label: '출석관리' },
-      { href: '/admin/cells', label: '구역관리' },
-    ],
-  },
-  {
-    label: '설정', Icon: EllipsisHorizontalIcon,
-    children: [
-      { href: '/settings/profile', label: '내 프로필' },
-      { href: '/settings/church', label: '교회 설정' },
-      { href: '/settings/notifications', label: '알림 설정' },
-    ],
-  },
-];
+// 모바일 하단 탭 네비게이션 아이콘 매핑
+const NAV_ICONS: Record<string, { Icon: typeof HomeIcon; ActiveIcon: typeof HomeIconSolid }> = {
+  '/dashboard': { Icon: HomeIcon, ActiveIcon: HomeIconSolid },
+  '/home': { Icon: HomeIcon, ActiveIcon: HomeIconSolid },
+  '/members': { Icon: UsersIcon, ActiveIcon: UsersIconSolid },
+  '/notes': { Icon: BookOpenIcon, ActiveIcon: BookOpenIconSolid },
+  '/admin/announcements': { Icon: ClipboardDocumentListIcon, ActiveIcon: ClipboardDocumentListIconSolid },
+  '/announcements': { Icon: ClipboardDocumentListIcon, ActiveIcon: ClipboardDocumentListIconSolid },
+  '/settings': { Icon: EllipsisHorizontalIcon, ActiveIcon: EllipsisHorizontalIconSolid },
+  '/profile': { Icon: EllipsisHorizontalIcon, ActiveIcon: EllipsisHorizontalIconSolid },
+};
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { menuItems, bottomNavItems, role } = useNavigation();
+  const { member, initialize, isLoading } = useAuthStore();
+
+  // authStore 초기화
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -81,8 +58,20 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   }
 
   function isActive(href: string) {
-    if (href === '/dashboard') return pathname === '/dashboard';
+    if (href === '/dashboard' || href === '/home') return pathname === href;
     return pathname.startsWith(href);
+  }
+
+  // 역할 표시 문자열
+  function getRoleDisplayName(role: string | null | undefined): string {
+    const roleNames: Record<string, string> = {
+      admin: '관리자',
+      pastor: '목회자',
+      staff: '스태프',
+      leader: '리더',
+      member: '교인',
+    };
+    return roleNames[role ?? ''] ?? '교인';
   }
 
   return (
@@ -105,58 +94,70 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           {/* Nav */}
           <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 flex flex-col">
             <div className="flex-1 space-y-1">
-            {SIDEBAR_ITEMS.map((item) => {
-              if ('children' in item && item.children) {
-                const isParentActive = item.children.some(c => isActive(c.href));
-                return (
-                  <div key={item.label} className="space-y-0.5">
-                    <div className={`flex items-center gap-3 px-3 py-2 text-ct-sm font-medium rounded-ct-md ${
-                      isParentActive ? 'text-ct-primary' : 'text-gray-600'
-                    }`}>
-                      <item.Icon className="w-5 h-5" />
-                      {item.label}
+              {menuItems.map((item) => {
+                if ('children' in item && item.children && item.children.length > 0) {
+                  const isParentActive = item.children.some(c => c.href && isActive(c.href));
+                  return (
+                    <div key={item.label} className="space-y-0.5">
+                      <div className={`flex items-center gap-3 px-3 py-2 text-ct-sm font-medium rounded-ct-md ${
+                        isParentActive ? 'text-ct-primary' : 'text-gray-600'
+                      }`}>
+                        {item.Icon && <item.Icon className="w-5 h-5" />}
+                        {item.label}
+                      </div>
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href!}
+                          className={`block pl-11 pr-3 py-2 text-ct-sm rounded-ct-md transition-colors ${
+                            child.href && isActive(child.href)
+                              ? 'bg-ct-primary-50 text-ct-primary font-medium'
+                              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
                     </div>
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className={`block pl-11 pr-3 py-2 text-ct-sm rounded-ct-md transition-colors ${
-                          isActive(child.href)
-                            ? 'bg-ct-primary-50 text-ct-primary font-medium'
-                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-                        }`}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
+                  );
+                }
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href!}
+                    className={`flex items-center gap-3 px-3 py-2 text-ct-sm font-medium rounded-ct-md transition-colors ${
+                      item.href && isActive(item.href)
+                        ? 'bg-ct-primary-50 text-ct-primary'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {item.Icon && <item.Icon className="w-5 h-5" />}
+                    {item.label}
+                  </Link>
                 );
-              }
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href!}
-                  className={`flex items-center gap-3 px-3 py-2 text-ct-sm font-medium rounded-ct-md transition-colors ${
-                    isActive(item.href!)
-                      ? 'bg-ct-primary-50 text-ct-primary'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  <item.Icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
+              })}
             </div>
 
-            {/* Logout Button */}
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-2 mt-4 text-ct-sm font-medium rounded-ct-md text-red-600 hover:bg-red-50 transition-colors"
-            >
-              <ArrowRightOnRectangleIcon className="w-5 h-5" />
-              로그아웃
-            </button>
+            {/* User Info & Logout */}
+            <div className="border-t border-gray-100 pt-4 mt-4">
+              {member && (
+                <div className="px-3 py-2 mb-2">
+                  <p className="text-ct-sm font-medium text-gray-800 truncate">
+                    {member.name}
+                  </p>
+                  <p className="text-ct-xs text-gray-500">
+                    {getRoleDisplayName(role)}
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-3 py-2 w-full text-ct-sm font-medium rounded-ct-md text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                로그아웃
+              </button>
+            </div>
           </nav>
         </div>
       </aside>
@@ -172,56 +173,70 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <XMarkIcon className="w-6 h-6" />
               </button>
             </div>
-            <nav className="py-4 px-3 space-y-1">
-              {SIDEBAR_ITEMS.map((item) => {
-                if ('children' in item && item.children) {
-                  return (
-                    <div key={item.label} className="space-y-0.5">
-                      <div className="flex items-center gap-3 px-3 py-2 text-ct-sm font-medium text-gray-600">
-                        <item.Icon className="w-5 h-5" />
-                        {item.label}
+            <nav className="py-4 px-3 space-y-1 flex flex-col h-[calc(100%-4rem)]">
+              <div className="flex-1 overflow-y-auto space-y-1">
+                {menuItems.map((item) => {
+                  if ('children' in item && item.children && item.children.length > 0) {
+                    return (
+                      <div key={item.label} className="space-y-0.5">
+                        <div className="flex items-center gap-3 px-3 py-2 text-ct-sm font-medium text-gray-600">
+                          {item.Icon && <item.Icon className="w-5 h-5" />}
+                          {item.label}
+                        </div>
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href!}
+                            onClick={() => setSidebarOpen(false)}
+                            className={`block pl-11 pr-3 py-2 text-ct-sm rounded-ct-md ${
+                              child.href && isActive(child.href) ? 'bg-ct-primary-50 text-ct-primary font-medium' : 'text-gray-500'
+                            }`}
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
                       </div>
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          onClick={() => setSidebarOpen(false)}
-                          className={`block pl-11 pr-3 py-2 text-ct-sm rounded-ct-md ${
-                            isActive(child.href) ? 'bg-ct-primary-50 text-ct-primary font-medium' : 'text-gray-500'
-                          }`}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
+                    );
+                  }
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href!}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-2 text-ct-sm font-medium rounded-ct-md ${
+                        item.href && isActive(item.href) ? 'bg-ct-primary-50 text-ct-primary' : 'text-gray-600'
+                      }`}
+                    >
+                      {item.Icon && <item.Icon className="w-5 h-5" />}
+                      {item.label}
+                    </Link>
                   );
-                }
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href!}
-                    onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2 text-ct-sm font-medium rounded-ct-md ${
-                      isActive(item.href!) ? 'bg-ct-primary-50 text-ct-primary' : 'text-gray-600'
-                    }`}
-                  >
-                    <item.Icon className="w-5 h-5" />
-                    {item.label}
-                  </Link>
-                );
-              })}
+                })}
+              </div>
 
-              {/* Mobile Logout Button */}
-              <button
-                onClick={() => {
-                  setSidebarOpen(false);
-                  handleLogout();
-                }}
-                className="flex items-center gap-3 px-3 py-2 mt-4 text-ct-sm font-medium rounded-ct-md text-red-600 hover:bg-red-50 transition-colors w-full"
-              >
-                <ArrowRightOnRectangleIcon className="w-5 h-5" />
-                로그아웃
-              </button>
+              {/* Mobile User Info & Logout */}
+              <div className="border-t border-gray-100 pt-4 mt-4">
+                {member && (
+                  <div className="px-3 py-2 mb-2">
+                    <p className="text-ct-sm font-medium text-gray-800 truncate">
+                      {member.name}
+                    </p>
+                    <p className="text-ct-xs text-gray-500">
+                      {getRoleDisplayName(role)}
+                    </p>
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    handleLogout();
+                  }}
+                  className="flex items-center gap-3 px-3 py-2 text-ct-sm font-medium rounded-ct-md text-red-600 hover:bg-red-50 transition-colors w-full"
+                >
+                  <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                  로그아웃
+                </button>
+              </div>
             </nav>
           </div>
         </div>
@@ -252,9 +267,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         {/* Mobile Bottom Tab Navigation */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[var(--ct-z-fixed)] bg-white border-t border-gray-200 safe-area-pb">
           <div className="flex items-center justify-around h-16">
-            {NAV_ITEMS.map((item) => {
+            {bottomNavItems.map((item) => {
               const active = isActive(item.href);
-              const Icon = active ? item.ActiveIcon : item.Icon;
+              const icons = NAV_ICONS[item.href] ?? { Icon: HomeIcon, ActiveIcon: HomeIconSolid };
+              const Icon = active ? icons.ActiveIcon : icons.Icon;
               return (
                 <Link
                   key={item.href}

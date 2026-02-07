@@ -1,11 +1,23 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@churchthrive/shared';
+import { hasPermission, type Permission } from '@churchthrive/shared';
+import type { UserRole } from '@churchthrive/shared';
 
 // Roles that have admin access
 const ADMIN_ROLES = ['admin', 'pastor', 'staff'];
 // Roles that use member homepage
 const MEMBER_ROLES = ['leader', 'member'];
+
+// 경로별 필요 권한 매핑
+const ROUTE_PERMISSIONS: Record<string, Permission> = {
+  '/admin/organizations': 'organization:read',
+  '/admin/cell-groups': 'cells:read',
+  '/admin/attendance': 'attendance:read',
+  '/admin/roles': 'organization:manage',
+  '/members/approvals': 'members:approve',
+  '/members/import': 'members:import',
+};
 
 // Get redirect destination based on role
 function getRoleBasedRedirect(role: string | null): string {
@@ -13,6 +25,21 @@ function getRoleBasedRedirect(role: string | null): string {
     return '/dashboard';
   }
   return '/home';
+}
+
+// 특정 경로에 대한 권한 검사
+function getRequiredPermission(pathname: string): Permission | null {
+  // 정확한 경로 매칭 먼저
+  if (ROUTE_PERMISSIONS[pathname]) {
+    return ROUTE_PERMISSIONS[pathname];
+  }
+  // prefix 매칭
+  for (const [route, permission] of Object.entries(ROUTE_PERMISSIONS)) {
+    if (pathname.startsWith(route + '/') || pathname === route) {
+      return permission;
+    }
+  }
+  return null;
 }
 
 export async function updateSession(request: NextRequest) {
@@ -136,7 +163,7 @@ export async function updateSession(request: NextRequest) {
     if (member?.status === 'active') {
       const isAdminRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/members');
       const isMemberRoute = pathname.startsWith('/home');
-      const role = member.role;
+      const role = member.role as UserRole;
 
       // Admin trying to access member-only routes: redirect to dashboard
       if (isMemberRoute && role && ADMIN_ROLES.includes(role)) {
@@ -151,6 +178,15 @@ export async function updateSession(request: NextRequest) {
       if (isAdminRoute && role && MEMBER_ROLES.includes(role)) {
         const url = request.nextUrl.clone();
         url.pathname = '/home';
+        return NextResponse.redirect(url);
+      }
+
+      // 세부 권한 검사: 특정 경로에 필요한 권한이 있는지 확인
+      const requiredPermission = getRequiredPermission(pathname);
+      if (requiredPermission && !hasPermission(role, requiredPermission)) {
+        const url = request.nextUrl.clone();
+        url.pathname = ADMIN_ROLES.includes(role) ? '/dashboard' : '/home';
+        url.searchParams.set('error', 'unauthorized');
         return NextResponse.redirect(url);
       }
     }

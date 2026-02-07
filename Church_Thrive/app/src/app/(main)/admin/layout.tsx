@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * Admin Layout - 단순화된 버전
+ *
+ * 사이드바는 (main)/layout.tsx에서 통합 관리되므로,
+ * 이 레이아웃은 children만 렌더링합니다.
+ *
+ * 모바일에서는 admin 페이지 전용 수평 탭 네비게이션을 표시합니다.
+ */
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/cn';
@@ -14,11 +23,11 @@ import {
 
 const ADMIN_NAV = [
   { href: '/admin', label: '대시보드', Icon: ChartBarIcon, exact: true },
-  { href: '/admin/announcements', label: '공지사항', Icon: MegaphoneIcon, exact: false },
+  { href: '/admin/announcements', label: '공지', Icon: MegaphoneIcon, exact: false },
   { href: '/admin/organizations', label: '조직도', Icon: BuildingOffice2Icon, exact: false },
   { href: '/admin/cell-groups', label: '구역/셀', Icon: UserGroupIcon, exact: false },
-  { href: '/admin/attendance', label: '출석관리', Icon: ClipboardDocumentCheckIcon, exact: false },
-  { href: '/admin/roles', label: '직분관리', Icon: ShieldCheckIcon, exact: false },
+  { href: '/admin/attendance', label: '출석', Icon: ClipboardDocumentCheckIcon, exact: false },
+  { href: '/admin/roles', label: '직분', Icon: ShieldCheckIcon, exact: false },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -30,37 +39,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-3.5rem)]">
-      {/* Desktop side navigation */}
-      <aside className="hidden lg:block w-56 shrink-0 border-r border-gray-200 bg-white">
-        <nav className="sticky top-16 py-4 px-3 space-y-1">
-          <p className="px-3 py-2 text-ct-xs font-semibold text-gray-400 uppercase tracking-wider">
-            교회행정
-          </p>
-          {ADMIN_NAV.map((item) => {
-            const active = isActive(item.href, item.exact);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-ct-md text-ct-sm font-medium transition-colors',
-                  'min-h-[44px]',
-                  active
-                    ? 'bg-ct-primary-50 text-ct-primary'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
-                )}
-              >
-                <item.Icon className="w-5 h-5 shrink-0" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-
-      {/* Mobile horizontal navigation */}
-      <div className="lg:hidden fixed top-14 left-0 right-0 z-[var(--ct-z-sticky)] bg-white border-b border-gray-200">
+    <>
+      {/* Mobile horizontal navigation - admin 페이지 전용 */}
+      <div className="lg:hidden sticky top-14 z-[var(--ct-z-sticky)] bg-white border-b border-gray-200">
         <div className="flex overflow-x-auto px-2 gap-1 py-1.5 scrollbar-hide">
           {ADMIN_NAV.map((item) => {
             const active = isActive(item.href, item.exact);
@@ -85,9 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </div>
 
       {/* Content area */}
-      <div className="flex-1 min-w-0 lg:pt-0 pt-14">
-        {children}
-      </div>
-    </div>
+      {children}
+    </>
   );
 }
