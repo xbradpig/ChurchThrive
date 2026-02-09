@@ -24,6 +24,8 @@ import {
 import { PWAInstallBanner } from '@/components/features/PWAInstallBanner';
 import { SWUpdateBanner } from '@/components/features/SWUpdateBanner';
 import { OfflineIndicator } from '@/components/features/OfflineIndicator';
+import { NotificationBanner } from '@/components/features/NotificationBanner';
+import { ViewModeSwitch } from '@/components/features/ViewModeSwitch';
 import { useNavigation } from '@/hooks/useNavigation';
 import { useAuthStore } from '@/stores/authStore';
 import type { MenuItem } from '@/lib/navigation/menu-config';
@@ -43,7 +45,7 @@ const NAV_ICONS: Record<string, { Icon: typeof HomeIcon; ActiveIcon: typeof Home
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { menuItems, bottomNavItems, role } = useNavigation();
+  const { menuItems, bottomNavItems, role, canToggleViewMode } = useNavigation();
   const { member, initialize, isLoading } = useAuthStore();
 
   // authStore 초기화
@@ -80,16 +82,24 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <SWUpdateBanner />
       <OfflineIndicator />
       <PWAInstallBanner />
+      <NotificationBanner />
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-1 bg-white border-r border-gray-200">
           {/* Logo */}
-          <div className="flex items-center h-16 px-6 border-b border-gray-100">
+          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-100">
             <Link href="/dashboard" className="text-ct-lg font-bold text-ct-primary">
               ChurchThrive
             </Link>
           </div>
+
+          {/* View Mode Switch */}
+          {canToggleViewMode && (
+            <div className="px-3 py-3 border-b border-gray-100">
+              <ViewModeSwitch className="w-full" />
+            </div>
+          )}
 
           {/* Nav */}
           <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 flex flex-col">
@@ -174,6 +184,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               </button>
             </div>
             <nav className="py-4 px-3 space-y-1 flex flex-col h-[calc(100%-4rem)]">
+              {/* Mobile View Mode Switch */}
+              {canToggleViewMode && (
+                <div className="mb-3 pb-3 border-b border-gray-100">
+                  <ViewModeSwitch className="w-full" />
+                </div>
+              )}
               <div className="flex-1 overflow-y-auto space-y-1">
                 {menuItems.map((item) => {
                   if ('children' in item && item.children && item.children.length > 0) {

@@ -19,12 +19,30 @@ const ROUTE_PERMISSIONS: Record<string, Permission> = {
   '/members/import': 'members:import',
 };
 
-// Get redirect destination based on role
-function getRoleBasedRedirect(role: string | null): string {
+// Get redirect destination based on role and viewMode
+function getRoleBasedRedirect(role: string | null, viewMode?: string): string {
   if (role && ADMIN_ROLES.includes(role)) {
+    // 관리자가 교인 모드로 설정한 경우 /home으로
+    if (viewMode === 'member') {
+      return '/home';
+    }
     return '/dashboard';
   }
   return '/home';
+}
+
+// Get viewMode from localStorage cookie (zustand persist)
+function getViewModeFromCookie(request: NextRequest): string | undefined {
+  try {
+    const authCookie = request.cookies.get('churchthrive-auth');
+    if (authCookie?.value) {
+      const parsed = JSON.parse(authCookie.value);
+      return parsed?.state?.viewMode;
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return undefined;
 }
 
 // 특정 경로에 대한 권한 검사
@@ -103,8 +121,9 @@ export async function updateSession(request: NextRequest) {
         .single();
 
       if (member?.status === 'active') {
+        const viewMode = getViewModeFromCookie(request);
         const url = request.nextUrl.clone();
-        url.pathname = getRoleBasedRedirect(member.role);
+        url.pathname = getRoleBasedRedirect(member.role, viewMode);
         return NextResponse.redirect(url);
       }
     }
@@ -139,8 +158,9 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url);
       }
     } else if (member?.status === 'active') {
+      const viewMode = getViewModeFromCookie(request);
       const url = request.nextUrl.clone();
-      url.pathname = getRoleBasedRedirect(member.role);
+      url.pathname = getRoleBasedRedirect(member.role, viewMode);
       return NextResponse.redirect(url);
     } else if (!member && !isChurchNewRoute && !isChurchSearchRoute && !pathname.startsWith('/register')) {
       // 멤버 레코드가 없고, 교회 등록/검색 관련 페이지가 아닌 경우

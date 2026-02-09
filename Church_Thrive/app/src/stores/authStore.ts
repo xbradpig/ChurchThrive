@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { createClient } from '@/lib/supabase/client';
 import type { AuthState, AuthUser } from '@churchthrive/shared';
 import type { Database } from '@churchthrive/shared';
@@ -6,14 +7,24 @@ import type { Database } from '@churchthrive/shared';
 type Member = Database['public']['Tables']['members']['Row'];
 type Church = Database['public']['Tables']['churches']['Row'];
 
+export type ViewMode = 'admin' | 'member';
+
+const ADMIN_ROLES = ['admin', 'pastor', 'staff'];
+
 export interface AuthStore extends AuthState {
+  viewMode: ViewMode;
   initialize: () => Promise<void>;
   signOut: () => Promise<void>;
   setMember: (member: Member | null) => void;
   setChurch: (church: Church | null) => void;
+  setViewMode: (mode: ViewMode) => void;
+  toggleViewMode: () => void;
+  canToggleViewMode: () => boolean;
 }
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set, get) => ({
   session: null,
   user: null,
   member: null,
@@ -21,6 +32,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isLoading: true,
   isAuthenticated: false,
   error: null,
+  viewMode: 'admin' as ViewMode,
 
   initialize: async () => {
     try {
@@ -43,7 +55,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           .single();
 
         let church: Church | null = null;
-        if (member?.church_id) {
+        if (member && member.church_id) {
           const { data } = await supabase
             .from('churches')
             .select('*')
@@ -101,4 +113,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   setMember: (member) => set({ member }),
   setChurch: (church) => set({ church }),
-}));
+
+  setViewMode: (mode: ViewMode) => set({ viewMode: mode }),
+
+  toggleViewMode: () => {
+    const { viewMode, canToggleViewMode } = get();
+    if (canToggleViewMode()) {
+      set({ viewMode: viewMode === 'admin' ? 'member' : 'admin' });
+    }
+  },
+
+  canToggleViewMode: () => {
+    const { member } = get();
+    return member?.role ? ADMIN_ROLES.includes(member.role) : false;
+  },
+}),
+    {
+      name: 'churchthrive-auth',
+      partialize: (state) => ({ viewMode: state.viewMode }),
+    }
+  )
+);

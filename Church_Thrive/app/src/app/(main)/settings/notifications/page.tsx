@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
-import { ArrowLeftIcon, BellIcon, BellSlashIcon } from '@heroicons/react/24/outline';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { ArrowLeftIcon, BellIcon, BellSlashIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
 interface NotificationPreferences {
   push: boolean;
@@ -23,6 +24,12 @@ const STORAGE_KEY = 'ct_notification_preferences';
 
 export default function NotificationsSettingsPage() {
   const { member } = useAuthStore();
+  const {
+    isSupported: isPushSupported,
+    permission: pushPermission,
+    isLoading: isPushLoading,
+    requestPermission,
+  } = usePushNotifications();
   const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -64,12 +71,15 @@ export default function NotificationsSettingsPage() {
   const handleToggle = useCallback(async (key: keyof NotificationPreferences) => {
     // Special handling for push notification permission
     if (key === 'push' && !preferences.push) {
-      if ('Notification' in window) {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          setMessage({ type: 'error', text: '알림 권한이 거부되었습니다. 브라우저 설정에서 허용해주세요.' });
-          return;
-        }
+      if (!isPushSupported) {
+        setMessage({ type: 'error', text: '이 브라우저에서는 푸시 알림을 지원하지 않습니다.' });
+        return;
+      }
+
+      const success = await requestPermission();
+      if (!success) {
+        setMessage({ type: 'error', text: '알림 권한이 거부되었습니다. 브라우저 설정에서 허용해주세요.' });
+        return;
       }
     }
 
@@ -79,7 +89,7 @@ export default function NotificationsSettingsPage() {
     };
     setPreferences(newPreferences);
     savePreferences(newPreferences);
-  }, [preferences, savePreferences]);
+  }, [preferences, savePreferences, isPushSupported, requestPermission]);
 
   const notificationItems = [
     {
@@ -157,12 +167,31 @@ export default function NotificationsSettingsPage() {
         </div>
       )}
 
-      {/* Info */}
+      {/* Push Status */}
       <div className="mt-6 p-4 bg-gray-50 rounded-ct-lg">
-        <p className="text-ct-xs text-gray-500">
-          푸시 알림을 받으려면 브라우저에서 알림 권한을 허용해야 합니다.
-          알림이 오지 않는다면 브라우저 설정을 확인해주세요.
-        </p>
+        <div className="flex items-start gap-3">
+          {pushPermission === 'granted' ? (
+            <CheckCircleIcon className="w-5 h-5 text-green-500 shrink-0" />
+          ) : pushPermission === 'denied' ? (
+            <ExclamationCircleIcon className="w-5 h-5 text-red-500 shrink-0" />
+          ) : (
+            <BellIcon className="w-5 h-5 text-gray-400 shrink-0" />
+          )}
+          <div>
+            <p className="text-ct-sm font-medium text-gray-700">
+              {pushPermission === 'granted'
+                ? '푸시 알림이 활성화되어 있습니다'
+                : pushPermission === 'denied'
+                  ? '푸시 알림이 차단되어 있습니다'
+                  : '푸시 알림을 활성화하세요'}
+            </p>
+            <p className="text-ct-xs text-gray-500 mt-1">
+              {pushPermission === 'denied'
+                ? '브라우저 설정에서 알림 권한을 허용해주세요.'
+                : '푸시 알림을 받으려면 브라우저에서 알림 권한을 허용해야 합니다.'}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

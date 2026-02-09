@@ -21,6 +21,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { PWAInstallBanner } from '@/components/features/PWAInstallBanner';
 import { SWUpdateBanner } from '@/components/features/SWUpdateBanner';
 import { OfflineIndicator } from '@/components/features/OfflineIndicator';
+import { ViewModeSwitch } from '@/components/features/ViewModeSwitch';
 
 const NAV_ITEMS = [
   { href: '/home', label: '홈', Icon: HomeIcon, ActiveIcon: HomeIconSolid },
@@ -71,16 +72,19 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 </span>
               </div>
             )}
-            <span className="font-semibold text-gray-900 truncate max-w-[200px]">
+            <span className="font-semibold text-gray-900 truncate max-w-[140px]">
               {church?.name || 'ChurchThrive'}
             </span>
           </div>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 text-gray-600 hover:text-gray-900 lg:hidden"
-          >
-            {menuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <ViewModeSwitch />
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 text-gray-600 hover:text-gray-900 lg:hidden"
+            >
+              {menuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore, type ViewMode } from '@/stores/authStore';
 import { usePermission, type Permission } from '@churchthrive/shared';
 import {
   ADMIN_MENU,
@@ -11,19 +11,27 @@ import {
   type MenuItem
 } from '@/lib/navigation/menu-config';
 
+const ADMIN_ROLES = ['admin', 'pastor', 'staff'];
+
 /**
  * 권한 기반 메뉴 필터링 훅
  *
  * 사용자의 역할과 권한에 따라 표시할 메뉴 항목을 필터링합니다.
+ * viewMode에 따라 관리자도 교인 메뉴를 볼 수 있습니다.
  */
 export function useNavigation() {
-  const { member } = useAuthStore();
+  const { member, viewMode, setViewMode, toggleViewMode, canToggleViewMode } = useAuthStore();
   const role = member?.role ?? null;
   const { can } = usePermission(role);
 
-  const isAdmin = useMemo(() => {
-    return ['admin', 'pastor', 'staff'].includes(role ?? '');
+  const isActualAdmin = useMemo(() => {
+    return ADMIN_ROLES.includes(role ?? '');
   }, [role]);
+
+  // viewMode가 admin이면서 실제 관리자인 경우만 admin으로 표시
+  const isAdmin = useMemo(() => {
+    return isActualAdmin && viewMode === 'admin';
+  }, [isActualAdmin, viewMode]);
 
   /**
    * 권한에 따라 메뉴 항목을 필터링합니다.
@@ -57,6 +65,11 @@ export function useNavigation() {
     menuItems,
     bottomNavItems,
     isAdmin,
+    isActualAdmin,
     role,
+    viewMode,
+    setViewMode,
+    toggleViewMode,
+    canToggleViewMode: canToggleViewMode(),
   };
 }
