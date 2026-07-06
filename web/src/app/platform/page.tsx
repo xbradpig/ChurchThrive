@@ -11,11 +11,13 @@ export default async function PlatformPage() {
   const { data: isPa } = await supabase.rpc("is_platform_admin");
   if (!isPa) redirect("/home");
 
-  const [{ data: overview }, { data: pending }, { data: applications }] = await Promise.all([
+  const [{ data: overview }, { data: pending }, { data: applications }, { data: audit }] = await Promise.all([
     supabase.rpc("platform_overview"),
     supabase.rpc("platform_pending_churches"),
     supabase.rpc("platform_pending_applications"),
+    supabase.rpc("platform_recent_audit", { p_limit: 100 }),
   ]);
 
-  return <PlatformConsole overview={overview} pending={pending ?? []} applications={applications ?? []} />;
+  return <PlatformConsole overview={overview} pending={pending ?? []}
+                          applications={applications ?? []} audit={audit ?? []} />;
 }

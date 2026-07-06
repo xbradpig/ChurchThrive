@@ -77,6 +77,8 @@ create table mod_rooms.reading_progress (     -- bookclub 전용
 - **member↔user 매핑 (루트 detail_goal §11 "교인≠계정")**: 수신 이벤트 해석은 havruta_user_id → user → member 순. member 미연결 계정의 이벤트는 `pending_events`로 보류 후 교적 연결 시 반영. 계정 없는 교인은 연합 이벤트 대상 아님 (교인카드 자체 기록만) — 루트 D13.
 - 교인카드 타임라인: 기존 교적 화면에 `growth_timeline` 뷰 (수료·완독·진단 등 ecosystem 이벤트 + 자체 mod_training 수료 통합 표시, 출처 앱 표기).
 - manna 헌금 연동: `offering.recorded` 수신 → 동의 ON 교인의 mod_giving 기록과 대사(금액 등급만, 원본 금액은 manna 소유 — 루트 개인정보 원칙).
+- 위수탁 동의: `register-church`/교회 승인 플로우에 처리위탁 고지·대표자 동의 단계 추가 (루트 D19, 표준 문안은 루트 Phase 1 산출물 공유).
+- 딥링크·알림 중복·webhook 응답 처리는 루트 표준(detail_goal §16, D16/D18) 준수 — 수신 이벤트는 인앱 알림센터만, 푸시는 자체 발생 건만.
 
 ## 5. 구현 순서 (4~5주) — 문서 내 정량 DoD
 
