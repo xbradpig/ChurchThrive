@@ -23,6 +23,7 @@ const supabase = createClient(
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"
 );
 
+const CHUNGPA_ID = "11111111-1111-1111-1111-111111111111";
 const report = { roster: 0, cards: 0, matched: 0, cardOnly: [], rosterOnly: [], photos: 0, attFiles: 0, attRows: 0, errors: [] };
 
 /** 이름 → (base, suffix): 김선우A → 김선우 + A */
@@ -104,6 +105,7 @@ for (const display of allNames) {
     }
   }
   const row = {
+    church_id: CHUNGPA_ID,            // 테넌시 스키마: 서비스 컨텍스트에선 명시 필수
     name, name_suffix: suffix,
     phone: y.phone || null,
     birthday: /^\d{4}-\d{2}-\d{2}$/.test(y.birthday ?? "") ? y.birthday : null,
@@ -114,7 +116,7 @@ for (const display of allNames) {
   };
   const { data, error } = await supabase
     .from("members")
-    .upsert(row, { onConflict: "name,name_suffix" })
+    .upsert(row, { onConflict: "church_id,name,name_suffix" })
     .select("id").single();
   if (error) { report.errors.push(`${display}: ${error.message}`); continue; }
   memberIdByDisplay.set(display, data.id);
