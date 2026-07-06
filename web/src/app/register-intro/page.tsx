@@ -14,9 +14,9 @@ export default function RegisterIntroPage() {
         {/* 절차 3단계 */}
         <div className="card p-5 flex flex-col gap-4">
           {[
-            ["1", "계정 만들기", "이메일 하나면 됩니다 (약 30초)"],
-            ["2", "교회 정보 입력", "교회 이름·교단·담임목사·연락처 등록 (약 3분)"],
-            ["3", "확인 후 승인", "운영팀이 등록 정보를 확인하고 승인해드립니다 (보통 1일 이내)"],
+            ["1", "신청서 제출", "계정 없이 교회 이름·교단·담임목사·연락처만 (약 3분)"],
+            ["2", "확인 후 승인", "운영팀이 등록 정보를 확인합니다 (보통 1일 이내)"],
+            ["3", "메일로 시작", "승인 메일의 가입 링크로 비밀번호만 정하면 바로 관리 시작"],
           ].map(([n, t, d]) => (
             <div key={n} className="flex gap-3 items-start">
               <span className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center font-black text-white"
@@ -40,8 +40,8 @@ export default function RegisterIntroPage() {
           </p>
         </div>
 
-        <Link href="/signup?flow=church" className="btn btn-primary text-lg">
-          시작하기 — 계정 만들기 (1/3)
+        <Link href="/apply" className="btn btn-primary text-lg">
+          신청서 작성하기 (1/3)
         </Link>
         <Link href="/login" className="btn btn-ghost text-sm">이미 계정이 있어요 — 로그인</Link>
       </div>

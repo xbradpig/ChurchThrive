@@ -15,8 +15,26 @@ type Pending = { id: string; name: string; slug: string; denomination: string | 
   pastor_name: string | null; contact_phone: string | null; address: string | null;
   member_size: string | null; intro: string | null; created_at: string };
 
-export default function PlatformConsole({ overview, pending }: { overview: Overview; pending: Pending[] }) {
+type Application = { id: string; name: string; slug: string; denomination: string;
+  pastor_name: string; contact_phone: string; applicant_email: string;
+  address: string | null; member_size: string | null; intro: string | null; created_at: string };
+
+export default function PlatformConsole({ overview, pending, applications }:
+  { overview: Overview; pending: Pending[]; applications: Application[] }) {
   const [queue, setQueue] = useState(pending);
+  const [apps, setApps] = useState(applications);
+
+  async function reviewApp(id: string, approve: boolean) {
+    const note = approve ? null : (prompt("거절 사유 (신청자 확인용)") ?? "등록 정보를 확인할 수 없습니다");
+    const res = await fetch("/api/platform/review-application", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ application_id: id, approve, note }),
+    });
+    const data = await res.json();
+    if (!res.ok) return alert(data.error);
+    if (approve) alert(`승인 완료 — ${data.church} 신청자에게 가입 메일을 보냈습니다.`);
+    setApps((q) => q.filter((a) => a.id !== id));
+  }
   const supabase = useMemo(() => createClient(), []);
   const [rows, setRows] = useState(overview.churches);
 
@@ -66,6 +84,35 @@ export default function PlatformConsole({ overview, pending }: { overview: Overv
             </div>
           ))}
         </div>
+
+        {/* 신규 신청 심사 큐 (계정 없이 접수 → 승인 시 가입 메일) */}
+        {apps.length > 0 && (
+          <div className="card p-5" style={{ borderColor: "var(--color-caution)" }} data-widget="application-queue">
+            <h3 className="font-black mb-3" style={{ color: "var(--color-caution)" }}>
+              📮 등록 신청 {apps.length}건 — 승인 시 가입 메일 자동 발송
+            </h3>
+            {apps.map((a) => (
+              <div key={a.id} className="py-3 border-t border-[var(--line)]">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <b className="text-lg">{a.name}</b>
+                  <span className="badge" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>
+                    {a.denomination}
+                  </span>
+                  <span className="text-sm text-[var(--text-soft)]">{a.member_size}</span>
+                  <span className="ml-auto flex gap-2">
+                    <button className="btn btn-positive !min-h-9 text-sm" onClick={() => reviewApp(a.id, true)}>승인</button>
+                    <button className="btn btn-danger-soft !min-h-9 text-sm" onClick={() => reviewApp(a.id, false)}>거절</button>
+                  </span>
+                </div>
+                <p className="text-sm text-[var(--text-soft)] mt-1">
+                  담임 {a.pastor_name} · {a.contact_phone} · ✉ {a.applicant_email}
+                  {a.address && <span> · {a.address}</span>}
+                  {a.intro && <span className="block">📝 {a.intro}</span>}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* 교회 등록 심사 큐 */}
         {queue.length > 0 && (
