@@ -8,13 +8,19 @@ import type { AppRole } from "@/lib/roles";
 import TrendChart, { type TrendPoint } from "./TrendChart";
 import NotificationSetup from "./NotificationSetup";
 import StaffManager from "./StaffManager";
+import MembersDirectory from "./MembersDirectory";
+import DepartmentsPanel from "./DepartmentsPanel";
+import ChurchSettings from "./ChurchSettings";
 
 const TABS = [
   { key: "overview", label: "현황" },
+  { key: "members", label: "교인 명부" },
+  { key: "departments", label: "부서" },
   { key: "absentees", label: "미출석" },
   { key: "permissions", label: "권한" },
   { key: "events", label: "이벤트" },
   { key: "export", label: "내보내기" },
+  { key: "settings", label: "설정" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
@@ -26,7 +32,7 @@ export default function AdminTabs({ role }: { role: AppRole }) {
   useEffect(() => { setTabState(urlTab); }, [urlTab]);   // 사이드 네비 클릭 반영
   const setTab = (t: TabKey) => { setTabState(t); router.replace(`/church?tab=${t}`, { scroll: false }); };
   const visibleTabs = role === "dept_leader"
-    ? TABS.filter((t) => ["overview", "absentees"].includes(t.key))
+    ? TABS.filter((t) => ["overview", "members", "absentees"].includes(t.key))
     : TABS;
 
   return (
@@ -40,6 +46,9 @@ export default function AdminTabs({ role }: { role: AppRole }) {
         ))}
       </div>
       {tab === "overview" && <Overview />}
+      {tab === "members" && <MembersDirectory canEdit={role === "superadmin" || role === "pastor"} />}
+      {tab === "departments" && <DepartmentsPanel />}
+      {tab === "settings" && <ChurchSettings canEdit={role === "superadmin"} />}
       {tab === "absentees" && (<><NotificationSetup /><Absentees /></>)}
       {tab === "permissions" && (<><StaffManager /><ModuleGrants /><Permissions /></>)}
       {tab === "events" && <EventsAdmin />}
