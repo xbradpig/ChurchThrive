@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { askConfirm } from "@/components/ui/AppDialog";
 
 const ROLES: { value: string; label: string }[] = [
   { value: "superadmin", label: "관리자" },
@@ -37,7 +38,9 @@ export default function StaffManager() {
   }
 
   async function revoke(s: Staff) {
-    if (!confirm(`${s.email} 님의 ${ROLES.find((r) => r.value === s.role)?.label ?? s.role} 권한을 해제할까요?`)) return;
+    if (!(await askConfirm({ title: "권한 해제",
+      body: `${s.email} 님의 ${ROLES.find((r) => r.value === s.role)?.label ?? s.role} 권한을 해제합니다.`,
+      danger: true, confirmLabel: "해제" }))) return;
     const { error } = await supabase.rpc("remove_church_role", { p_user: s.user_id, p_role: s.role });
     if (error) return setMsg({ ok: false, text: error.message });
     load();

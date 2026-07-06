@@ -11,6 +11,7 @@ import StaffManager from "./StaffManager";
 import MembersDirectory from "./MembersDirectory";
 import DepartmentsPanel from "./DepartmentsPanel";
 import ChurchSettings from "./ChurchSettings";
+import { notify } from "@/components/ui/AppDialog";
 
 const TABS = [
   { key: "overview", label: "현황" },
@@ -113,7 +114,7 @@ function JoinQueue() {
     const { error } = ok
       ? await supabase.rpc("approve_join", { p_request: id, p_member_id: linkSel[id] || null })
       : await supabase.rpc("reject_join", { p_request: id });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     load();
   }
 
@@ -267,7 +268,7 @@ function ModuleGrants() {
       const { data: ch } = await supabase.from("churches").select("id").limit(1).single();
       const { error: e2 } = await supabase.from("module_grants").upsert(
         { user_id: sel.user, module: sel.module, level: sel.level, church_id: ch!.id });
-      if (e2) return alert(e2.message);
+      if (e2) return notify(e2.message);
     }
     load();
   }
@@ -379,7 +380,7 @@ function EventsAdmin() {
   async function add() {
     if (!newName.trim()) return;
     const { error } = await supabase.from("events").insert({ name: newName.trim(), category: newCat, sort_order: 50 });
-    if (error) alert(error.message);
+    if (error) notify(error.message, "error");
     setNewName("");
     load();
   }

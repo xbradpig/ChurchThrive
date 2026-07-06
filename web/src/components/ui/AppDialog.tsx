@@ -9,7 +9,7 @@ import { createContext, useCallback, useContext, useRef, useState } from "react"
 
 type ConfirmOpts = { title: string; body?: string; confirmLabel?: string; danger?: boolean };
 type PromptOpts = { title: string; body?: string; placeholder?: string; defaultValue?: string };
-type Toast = { id: number; kind: "success" | "error"; text: string };
+type Toast = { id: number; kind: "success" | "error" | "info"; text: string };
 
 type Ctx = {
   confirm: (o: ConfirmOpts) => Promise<boolean>;
@@ -18,6 +18,12 @@ type Ctx = {
 };
 
 const DialogCtx = createContext<Ctx | null>(null);
+
+/* 모듈 레벨 명령형 API — 훅 없이 어디서나 (Provider가 마운트 시 바인딩) */
+let _api: Ctx | null = null;
+export function notify(text: string, kind: Toast["kind"] = "info") { _api?.toast(kind, text); }
+export function askConfirm(o: ConfirmOpts) { return _api ? _api.confirm(o) : Promise.resolve(window.confirm(o.title)); }
+export function askPrompt(o: PromptOpts) { return _api ? _api.promptText(o) : Promise.resolve(window.prompt(o.title, o.defaultValue ?? "")); }
 export function useAppDialog() {
   const ctx = useContext(DialogCtx);
   if (!ctx) throw new Error("AppDialogProvider 필요");
@@ -39,6 +45,8 @@ export default function AppDialogProvider({ children }: { children: React.ReactN
     setToasts((t) => [...t, { id, kind, text }]);
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3500);
   }, []);
+
+  _api = { confirm, promptText, toast };
 
   return (
     <DialogCtx.Provider value={{ confirm, promptText, toast }}>
@@ -89,9 +97,9 @@ export default function AppDialogProvider({ children }: { children: React.ReactN
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[95] flex flex-col gap-2 items-center pointer-events-none">
         {toasts.map((t) => (
           <div key={t.id} className="pop-in px-4 py-3 rounded-xl font-bold text-white flex items-center gap-2"
-               style={{ background: t.kind === "success" ? "var(--color-positive)" : "var(--color-danger)",
+               style={{ background: t.kind === "success" ? "var(--color-positive)" : t.kind === "error" ? "var(--color-danger)" : "var(--color-brand-800)",
                         boxShadow: "var(--shadow-pop)" }}>
-            {t.kind === "success" ? "✓" : "!"} {t.text}
+            {t.kind === "success" ? "✓" : t.kind === "error" ? "!" : "·"} {t.text}
           </div>
         ))}
       </div>

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { notify, askConfirm, askPrompt } from "@/components/ui/AppDialog";
 
 type Overview = {
   church_count: number; active_count: number; member_total: number; week_attendance: number;
@@ -39,43 +40,43 @@ export default function PlatformConsole({ overview, pending, applications, audit
   ];
 
   async function linkApp(a: Application, churchId: string, churchName: string) {
-    if (!confirm(`${a.applicant_email} 님을 기존 "${churchName}"의 ${a.applicant_role}(으)로 연결할까요?\n(등록된 교회 연락처로 본인 확인을 마친 뒤 진행하세요)`)) return;
+    if (!(await askConfirm({ title: `${a.applicant_email} 님을 기존 "${churchName}"의 ${a.applicant_role}(으)로 연결할까요?\n(등록된 교회 연락처로 본인 확인을 마친 뒤 진행하세요)` }))) return;
     const res = await fetch("/api/platform/review-application", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ application_id: a.id, link_church_id: churchId }),
     });
     const data = await res.json();
-    if (!res.ok) return alert(data.error);
-    if (data.mail_sent) alert(`연결 완료 (${data.role}) — 신청자에게 가입 메일을 보냈습니다.`);
+    if (!res.ok) return notify(data.error);
+    if (data.mail_sent) notify(`연결 완료 (${data.role}) — 신청자에게 가입 메일을 보냈습니다.`);
     else prompt("연결 완료 — 메일 한도 초과로 발송하지 못했습니다.\n아래 가입 링크를 복사해 문자·카톡으로 전달해주세요:", data.action_link ?? "");
     setApps((q) => q.filter((x) => x.id !== a.id));
   }
 
   async function reviewApp(id: string, approve: boolean) {
-    const note = approve ? null : (prompt("거절 사유 (신청자 확인용)") ?? "등록 정보를 확인할 수 없습니다");
+    const note = approve ? null : ((await askPrompt({ title: "거절 사유 (신청자 확인용)" })) ?? "등록 정보를 확인할 수 없습니다");
     const res = await fetch("/api/platform/review-application", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ application_id: id, approve, note }),
     });
     const data = await res.json();
-    if (!res.ok) return alert(data.error);
-    if (approve && data.mail_sent) alert(`승인 완료 — ${data.church} 신청자에게 가입 메일을 보냈습니다.`);
+    if (!res.ok) return notify(data.error);
+    if (approve && data.mail_sent) notify(`승인 완료 — ${data.church} 신청자에게 가입 메일을 보냈습니다.`);
     else if (approve) prompt("승인 완료 — 메일 한도 초과로 발송하지 못했습니다.\n아래 가입 링크를 복사해 전달해주세요:", data.action_link ?? "");
     setApps((q) => q.filter((a) => a.id !== id));
   }
 
   async function review(id: string, approve: boolean) {
-    const note = approve ? null : (prompt("거절 사유 (신청자에게 표시됩니다)") ?? "등록 정보를 확인할 수 없습니다");
+    const note = approve ? null : ((await askPrompt({ title: "거절 사유 (신청자에게 표시됩니다)" })) ?? "등록 정보를 확인할 수 없습니다");
     const { error } = await supabase.rpc("platform_set_church_status",
       { p_church: id, p_status: approve ? "active" : "rejected", p_note: note });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setQueue((q) => q.filter((c) => c.id !== id));
   }
 
   async function setStatus(id: string, status: string) {
     const next = status === "active" ? "suspended" : "active";
     const { error } = await supabase.rpc("platform_set_church_status", { p_church: id, p_status: next });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, status: next } : r)));
   }
 

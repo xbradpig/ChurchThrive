@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import QRCode from "qrcode";
+import { notify } from "@/components/ui/AppDialog";
 
 type Row = { member_id: string; name: string; name_suffix: string; phone: string | null;
   joined: boolean; invited: boolean; invite_token: string | null };
@@ -22,7 +23,7 @@ export default function InviteBoard() {
     let token = r.invite_token;
     if (!token) {
       const { data, error } = await supabase.rpc("create_member_invite", { p_member: r.member_id });
-      if (error) return alert(error.message);
+      if (error) return notify(error.message, "error");
       token = data as string;
       load();
     }
@@ -49,7 +50,7 @@ export default function InviteBoard() {
 
   async function inviteOne(r: Row) {
     const { data: token, error } = await supabase.rpc("create_member_invite", { p_member: r.member_id });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     await navigator.clipboard.writeText(linkOf(token)).catch(() => {});
     setCopied(r.member_id);
     setTimeout(() => setCopied(null), 2000);
@@ -110,7 +111,7 @@ export default function InviteBoard() {
           <b className="text-sm">일괄 초대 링크 — 복사해서 문자·카톡으로 나눠 보내세요</b>
           <textarea className="input !min-h-32 text-xs font-mono" readOnly value={bulk} />
           <button className="btn btn-primary !min-h-11 text-sm"
-                  onClick={async () => { await navigator.clipboard.writeText(bulk); alert("복사됐습니다"); }}>
+                  onClick={async () => { await navigator.clipboard.writeText(bulk); notify("복사됐습니다"); }}>
             전체 복사
           </button>
         </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 const DOW = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -40,7 +41,7 @@ export default function NotificationSetup() {
   async function subscribe() {
     try {
       const perm = await Notification.requestPermission();
-      if (perm !== "granted") return alert("알림 권한이 거부되었습니다.");
+      if (perm !== "granted") return notify("알림 권한이 거부되었습니다.");
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
@@ -54,7 +55,7 @@ export default function NotificationSetup() {
       setSubscribed(true);
       await save({ ...setting, enabled: true });
     } catch (e) {
-      alert("이 기기는 푸시를 지원하지 않습니다. (아이폰은 홈 화면에 설치 후 가능) " + e);
+      notify("이 기기는 푸시를 지원하지 않습니다. (아이폰은 홈 화면에 설치 후 가능) " + e);
     }
   }
 

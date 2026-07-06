@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 const STAGES = ["등록", "환영·심방", "새가족 교육", "정착 완료"];
 
@@ -25,7 +26,7 @@ export default function NewcomerBoard() {
     const { error } = await supabase.schema("mod_newcomer").from("progress")
       .upsert({ church_id: cid, member_id: memberId, stage, updated_at: new Date().toISOString() },
               { onConflict: "church_id,member_id" });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     load();
   }
 

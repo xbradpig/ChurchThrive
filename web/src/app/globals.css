@@ -345,3 +345,45 @@ table tbody tr:hover {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ---------- W1/W2: 스켈레톤 · 스크롤 인지 · 하단 탭 바 ---------- */
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+.skeleton {
+  border-radius: 0.6rem;
+  background: linear-gradient(90deg, var(--surface-soft) 40%,
+              color-mix(in srgb, var(--surface-soft) 50%, var(--surface)) 50%, var(--surface-soft) 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  color: transparent;
+}
+
+/* 긴 목록 스크롤 인지 (Toss 시니어 연구) — 위아래 흐림 */
+.scroll-fade {
+  mask-image: linear-gradient(to bottom, transparent, black 14px, black calc(100% - 18px), transparent);
+}
+
+/* 모바일 하단 탭 바 (시니어 표준) */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 45;
+  display: flex;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(14px) saturate(1.3);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav a {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 0.55rem 0 0.5rem;
+  font-size: 0.72rem; font-weight: 700; color: var(--text-soft);
+  min-height: 3.5rem;
+}
+.bottom-nav a.active { color: var(--color-brand-700); }
+.bottom-nav a .bn-icon { font-size: 1.35rem; line-height: 1; }
+@media (prefers-color-scheme: dark) {
+  .bottom-nav a.active { color: var(--color-brand-200); }
+}
+.has-bottom-nav { padding-bottom: calc(4.2rem + env(safe-area-inset-bottom)); }

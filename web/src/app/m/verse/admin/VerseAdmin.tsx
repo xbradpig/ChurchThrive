@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 type Assignment = {
   id: string; week_start: string; reference: string; body: string;
@@ -27,14 +28,14 @@ export default function VerseAdmin() {
   useEffect(() => { load(); }, [load]);
 
   async function create() {
-    if (!form.ref.trim() || !form.body.trim()) return alert("장절과 본문을 입력해주세요.");
+    if (!form.ref.trim() || !form.body.trim()) return notify("장절과 본문을 입력해주세요.");
     setBusy(true);
     const { error } = await supabase.rpc("verse_create_assignment", {
       p_week_start: form.week, p_reference: form.ref.trim(),
       p_body: form.body.trim(), p_guide: form.guide.trim() || null,
     });
     setBusy(false);
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setForm({ week: nextSunday(), ref: "", body: "", guide: "" });
     load();
   }

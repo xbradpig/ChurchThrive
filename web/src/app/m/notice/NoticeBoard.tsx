@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 type Notice = { id: string; title: string; body: string; published_at: string };
 
@@ -23,7 +24,7 @@ export default function NoticeBoard({ canManage }: { canManage: boolean }) {
     const { data: cid } = await supabase.rpc("my_church_id");
     const { error } = await supabase.schema("mod_notice").from("notices")
       .insert({ title: form.title.trim(), body: form.body.trim(), church_id: cid });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setForm({ title: "", body: "" });
     load();
   }

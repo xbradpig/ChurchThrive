@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 type Card = {
   id: string; name: string; name_suffix: string; photo_url: string | null;
@@ -31,7 +32,7 @@ export default function MemberCard({ card, editable }: { card: Card; editable?: 
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } else {
-      alert("저장에 실패했습니다: " + error.message);
+      notify("저장에 실패했습니다: " + error.message, "error");
     }
   }
 

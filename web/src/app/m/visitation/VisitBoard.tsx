@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify, askPrompt } from "@/components/ui/AppDialog";
 
 type Visit = { id: string; member_id: string; status: string; visit_date: string | null; note: string | null; created_at: string };
 const STATUS_LABEL: Record<string, string> = { requested: "요청됨", assigned: "배정됨", done: "완료" };
@@ -28,10 +29,10 @@ export default function VisitBoard({ canManage }: { canManage: boolean }) {
   async function requestVisit() {
     const [{ data: mid }, { data: cid }] = await Promise.all([
       supabase.rpc("my_member_id"), supabase.rpc("my_church_id")]);
-    if (!mid) return alert("교적이 연결되어 있지 않습니다.");
+    if (!mid) return notify("교적이 연결되어 있지 않습니다.");
     const { error } = await supabase.schema("mod_visitation").from("visits")
       .insert({ member_id: mid, church_id: cid });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setRequested(true);
     load();
   }
@@ -40,12 +41,12 @@ export default function VisitBoard({ canManage }: { canManage: boolean }) {
     const next = v.status === "requested" ? "assigned" : "done";
     const patch: Record<string, unknown> = { status: next };
     if (next === "done") {
-      const note = prompt("심방 기록 (담당자 등급만 열람됩니다)");
+      const note = (await askPrompt({ title: "심방 기록 (담당자 등급만 열람됩니다)" }));
       if (note) patch.note = note;
       patch.visit_date = new Date().toISOString().slice(0, 10);
     }
     const { error } = await supabase.schema("mod_visitation").from("visits").update(patch).eq("id", v.id);
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     load();
   }
 

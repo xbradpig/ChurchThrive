@@ -114,6 +114,82 @@ export default function Landing() {
       </section>
 
       {/* 마지막 CTA */}
+      {/* 차별점 — 업계 리뷰의 최대 불만 2가지를 정면으로 */}
+      <section className="px-5 py-16 max-w-5xl mx-auto">
+        <h2 className="text-2xl font-black text-center mb-2">기존 교회 프로그램과 무엇이 다른가요?</h2>
+        <p className="text-center text-[var(--text-soft)] mb-8">해외 1위 제품 사용자들이 가장 많이 호소하는 불편을 처음부터 설계로 풀었습니다.</p>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="card p-6">
+            <span className="text-3xl">🧭</span>
+            <h3 className="font-black mt-2 mb-1">길 잃지 않는 하나의 사이드바</h3>
+            <p className="text-sm text-[var(--text-soft)] leading-relaxed">
+              기능마다 다른 화면을 오가지 않습니다. 출석·교적·공지·훈련 — 모든 기능이 한 네비게이션에
+              역할에 맞게 자동으로 쌓입니다.
+            </p>
+          </div>
+          <div className="card p-6">
+            <span className="text-3xl">🙋</span>
+            <h3 className="font-black mt-2 mb-1">어르신은 버튼 하나로 시작</h3>
+            <p className="text-sm text-[var(--text-soft)] leading-relaxed">
+              이메일도 비밀번호도 없이 — 담당자가 보낸 문자 링크나 QR을 통해
+              [시작하기] 한 번이면 끝. 글자 크기도 취향대로 키울 수 있습니다.
+            </p>
+          </div>
+          <div className="card p-6">
+            <span className="text-3xl">🛡</span>
+            <h3 className="font-black mt-2 mb-1">개인정보는 이중 잠금</h3>
+            <p className="text-sm text-[var(--text-soft)] leading-relaxed">
+              연락처·심방 기록은 관리자 승인과 교인 본인 동의가 모두 있어야 보입니다.
+              헌금 내역은 재정 담당 외엔 교역자도 볼 수 없습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 요금 */}
+      <section className="px-5 py-16" style={{ background: "var(--color-sand-100)" }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-black mb-2">교회 규모에 맞게, 쓰는 만큼만</h2>
+          <p className="text-[var(--text-soft)] mb-8">교적·출석 등 핵심 기능은 무료입니다. 필요한 모듈만 골라 더하세요.</p>
+          <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div className="card p-6 text-left">
+              <p className="font-black text-lg">코어</p>
+              <p className="text-3xl font-black mt-1">무료</p>
+              <p className="text-sm text-[var(--text-soft)] mt-2 leading-relaxed">
+                교적 관리 · 출석 체크 · QR · 교인 초대 · 부서 관리 · 가입 승인
+              </p>
+            </div>
+            <div className="card p-6 text-left" style={{ borderColor: "var(--color-accent)" }}>
+              <p className="font-black text-lg">모듈 스토어</p>
+              <p className="text-3xl font-black mt-1">모듈별 구독</p>
+              <p className="text-sm text-[var(--text-soft)] mt-2 leading-relaxed">
+                공지·심방·새가족·훈련·헌금 기록·전자주보 — 파일럿 기간 전 모듈 무료
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="px-5 py-16 max-w-3xl mx-auto">
+        <h2 className="text-2xl font-black text-center mb-8">자주 묻는 질문</h2>
+        <div className="flex flex-col gap-3">
+          {[
+            ["등록하면 바로 쓸 수 있나요?", "건강한 교회 생태계를 위해 등록 정보(교단·담임목사·연락처)를 확인한 뒤 승인해드립니다. 보통 1일 이내이며, 승인 메일의 링크로 비밀번호만 정하면 바로 시작됩니다."],
+            ["교인들이 앱스토어에서 설치해야 하나요?", "아니요. 웹 주소로 바로 쓰고, 홈 화면에 추가하면 앱처럼 동작합니다. 어르신은 담당자가 보낸 초대 링크·QR로 가입 절차 없이 시작합니다."],
+            ["기존 엑셀 교적을 옮길 수 있나요?", "네. 엑셀에서 복사해 붙여넣으면 미리보기 후 일괄 등록됩니다. 사진도 함께 옮겨드립니다."],
+            ["교인 정보는 안전한가요?", "모든 데이터는 교회별로 격리되고, 민감 정보는 관리자 승인+본인 동의의 이중 잠금을 거칩니다. 모든 권한 변경은 감사 기록으로 남습니다."],
+          ].map(([q, a]) => (
+            <details key={q} className="card p-5 group">
+              <summary className="font-black cursor-pointer list-none flex items-center">
+                {q} <span className="ml-auto transition-transform group-open:rotate-45 text-xl text-[var(--text-soft)]">+</span>
+              </summary>
+              <p className="text-sm text-[var(--text-soft)] leading-relaxed mt-3">{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       <section className="px-5 py-16 text-center text-white"
                style={{ background: "var(--color-brand-900)" }}>
         <h2 className="text-2xl font-black mb-3">이번 주일부터 시작해보세요</h2>

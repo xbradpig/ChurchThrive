@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 type Issue = { id: string; week_start: string; title: string; content_md: string; published: boolean };
 
@@ -31,7 +32,7 @@ export default function BulletinBoard({ canManage }: { canManage: boolean }) {
       .upsert({ church_id: cid, week_start: form.week, title: form.title.trim(),
                 content_md: form.content, published: true },
               { onConflict: "church_id,week_start" });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setForm({ ...form, title: "", content: "" });
     load();
   }

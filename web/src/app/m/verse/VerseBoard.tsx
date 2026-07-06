@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 type Assignment = {
   id: string; week_start: string; reference: string; body: string; guide: string | null;
@@ -22,7 +23,7 @@ export default function VerseBoard() {
   async function check(a: Assignment) {
     const { error } = await supabase.rpc("verse_check", { p_assignment: a.id });
     if (!error) { setDone(a.id); load(); }
-    else alert(error.message);
+    else notify(error.message, "error");
   }
 
   const current = rows[0];

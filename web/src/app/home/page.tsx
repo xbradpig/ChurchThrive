@@ -18,6 +18,8 @@ export default async function HomePage() {
     supabase.rpc("my_church_status"),
   ]);
   if (churchStatus && churchStatus !== "active") redirect("/pending");   // 승인 전 사용 차단
+  const { data: joinPending } = (role === "superadmin" || role === "pastor")
+    ? await supabase.rpc("admin_list_join_requests") : { data: null };
   const r = (role as AppRole) ?? "member";
   const isStaffRole = r !== "member";
   const isChurchStaff = r === "superadmin" || r === "pastor";
@@ -40,6 +42,14 @@ export default async function HomePage() {
       <AppHeader role={r} title="홈" />
       <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
         <InstallBanner />
+        {(joinPending?.length ?? 0) > 0 && (
+          <Link href="/church?tab=members" className="card card-hover p-4 flex items-center gap-3"
+                style={{ borderColor: "var(--color-caution)" }} data-widget="todo">
+            <span className="text-2xl">🙋</span>
+            <span className="font-bold">가입 신청 {joinPending!.length}건이 승인을 기다리고 있어요</span>
+            <span className="ml-auto">→</span>
+          </Link>
+        )}
         <p className="text-[var(--text-soft)] px-1 font-bold">{church?.name}</p>
 
         {/* [담당자] 오늘 작업 바로가기 — 대형 버튼 */}

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useAppDialog } from "@/components/ui/AppDialog";
+import ListSkeleton from "@/components/ui/ListSkeleton";
 
 type Dept = { id: string; name: string };
 type Row = {
@@ -34,6 +35,7 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
   const [deptF, setDeptF] = useState("");
   const [statusF, setStatusF] = useState("");
   const [editing, setEditing] = useState<Partial<Row> | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   const load = useCallback(async () => {
     const [{ data: m }, { data: d }, { data: j }] = await Promise.all([
@@ -42,7 +44,7 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
       supabase.rpc("admin_list_departments"),
       supabase.rpc("admin_list_join_requests"),
     ]);
-    setRows(m ?? []); setDepts(d ?? []); setJoinReqs(j ?? []);
+    setRows(m ?? []); setDepts(d ?? []); setJoinReqs(j ?? []); setLoaded(true);
   }, [supabase, q, deptF, statusF]);
   useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
 
@@ -114,6 +116,7 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
       </div>
 
       {/* 명부 */}
+      {!loaded ? <ListSkeleton rows={8} /> : (
       <div className="card divide-y divide-[var(--line)]" data-member-list>
         {rows.map((r) => (
           <div key={r.id} className="flex items-center gap-3 px-4 py-2.5">
@@ -142,6 +145,7 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
         ))}
         {rows.length === 0 && <p className="p-8 text-center text-[var(--text-soft)]">조건에 맞는 교인이 없습니다.</p>}
       </div>
+      )}
 
       {editing && (
         <MemberEditSheet member={editing} depts={depts}

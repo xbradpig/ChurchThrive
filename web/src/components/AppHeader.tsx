@@ -9,6 +9,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import FontScale from "@/components/ui/FontScale";
+import BottomNav from "@/components/ui/BottomNav";
+import GlobalSearch from "@/components/ui/GlobalSearch";
 import { createClient } from "@/lib/supabase/client";
 import { buildNav, type NavSection, type NavCtx } from "@/modules/registry";
 import type { AppRole } from "@/lib/roles";
@@ -68,7 +71,11 @@ export default function AppHeader({ role, title }: { role: AppRole; title: strin
           <b className="text-lg">ChurchThrive</b>
         </Link>
         <p className="px-5 pb-3 text-xs opacity-60 font-bold">{churchName}</p>
-        <nav className="flex-1 overflow-y-auto px-3 flex flex-col gap-4">
+        <GlobalSearch isStaff={role !== "member"}
+                      navItems={nav.flatMap((s) => s.items.filter((i) => i.state === "visible")
+                        .flatMap((i) => [{ label: i.label, href: i.href },
+                          ...(i.sub ?? []).map((su) => ({ label: su.label, href: su.href }))]))} />
+        <nav className="flex-1 overflow-y-auto px-3 flex flex-col gap-4 scroll-fade">
           {nav.map((sec) => (
             <div key={sec.group}>
               <p className="px-2 pb-1 text-[11px] font-black uppercase tracking-wider opacity-40">{sec.group}</p>
@@ -113,11 +120,15 @@ export default function AppHeader({ role, title }: { role: AppRole; title: strin
             </div>
           ))}
         </nav>
+        <div className="px-3 pb-1"><FontScale /></div>
         <div className="px-5 py-4 border-t border-white/10 flex items-center gap-2 text-sm">
           <span className="opacity-70 font-bold mr-auto">{title}</span>
           <button onClick={logout} className="opacity-60 hover:opacity-100 font-bold">나가기</button>
         </div>
       </aside>
+
+      {/* 모바일 하단 탭 바 */}
+      <BottomNav isStaff={role !== "member"} />
 
       {/* 잠금 안내 시트 (disabled 탭 시) */}
       {locked && (

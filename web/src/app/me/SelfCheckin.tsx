@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 export default function SelfCheckin({ events }: { events: { id: string; name: string }[] }) {
   const supabase = useMemo(() => createClient(), []);
@@ -11,7 +12,7 @@ export default function SelfCheckin({ events }: { events: { id: string; name: st
   async function checkin() {
     const { error } = await supabase.rpc("self_checkin", { p_event_id: eventId });
     if (!error) setDone(true);
-    else alert("요청에 실패했습니다: " + error.message);
+    else notify("요청에 실패했습니다: " + error.message, "error");
   }
 
   if (events.length === 0) return null;

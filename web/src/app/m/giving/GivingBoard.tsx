@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 type Rec = { id: string; member_id: string; fund: string; amount: number; given_on: string };
 const FUNDS = ["십일조", "감사헌금", "주정헌금", "선교헌금", "건축헌금", "기타"];
@@ -27,11 +28,11 @@ export default function GivingBoard({ canManage }: { canManage: boolean }) {
 
   async function record() {
     const amount = parseInt(form.amount.replace(/[^0-9]/g, ""), 10);
-    if (!form.member || !amount) return alert("교인과 금액을 입력해주세요.");
+    if (!form.member || !amount) return notify("교인과 금액을 입력해주세요.");
     const { data: cid } = await supabase.rpc("my_church_id");
     const { error } = await supabase.schema("mod_giving").from("records")
       .insert({ church_id: cid, member_id: form.member, fund: form.fund, amount });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setForm({ ...form, amount: "" });
     load();
   }

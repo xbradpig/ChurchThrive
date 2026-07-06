@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { MODULES, type ModuleDef } from "@/modules/registry";
+import { notify } from "@/components/ui/AppDialog";
 
 export default function StoreBoard({
   isAdmin, churchName, installed,
@@ -16,7 +17,7 @@ export default function StoreBoard({
     setBusy(true);
     const { error } = await supabase.rpc("set_module", { p_module: mod.key, p_enabled: enable });
     setBusy(false);
-    if (error) { alert(error.message); return; }
+    if (error) { notify(error.message, "error"); return; }
     setState((s) => ({ ...s, [mod.key]: enable }));
     setConfirm(null);
   }

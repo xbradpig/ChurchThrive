@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CHOSUNG_GROUPS, groupByChosung, chosungOf } from "@/lib/chosung";
+import { notify } from "@/components/ui/AppDialog";
 
 type EventRow = { id: string; name: string; category: string; schedule_rule: unknown; sort_order: number };
 type Row = {
@@ -86,7 +87,7 @@ export default function CheckBoard({ events }: { events: EventRow[] }) {
       setShowNew(false);
       load();
     } else {
-      alert("등록에 실패했습니다: " + error.message);
+      notify("등록에 실패했습니다: " + error.message, "error");
     }
   }
 

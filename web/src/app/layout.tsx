@@ -24,6 +24,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html:
+          `try{var f=+localStorage.getItem("font-scale")||0;if(f>0)document.documentElement.style.fontSize=[17,19,21][f]+"px";}catch(e){}` }} />
+      </head>
       <body>
         <AppDialogProvider>{children}</AppDialogProvider>
         <script

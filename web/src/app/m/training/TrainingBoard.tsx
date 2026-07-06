@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { notify } from "@/components/ui/AppDialog";
 
 type Course = { id: string; name: string; description: string | null; start_on: string | null; active: boolean };
 type Enroll = { course_id: string; member_id: string; status: string };
@@ -28,16 +29,16 @@ export default function TrainingBoard({ canManage, isAdmin }: { canManage: boole
     const { data: cid } = await supabase.rpc("my_church_id");
     const { error } = await supabase.schema("mod_training").from("courses")
       .insert({ church_id: cid, name: newName.trim(), start_on: new Date().toISOString().slice(0, 10) });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     setNewName(""); load();
   }
 
   async function enroll(courseId: string) {
-    if (!myId) return alert("교적이 연결되어 있지 않습니다.");
+    if (!myId) return notify("교적이 연결되어 있지 않습니다.");
     const { data: cid } = await supabase.rpc("my_church_id");
     const { error } = await supabase.schema("mod_training").from("enrollments")
       .insert({ course_id: courseId, member_id: myId, church_id: cid });
-    if (error) return alert(error.message);
+    if (error) return notify(error.message, "error");
     load();
   }
 
