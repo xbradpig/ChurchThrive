@@ -16,13 +16,26 @@ type Pending = { id: string; name: string; slug: string; denomination: string | 
   member_size: string | null; intro: string | null; created_at: string };
 
 type Application = { id: string; name: string; slug: string; denomination: string;
-  pastor_name: string; contact_phone: string; applicant_email: string;
+  pastor_name: string; contact_phone: string; applicant_email: string; applicant_role: string;
   address: string | null; member_size: string | null; intro: string | null; created_at: string };
 
 export default function PlatformConsole({ overview, pending, applications }:
   { overview: Overview; pending: Pending[]; applications: Application[] }) {
   const [queue, setQueue] = useState(pending);
   const [apps, setApps] = useState(applications);
+
+  async function linkApp(a: Application, churchId: string, churchName: string) {
+    if (!confirm(`${a.applicant_email} 님을 기존 "${churchName}"의 ${a.applicant_role}(으)로 연결할까요?\n(등록된 교회 연락처로 본인 확인을 마친 뒤 진행하세요)`)) return;
+    const res = await fetch("/api/platform/review-application", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ application_id: a.id, link_church_id: churchId }),
+    });
+    const data = await res.json();
+    if (!res.ok) return alert(data.error);
+    if (data.mail_sent) alert(`연결 완료 (${data.role}) — 신청자에게 가입 메일을 보냈습니다.`);
+    else prompt("연결 완료 — 메일 한도 초과로 발송하지 못했습니다.\n아래 가입 링크를 복사해 문자·카톡으로 전달해주세요:", data.action_link ?? "");
+    setApps((q) => q.filter((x) => x.id !== a.id));
+  }
 
   async function reviewApp(id: string, approve: boolean) {
     const note = approve ? null : (prompt("거절 사유 (신청자 확인용)") ?? "등록 정보를 확인할 수 없습니다");
@@ -32,7 +45,8 @@ export default function PlatformConsole({ overview, pending, applications }:
     });
     const data = await res.json();
     if (!res.ok) return alert(data.error);
-    if (approve) alert(`승인 완료 — ${data.church} 신청자에게 가입 메일을 보냈습니다.`);
+    if (approve && data.mail_sent) alert(`승인 완료 — ${data.church} 신청자에게 가입 메일을 보냈습니다.`);
+    else if (approve) prompt("승인 완료 — 메일 한도 초과로 발송하지 못했습니다.\n아래 가입 링크를 복사해 전달해주세요:", data.action_link ?? "");
     setApps((q) => q.filter((a) => a.id !== id));
   }
   const supabase = useMemo(() => createClient(), []);
@@ -98,6 +112,7 @@ export default function PlatformConsole({ overview, pending, applications }:
                   <span className="badge" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>
                     {a.denomination}
                   </span>
+                  <span className="badge" style={{ background: "var(--surface-soft)" }}>{a.applicant_role}</span>
                   <span className="text-sm text-[var(--text-soft)]">{a.member_size}</span>
                   <span className="ml-auto flex gap-2">
                     <button className="btn btn-positive !min-h-9 text-sm" onClick={() => reviewApp(a.id, true)}>승인</button>
@@ -109,6 +124,19 @@ export default function PlatformConsole({ overview, pending, applications }:
                   {a.address && <span> · {a.address}</span>}
                   {a.intro && <span className="block">📝 {a.intro}</span>}
                 </p>
+                {(() => {
+                  const match = overview.churches?.find((c) => c.name.trim() === a.name.trim());
+                  return match ? (
+                    <p className="mt-2 flex items-center gap-2 flex-wrap text-sm rounded-xl p-2.5"
+                       style={{ background: "var(--color-caution-soft, #fef3c7)" }} data-existing-match>
+                      ⚠️ 같은 이름의 교회가 이미 있습니다 — 신설 승인 대신 담당자 확인 후 연결하세요.
+                      <button className="btn btn-primary !min-h-9 text-sm"
+                              onClick={() => linkApp(a, match.id, match.name)}>
+                        기존 교회에 {a.applicant_role}로 연결
+                      </button>
+                    </p>
+                  ) : null;
+                })()}
               </div>
             ))}
           </div>

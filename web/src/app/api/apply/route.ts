@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     denomination: String(b.denomination).trim(), pastor_name: String(b.pastor_name).trim(),
     contact_phone: String(b.contact_phone).trim(), applicant_email: String(b.applicant_email).trim().toLowerCase(),
     address: b.address || null, member_size: b.member_size || null, intro: b.intro || null,
+    applicant_role: ["담임목사","교역자","담당 관리자","부서 담당자"].includes(b.applicant_role) ? b.applicant_role : "담당 관리자",
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });

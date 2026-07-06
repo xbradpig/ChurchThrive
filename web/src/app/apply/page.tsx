@@ -8,13 +8,14 @@ const DENOMINATIONS = [
   "한국기독교장로회", "기독교대한감리회", "기독교대한성결교회",
   "기독교한국침례회", "기독교대한하나님의성회(순복음)", "독립교회·선교단체", "기타(직접 입력)",
 ];
+const ROLES = ["담임목사", "교역자", "담당 관리자", "부서 담당자"];
 const SIZES = ["50명 미만", "50~100명", "100~300명", "300~1,000명", "1,000명 이상"];
 
 /** 교회 등록 신청 — 계정 없이 제출, 승인되면 메일로 가입 링크 발송 */
 export default function ApplyPage() {
   const [f, setF] = useState({
     name: "", slug: "", denomination: DENOMINATIONS[0], denomEtc: "",
-    pastor_name: "", contact_phone: "", applicant_email: "", address: "", member_size: SIZES[2], intro: "",
+    pastor_name: "", contact_phone: "", applicant_email: "", applicant_role: ROLES[2], address: "", member_size: SIZES[2], intro: "",
   });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -86,6 +87,11 @@ export default function ApplyPage() {
                    placeholder="02-000-0000" />
           </Field>
         </div>
+        <Field label="신청하시는 분의 역할 *">
+          <select className="input" value={f.applicant_role} onChange={(e) => set("applicant_role", e.target.value)}>
+            {ROLES.map((r) => <option key={r}>{r}</option>)}
+          </select>
+        </Field>
         <Field label="담당자 이메일 * (승인 메일 수신)">
           <input className="input" type="email" required value={f.applicant_email}
                  onChange={(e) => set("applicant_email", e.target.value)} placeholder="you@example.com" />
