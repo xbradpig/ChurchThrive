@@ -13,6 +13,20 @@ export default async function ChurchAdminPage() {
   return (
     <div className="min-h-dvh md:pl-60">
       <AppHeader role={role as AppRole} title="교회 관리" />
+      {/* 당직 모드 — 모바일에선 자주 쓰는 과업을 카드로 먼저 (dual-grammar G3) */}
+      <div className="md:hidden max-w-lg mx-auto px-4 pt-4 grid grid-cols-2 gap-2" data-duty-mode>
+        {[
+          ["🙋", "가입 승인", "/church?tab=members"],
+          ["📲", "교인 초대", "/invites"],
+          ["🔔", "미출석 확인", "/church?tab=absentees"],
+          ["🔍", "교인 찾기", "/church?tab=members"],
+        ].map(([icon, label, href]) => (
+          <a key={label} href={href} className="card p-4 flex flex-col items-center gap-1 text-center">
+            <span className="text-2xl">{icon}</span>
+            <b className="text-sm">{label}</b>
+          </a>
+        ))}
+      </div>
       <AdminTabs role={role as AppRole} />
     </div>
   );

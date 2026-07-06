@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ROLE_LABEL, type AppRole } from "@/lib/roles";
 import { MODULES } from "@/modules/registry";
-import AppHeader from "@/components/AppHeader";
+import AppFrame from "@/components/AppFrame";
+import LogoutButton from "@/components/LogoutButton";
 
 /** 동적 전체 메뉴 = registry × church_modules × (역할 ∪ module_grants) — ia-menu-structure.md */
 export default async function MenuPage() {
@@ -50,16 +51,21 @@ export default async function MenuPage() {
     }
   }
 
+  const opsItems: Item[] = [];
   if (isChurchStaff || r === "dept_leader") {
-    items.push({ href: "/admin", icon: "📊", title: "교회 대시보드", desc: "출석 통계 · 미출석 알림 · 권한", admin: true });
+    opsItems.push({ href: "/church", icon: "🏛", title: "교회 관리", desc: "명부 · 부서 · 통계 · 권한 · 설정", admin: true });
+    opsItems.push({ href: "/invites", icon: "📲", title: "교인 초대", desc: "문자 링크 · QR로 앱 초대", admin: true });
   }
   if (r === "superadmin") {
-    items.push({ href: "/store", icon: "🏪", title: "마켓 스토어", desc: "교회 기능 설치 · 해지 · 구독", admin: true });
+    opsItems.push({ href: "/store", icon: "🏪", title: "마켓 스토어", desc: "교회 기능 설치 · 해지 · 구독", admin: true });
+  }
+  const { data: isPa } = await supabase.rpc("is_platform_admin");
+  if (isPa) {
+    opsItems.push({ href: "/platform", icon: "🛠", title: "플랫폼 운영", desc: "교회 심사 · 감사 기록 (별도 공간)", admin: true });
   }
 
   return (
-    <div className="min-h-dvh md:pl-60">
-      <AppHeader role={r} title="전체 메뉴" />
+    <AppFrame title="전체 메뉴" isStaff={r !== "member"}>
       <main className="max-w-lg mx-auto p-4 flex flex-col gap-3">
         <p className="text-[var(--text-soft)] px-1">
           <b>{church?.name}</b> · {ROLE_LABEL[r]}
@@ -79,7 +85,27 @@ export default async function MenuPage() {
             <span className="ml-auto text-[var(--color-brand-300)] text-xl">›</span>
           </Link>
         ))}
+        {opsItems.length > 0 && (
+          <>
+            <p className="text-xs font-black uppercase tracking-wider text-[var(--text-soft)] px-1 mt-4">
+              운영 도구 — 관리 화면으로 전환
+            </p>
+            {opsItems.map((m, i) => (
+              <Link key={"ops" + i} href={m.href}
+                    className="card p-5 flex items-center gap-4 hover:shadow-[var(--shadow-card-hover)] transition-shadow"
+                    style={{ borderColor: "var(--color-accent)" }}>
+                <span className="text-3xl w-12 text-center">{m.icon}</span>
+                <span className="min-w-0">
+                  <b className="text-lg text-[var(--color-brand-800)]">{m.title}</b>
+                  <span className="block text-sm text-[var(--text-soft)]">{m.desc}</span>
+                </span>
+                <span className="ml-auto text-[var(--color-brand-300)] text-xl">›</span>
+              </Link>
+            ))}
+          </>
+        )}
+        <LogoutButton />
       </main>
-    </div>
+    </AppFrame>
   );
 }

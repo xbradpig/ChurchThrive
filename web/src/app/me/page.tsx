@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { AppRole } from "@/lib/roles";
-import AppHeader from "@/components/AppHeader";
+import AppFrame from "@/components/AppFrame";
 import MemberCard from "@/components/MemberCard";
 import ConsentPanel from "./ConsentPanel";
 import SelfCheckin from "./SelfCheckin";
@@ -19,8 +19,7 @@ export default async function MePage() {
     .from("events").select("id, name").eq("active", true).order("sort_order");
 
   return (
-    <div className="min-h-dvh md:pl-60">
-      <AppHeader role={(role as AppRole) ?? "member"} title="내 교적" />
+    <AppFrame title="내 교적" isStaff={role !== "member"}>
       <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
         {!card ? (
           <div className="card p-8 text-center text-[var(--text-soft)]">
@@ -35,6 +34,6 @@ export default async function MePage() {
           </>
         )}
       </main>
-    </div>
+    </AppFrame>
   );
 }

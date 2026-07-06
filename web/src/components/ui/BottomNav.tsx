@@ -7,16 +7,16 @@ import { useEffect } from "react";
 type Item = { key: string; icon: string; label: string; href: string };
 
 /** 모바일 하단 탭 바 (시니어 표준) — 몰입 화면(/check /scan)에선 미표시 */
-export default function BottomNav({ isStaff }: { isStaff: boolean }) {
+export default function BottomNav({ isStaff, always = false }: { isStaff: boolean; always?: boolean }) {
   const pathname = usePathname();
   const hidden = pathname.startsWith("/check") || pathname.startsWith("/scan") || pathname.startsWith("/platform");
 
   useEffect(() => {
-    if (!hidden && window.matchMedia("(max-width: 767px)").matches) {
+    if (!hidden && (always || window.matchMedia("(max-width: 767px)").matches)) {
       document.body.classList.add("has-bottom-nav");
       return () => document.body.classList.remove("has-bottom-nav");
     }
-  }, [hidden, pathname]);
+  }, [hidden, pathname, always]);
 
   if (hidden) return null;
 
@@ -34,7 +34,8 @@ export default function BottomNav({ isStaff }: { isStaff: boolean }) {
       ];
 
   return (
-    <nav className="bottom-nav md:hidden" data-bottom-nav>
+    <nav className={`bottom-nav ${always ? "" : "md:hidden"}`} data-bottom-nav>
+      <div className="bottom-nav-inner">
       {items.map((it) => {
         const path = it.href.split("?")[0];
         const active = pathname === path || (path !== "/home" && pathname.startsWith(path));
@@ -45,6 +46,7 @@ export default function BottomNav({ isStaff }: { isStaff: boolean }) {
           </Link>
         );
       })}
+      </div>
     </nav>
   );
 }

@@ -50,15 +50,18 @@ async function navStates(pg) {
 {
   const pg = await loginPage("member@chungpa.local", "chungpa-member-2026!");
   await pg.goto(WEB + "/home", { waitUntil: "networkidle0" });
-  const n = await navStates(pg);
-  check("N1 교인: 내공간 v / 출석 h / 교회관리 h / 시스템 h",
-    n.home === "visible" && n.me === "visible" && n.verse === "visible"
-    && !n.check && !n.church && !n.platform, JSON.stringify(n));
+  // 이원 문법: 교인 홈 = 앱 프레임 (사이드바 없음, 하단 탭 홈/내 교적/메뉴)
+  const bn = await pg.evaluate(() =>
+    [...document.querySelectorAll("[data-bn]")].map((e) => e.getAttribute("data-bn")));
+  const hasSidebar = await pg.evaluate(() => !!document.querySelector('[data-testid="sidebar"]'));
+  check("N1 교인(문법A): 하단 탭 홈·교적·메뉴 + 사이드바 부재 + 관리 진입 없음",
+    bn.includes("home") && bn.includes("me") && bn.includes("menu") && !bn.includes("members") && !hasSidebar,
+    JSON.stringify(bn));
   await pg.browserContext().close();
 }
 {
   const pg = await loginPage("checker@chungpa.local", "chungpa-check-2026!");
-  await pg.goto(WEB + "/home", { waitUntil: "networkidle0" });
+  await pg.goto(WEB + "/check", { waitUntil: "networkidle0" });
   const n = await navStates(pg);
   check("N2 출석담당: 출석 v / 교회관리 d(잠금) / 시스템 h",
     n.check === "visible" && n.scan === "visible" && n.church === "disabled" && !n.platform, JSON.stringify(n));
@@ -71,7 +74,7 @@ async function navStates(pg) {
 }
 {
   const pg = await loginPage("pastor@chungpa.local", "chungpa-pastor-2026!");
-  await pg.goto(WEB + "/home", { waitUntil: "networkidle0" });
+  await pg.goto(WEB + "/church", { waitUntil: "networkidle0" });
   const n = await navStates(pg);
   check("N4 교역자: 교회관리 v / 시스템 h (누적: 내공간 유지)",
     n.church === "visible" && !n.platform && n.me === "visible", JSON.stringify(n));
@@ -79,7 +82,7 @@ async function navStates(pg) {
 }
 {
   const pg = await loginPage("admin@chungpa.local", "chungpa-admin-2026!");
-  await pg.goto(WEB + "/home", { waitUntil: "networkidle0" });
+  await pg.goto(WEB + "/church", { waitUntil: "networkidle0" });
   const n = await navStates(pg);
   check("N5 교회관리자+플랫폼: 전부 v + 누적 스택(내 교적 유지)",
     n.church === "visible" && n.platform === "visible" && n.me === "visible" && n.check === "visible",
@@ -120,6 +123,8 @@ async function navStates(pg) {
   const pg2 = await loginPage("admin@chungpa.local", "chungpa-admin-2026!");
   await pg2.goto(WEB + "/platform", { waitUntil: "networkidle0" });
   const banner = await pg2.evaluate(() => document.body.innerText.includes("플랫폼 운영") && document.body.innerText.includes("교회로 돌아가기"));
+  await pg2.click('[data-pnav="churches"]').catch(() => {});
+  await new Promise((r) => setTimeout(r, 800));
   const churchCount = await pg2.evaluate(() => document.querySelectorAll("tbody tr").length);
   check("X2 플랫폼 콘솔: 운영 배너 + 복귀 버튼 + 교회 목록", banner && churchCount >= 3, `배너=${banner}, 교회=${churchCount}곳`);
   await pg2.screenshot({ path: "/private/tmp/claude-501/-Users-xbradpig-aretevision-dev-Havruta-Project/8f49d000-6d9f-47a2-975d-95ea78162575/scratchpad/platform.png" });
