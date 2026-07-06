@@ -64,8 +64,8 @@ export default function ApplyPage() {
           <input className="input" required value={f.name} onChange={(e) => set("name", e.target.value)}
                  placeholder="예: 은혜중앙교회" />
         </Field>
-        <Field label="영문 주소 *">
-          <input className="input" required value={f.slug} onChange={(e) => set("slug", e.target.value.toLowerCase())}
+        <Field label="영문 주소 (선택 — 비워두면 자동 생성)">
+          <input className="input" value={f.slug} onChange={(e) => set("slug", e.target.value.toLowerCase())}
                  placeholder="예: grace-central" pattern="[a-z0-9-]{2,32}" />
         </Field>
         <Field label="교단 *">
