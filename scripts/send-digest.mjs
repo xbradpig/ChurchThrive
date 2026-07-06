@@ -32,11 +32,10 @@ for (const s of settings ?? []) {
   if (Math.abs(h * 60 + m - nowMin) > 30) continue; // 매시 cron 기준 ±30분 창
 
   // 수신자 역할·부서 스코프는 absentee_list RPC의 RLS 로직과 동일하게 서비스에서 재현
-  const { data: absentees } = await svc.rpc("absentee_list_for", {
+  const { data: absentees, error: alErr } = await svc.rpc("absentee_list_for", {
     p_user_id: s.user_id, p_weeks: s.threshold_weeks,
-  }).then(async (r) => r.error
-    ? await svc.rpc("absentee_list", { p_weeks: s.threshold_weeks }) // 폴백(전체)
-    : r);
+  });
+  if (alErr) { console.error("[digest] absentee_list_for 실패:", alErr.message); continue; }
 
   const list = absentees ?? [];
   if (list.length === 0) continue;

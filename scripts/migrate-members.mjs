@@ -15,7 +15,7 @@ const VAULT = "/Users/xbradpig/aretevision/dev/Havruta Project/BlueHill21Leader/
 const GEN_HTML = path.join(VAULT, "B330.출석관리", "🌐 출석부 생성기.html");
 const CARDS_DIR = path.join(VAULT, "B320.교인명부");
 const ATT_DIR = path.join(VAULT, "B330.출석관리", "B332.출석데이터");
-const PHOTOS_OUT = fileURLToPath(new URL("../web/public/photos/", import.meta.url));
+const PHOTOS_OUT = fileURLToPath(new URL("../web/photos-secure/", import.meta.url));
 
 const supabase = createClient(
   process.env.SUPABASE_URL ?? "http://127.0.0.1:54321",
@@ -69,7 +69,7 @@ for (const entry of fs.readdirSync(CARDS_DIR, { withFileTypes: true })) {
   }
 }
 
-// 3) 사진 복사 → web/public/photos/
+// 3) 사진 복사 → web/photos-secure/ (인증 API로만 서빙)
 fs.mkdirSync(PHOTOS_OUT, { recursive: true });
 
 // 4) members upsert (정본 = roster ∪ card)
@@ -99,7 +99,7 @@ for (const display of allNames) {
     if (img) {
       const ext = img.match(/\.(jpe?g|png)$/i)[0].toLowerCase();
       fs.copyFileSync(path.join(dirPath, img), path.join(PHOTOS_OUT, `${display}${ext}`));
-      photoUrl = `/photos/${encodeURIComponent(display)}${ext}`;
+      photoUrl = `/api/photos/${encodeURIComponent(display)}${ext}`;
       report.photos++;
     }
   }
