@@ -1,21 +1,21 @@
 # ChurchThrive 로컬 컨테이너 스택
 # Supabase는 `npx supabase start`(자체 컨테이너)로 먼저 기동 — 웹만 여기서 관리
+# 시크릿은 같은 폴더의 .env에서 주입 (.env는 gitignore, 견본은 .env.example)
 services:
   web:
     build:
       context: ./web
       args:
-        NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-        NEXT_PUBLIC_VAPID_PUBLIC_KEY: BGRgcwqdx3Dtubx3bvMRtE8fJ3drRSbXF-kWqW6EnULyKbkjypRI0yjDnlA2wPq-igQzJYldpr9nTal0yNW5Ocw
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
     image: churchthrive-web:local
     container_name: churchthrive_web
     ports:
       - "3120:3120"
     environment:
-      # 서버(컨테이너) → Supabase Kong: 호스트 게이트웨이 경유
-      SUPABASE_URL_INTERNAL: http://host.docker.internal:54321
-      SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+      SUPABASE_URL_INTERNAL: ${SUPABASE_URL_INTERNAL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped

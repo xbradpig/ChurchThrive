@@ -60,6 +60,9 @@ export default function LoginPage() {
           <button className="btn btn-primary w-full text-lg" disabled={loading}>
             {loading ? "확인 중…" : "로그인"}
           </button>
+          <a href="/forgot-password" className="text-center text-sm font-bold text-[var(--color-brand-600)] underline py-1">
+            비밀번호를 잊으셨나요?
+          </a>
         </form>
 
         <p className="mt-6 text-center text-sm text-[var(--text-soft)]">
