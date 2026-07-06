@@ -390,3 +390,8 @@ table tbody tr:hover {
   .bottom-nav a.active { color: var(--color-brand-200); }
 }
 .has-bottom-nav { padding-bottom: calc(4.2rem + env(safe-area-inset-bottom)); }
+/* 웹/앱 분리: 데스크톱(웹 서비스)에선 하단 탭 숨김 — .bn-always만 예외 */
+@media (min-width: 768px) {
+  .bottom-nav:not(.bn-always) { display: none; }
+  .has-bottom-nav { padding-bottom: 0; }
+}

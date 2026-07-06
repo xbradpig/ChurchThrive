@@ -50,13 +50,11 @@ async function navStates(pg) {
 {
   const pg = await loginPage("member@chungpa.local", "chungpa-member-2026!");
   await pg.goto(WEB + "/home", { waitUntil: "networkidle0" });
-  // 이원 문법: 교인 홈 = 앱 프레임 (사이드바 없음, 하단 탭 홈/내 교적/메뉴)
-  const bn = await pg.evaluate(() =>
-    [...document.querySelectorAll("[data-bn]")].map((e) => e.getAttribute("data-bn")));
-  const hasSidebar = await pg.evaluate(() => !!document.querySelector('[data-testid="sidebar"]'));
-  check("N1 교인(문법A): 하단 탭 홈·교적·메뉴 + 사이드바 부재 + 관리 진입 없음",
-    bn.includes("home") && bn.includes("me") && bn.includes("menu") && !bn.includes("members") && !hasSidebar,
-    JSON.stringify(bn));
+  // 웹 기준: 데스크톱 교인 = 사이드바 노출 매트릭스 (누적 원칙)
+  const n = await navStates(pg);
+  check("N1 교인(웹): 내공간 v / 출석 h / 교회관리 h / 시스템 h",
+    n.home === "visible" && n.me === "visible" && !n.check && !n.church && !n.platform,
+    JSON.stringify(n));
   await pg.browserContext().close();
 }
 {

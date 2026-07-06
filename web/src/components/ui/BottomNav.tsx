@@ -34,7 +34,7 @@ export default function BottomNav({ isStaff, always = false }: { isStaff: boolea
       ];
 
   return (
-    <nav className={`bottom-nav ${always ? "" : "md:hidden"}`} data-bottom-nav>
+    <nav className={`bottom-nav ${always ? "bn-always" : ""}`} data-bottom-nav>
       <div className="bottom-nav-inner">
       {items.map((it) => {
         const path = it.href.split("?")[0];
