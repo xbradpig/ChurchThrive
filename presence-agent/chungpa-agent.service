@@ -1,0 +1,15 @@
+[Unit]
+Description=ChungpaAttend Presence Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+EnvironmentFile=/home/pi/chungpa-agent.env
+ExecStart=/usr/bin/python3 /home/pi/presence-agent/agent.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

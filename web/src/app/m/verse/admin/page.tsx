@@ -1,0 +1,19 @@
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import type { AppRole } from "@/lib/roles";
+import AppHeader from "@/components/AppHeader";
+import VerseAdmin from "./VerseAdmin";
+
+export default async function VerseAdminPage() {
+  const supabase = await createClient();
+  const { data: role } = await supabase.rpc("my_role");
+  const { data: canAdmin } = await supabase.rpc("has_module", { p_module: "verse", p_level: "admin" });
+  if (!canAdmin) redirect("/m/verse");   // 모듈 admin 권한 게이트 (module_grants)
+
+  return (
+    <div className="min-h-dvh">
+      <AppHeader role={(role as AppRole) ?? "member"} title="말씀 암송 관리" />
+      <VerseAdmin />
+    </div>
+  );
+}

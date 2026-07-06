@@ -1,0 +1,27 @@
+# 의존성·빌드
+node_modules/
+.next/
+*.tsbuildinfo
+
+# 환경·시크릿
+.env
+.env.*
+!.env.example
+scripts/.vapid.json
+
+# 개인정보 — 교인 사진은 절대 커밋 금지 (테넌트 데이터)
+web/public/photos/
+
+# 백업·로컬 산출물
+backups/
+scripts/qr-cards.html
+scripts/migration-report.md
+scripts/verify-report.md
+scripts/platform-report.md
+
+# Supabase 로컬
+supabase/.temp/
+supabase/.branches/
+
+# OS
+.DS_Store
