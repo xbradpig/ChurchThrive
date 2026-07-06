@@ -56,7 +56,7 @@ export default function Landing() {
             등록부터 사용까지 15분이면 충분합니다.
           </p>
           <div className="flex gap-3 mt-2">
-            <Link href="/signup" className="btn text-lg !px-8"
+            <Link href="/register-intro" className="btn text-lg !px-8"
                   style={{ background: "var(--color-accent)", color: "var(--color-brand-900)" }}>
               ⛪ 우리 교회 등록하기
             </Link>
@@ -118,7 +118,7 @@ export default function Landing() {
                style={{ background: "var(--color-brand-900)" }}>
         <h2 className="text-2xl font-black mb-3">이번 주일부터 시작해보세요</h2>
         <p className="opacity-75 mb-6">지금 등록하면 15분 뒤, 우리 교회 출석부가 준비됩니다.</p>
-        <Link href="/signup" className="btn text-lg !px-8"
+        <Link href="/register-intro" className="btn text-lg !px-8"
               style={{ background: "var(--color-accent)", color: "var(--color-brand-900)" }}>
           무료로 시작하기
         </Link>

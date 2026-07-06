@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -10,6 +10,26 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // 초대 매직링크 등으로 #access_token이 붙어 도착하면 세션을 심고 홈으로
+  useEffect(() => {
+    const supabase = createClient();
+    const hash = window.location.hash;
+    if (hash.includes("access_token")) {
+      const p = new URLSearchParams(hash.slice(1));
+      const access_token = p.get("access_token");
+      const refresh_token = p.get("refresh_token");
+      if (access_token && refresh_token) {
+        supabase.auth.setSession({ access_token, refresh_token }).then(({ error }) => {
+          if (!error) window.location.replace("/home");
+        });
+        return;
+      }
+    }
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) router.replace("/home");
+    });
+  }, [router]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,7 +88,7 @@ export default function LoginPage() {
         <p className="mt-6 text-center text-sm text-[var(--text-soft)]">
           교인 계정은 교회 사무실에 문의해주세요.
         </p>
-        <a href="/signup"
+        <a href="/register-intro"
            className="btn btn-ghost w-full mt-3 text-sm">
           ⛪ 우리 교회를 새로 등록하려면 — 시작하기
         </a>

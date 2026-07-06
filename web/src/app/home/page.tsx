@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { AppRole } from "@/lib/roles";
 import AppHeader from "@/components/AppHeader";
+import InstallBanner from "@/components/InstallBanner";
 
 /** 역할별 위젯 홈 (ui-upgrade U2 — identity §6.5 조립 규칙의 v1 구현) */
 export default async function HomePage() {
@@ -38,6 +39,7 @@ export default async function HomePage() {
     <div className="min-h-dvh md:pl-60" data-testid="widget-home">
       <AppHeader role={r} title="홈" />
       <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+        <InstallBanner />
         <p className="text-[var(--text-soft)] px-1 font-bold">{church?.name}</p>
 
         {/* [담당자] 오늘 작업 바로가기 — 대형 버튼 */}

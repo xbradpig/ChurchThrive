@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
-/** 회원가입 → 교회 등록/가입으로 이어지는 셀프서비스 온보딩 입구 */
-export default function SignupPage() {
+/** 회원가입 → 교회 등록(flow=church) 또는 갈림길로 이어지는 온보딩 입구 */
+function SignupForm() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const params = useSearchParams();
+  const churchFlow = params.get("flow") === "church";   // 교회 등록 3단계 중 1단계
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export default function SignupPage() {
       setError("가입 확인 메일을 확인해주세요.");
       return;
     }
-    router.replace("/start");
+    router.replace(churchFlow ? "/register-church" : "/start");
     router.refresh();
   }
 
@@ -37,10 +39,25 @@ export default function SignupPage() {
           <div className="w-14 h-14 rounded-full bg-[var(--color-brand-800)] flex items-center justify-center">
             <span className="text-[var(--color-accent)] text-2xl font-black">✝</span>
           </div>
-          <h1 className="text-xl font-black text-[var(--color-brand-800)]">ChurchThrive 시작하기</h1>
-          <p className="text-sm text-[var(--text-soft)] text-center">
-            계정을 만들고 우리 교회를 등록하세요.<br />약 15분이면 교회 공간이 준비됩니다.
-          </p>
+          {churchFlow ? (
+            <>
+              <span className="badge" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>
+                교회 등록 1/3 — 계정 만들기
+              </span>
+              <h1 className="text-xl font-black text-[var(--color-brand-800)]">관리자 계정 만들기</h1>
+              <p className="text-sm text-[var(--text-soft)] text-center">
+                이 계정이 우리 교회의 관리자 계정이 됩니다.<br />
+                다음 단계에서 교회 정보를 입력합니다.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-xl font-black text-[var(--color-brand-800)]">ChurchThrive 시작하기</h1>
+              <p className="text-sm text-[var(--text-soft)] text-center">
+                계정을 만들고 우리 교회를 등록하세요.<br />약 15분이면 교회 공간이 준비됩니다.
+              </p>
+            </>
+          )}
         </div>
         <form onSubmit={signup} className="flex flex-col gap-3">
           <label className="flex flex-col gap-1.5">
@@ -67,4 +84,8 @@ export default function SignupPage() {
       </div>
     </main>
   );
+}
+
+export default function SignupPage() {
+  return <Suspense><SignupForm /></Suspense>;
 }
