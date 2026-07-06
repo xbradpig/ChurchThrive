@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { AppRole } from "@/lib/roles";
 import TrendChart, { type TrendPoint } from "./TrendChart";
 import NotificationSetup from "./NotificationSetup";
+import StaffManager from "./StaffManager";
 
 const TABS = [
   { key: "overview", label: "현황" },
@@ -34,7 +35,7 @@ export default function AdminTabs({ role }: { role: AppRole }) {
       </div>
       {tab === "overview" && <Overview />}
       {tab === "absentees" && (<><NotificationSetup /><Absentees /></>)}
-      {tab === "permissions" && (<><ModuleGrants /><Permissions /></>)}
+      {tab === "permissions" && (<><StaffManager /><ModuleGrants /><Permissions /></>)}
       {tab === "events" && <EventsAdmin />}
       {tab === "export" && <ExportPanel />}
     </main>
