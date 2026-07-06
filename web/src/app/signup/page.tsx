@@ -26,7 +26,7 @@ export default function SignupPage() {
       setError("가입 확인 메일을 확인해주세요.");
       return;
     }
-    router.replace("/register-church");
+    router.replace("/start");
     router.refresh();
   }
 

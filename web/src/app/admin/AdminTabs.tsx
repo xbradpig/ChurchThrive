@@ -70,8 +70,59 @@ function Overview() {
         <Stat label="담당자 승인 대기" value={`${stats.pendingLeaders}건`} warn={stats.pendingLeaders > 0} />
       </div>
       <TrendChart data={trend} events={eventNames} />
+      <JoinQueue />
       <LeaderQueue />
     </>
+  );
+}
+
+/* ---------- 교인 가입 신청 승인 큐 (P0-3) ---------- */
+function JoinQueue() {
+  const supabase = useMemo(() => createClient(), []);
+  const [rows, setRows] = useState<{ id: string; applicant_name: string; requested_at: string }[]>([]);
+  const [unlinked, setUnlinked] = useState<{ id: string; name: string; name_suffix: string }[]>([]);
+  const [linkSel, setLinkSel] = useState<Record<string, string>>({});
+
+  const load = useCallback(async () => {
+    const [{ data: jr }, { data: m }] = await Promise.all([
+      supabase.from("join_requests").select("id, applicant_name, requested_at").eq("status", "pending"),
+      supabase.from("members").select("id, name, name_suffix").is("user_id", null).eq("status", "active"),
+    ]);
+    setRows(jr ?? []);
+    setUnlinked((m ?? []) as never);
+  }, [supabase]);
+  useEffect(() => { load(); }, [load]);
+
+  async function decide(id: string, ok: boolean) {
+    const { error } = ok
+      ? await supabase.rpc("approve_join", { p_request: id, p_member_id: linkSel[id] || null })
+      : await supabase.rpc("reject_join", { p_request: id });
+    if (error) return alert(error.message);
+    load();
+  }
+
+  if (rows.length === 0) return null;
+  return (
+    <div className="card p-5" data-widget="join-queue">
+      <h3 className="font-black text-[var(--color-brand-700)] mb-1">교인 가입 신청 {rows.length}건</h3>
+      <p className="text-sm text-[var(--text-soft)] mb-2">기존 교적과 연결하거나, 새 교적으로 승인하세요.</p>
+      {rows.map((r) => (
+        <div key={r.id} className="flex items-center gap-2 py-2.5 border-t border-[var(--line)] flex-wrap">
+          <b>{r.applicant_name}</b>
+          <span className="text-xs text-[var(--text-soft)]">{r.requested_at.slice(0, 10)}</span>
+          <select className="input !w-auto !min-h-9 text-sm ml-auto"
+                  value={linkSel[r.id] ?? ""}
+                  onChange={(e) => setLinkSel((s) => ({ ...s, [r.id]: e.target.value }))}>
+            <option value="">새 교적으로 등록</option>
+            {unlinked.filter((m) => m.name === r.applicant_name || (linkSel[r.id] === m.id))
+              .concat(unlinked.filter((m) => m.name !== r.applicant_name)).slice(0, 50)
+              .map((m) => <option key={m.id} value={m.id}>기존: {m.name}{m.name_suffix}</option>)}
+          </select>
+          <button className="btn btn-positive !min-h-9 text-sm" onClick={() => decide(r.id, true)}>승인</button>
+          <button className="btn btn-danger-soft !min-h-9 text-sm" onClick={() => decide(r.id, false)}>거절</button>
+        </div>
+      ))}
+    </div>
   );
 }
 

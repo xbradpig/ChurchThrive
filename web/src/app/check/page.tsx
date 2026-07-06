@@ -18,7 +18,7 @@ export default async function CheckPage() {
     .order("sort_order");
 
   return (
-    <div className="min-h-dvh pb-24">
+    <div className="min-h-dvh pb-24 md:pl-60">
       <AppHeader role={role as AppRole} title="출석 체크" />
       <CheckBoard events={events ?? []} />
     </div>

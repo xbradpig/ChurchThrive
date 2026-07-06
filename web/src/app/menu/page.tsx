@@ -58,7 +58,7 @@ export default async function MenuPage() {
   }
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh md:pl-60">
       <AppHeader role={r} title="전체 메뉴" />
       <main className="max-w-lg mx-auto p-4 flex flex-col gap-3">
         <p className="text-[var(--text-soft)] px-1">

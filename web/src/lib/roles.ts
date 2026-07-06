@@ -11,11 +11,11 @@ export const ROLE_LABEL: Record<AppRole, string> = {
 };
 
 export const ROLE_HOME: Record<AppRole, string> = {
-  superadmin: "/admin",
-  pastor: "/admin",
-  dept_leader: "/check",
+  superadmin: "/home",     // 위젯 홈 (운영 위젯 포함)
+  pastor: "/home",
+  dept_leader: "/check",   // 실무자는 작업 화면 직행 (ia-menu 원칙)
   checker: "/check",
-  member: "/me",
+  member: "/home",
 };
 
 export async function getMyRole(supabase: SupabaseClient): Promise<AppRole> {

@@ -11,7 +11,7 @@ export default async function VerseAdminPage() {
   if (!canAdmin) redirect("/m/verse");   // 모듈 admin 권한 게이트 (module_grants)
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh md:pl-60">
       <AppHeader role={(role as AppRole) ?? "member"} title="말씀 암송 관리" />
       <VerseAdmin />
     </div>

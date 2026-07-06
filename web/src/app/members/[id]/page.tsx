@@ -13,7 +13,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
   const { data: card } = await supabase.rpc("get_member_card", { p_member_id: id });
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh md:pl-60">
       <AppHeader role={role as AppRole} title="교적카드" />
       <main className="max-w-lg mx-auto p-4">
         {card

@@ -44,3 +44,58 @@ export const MODULES: ModuleDef[] = [
 ];
 
 export const getModule = (key: string) => MODULES.find((m) => m.key === key);
+
+/* ================= 사이드 네비 매트릭스 (ui-upgrade detail_goal R1) =================
+   상태: visible(활성) / disabled(🔒 자격 존재·미보유 → 승급 안내) / hidden
+   누적 스택: 상위 등급이 하위 메뉴를 잃지 않음 (D1) */
+
+export type NavState = "visible" | "disabled" | "hidden";
+export type NavItem = { key: string; label: string; icon: string; href: string; state: NavState };
+export type NavSection = { group: string; items: NavItem[] };
+
+export type NavCtx = {
+  role: "superadmin" | "pastor" | "dept_leader" | "checker" | "member";
+  grants: Record<string, string>;          // module → level
+  modules: Set<string>;                    // enabled modules
+  isPlatformAdmin: boolean;
+};
+
+export function buildNav(ctx: NavCtx): NavSection[] {
+  const { role, grants, modules, isPlatformAdmin } = ctx;
+  const isChurchStaff = role === "superadmin" || role === "pastor";
+  const attOp = isChurchStaff || role === "dept_leader" || role === "checker" || !!grants["attendance"];
+  const s = (cond: boolean, elseState: NavState = "hidden"): NavState => (cond ? "visible" : elseState);
+
+  const my: NavItem[] = [
+    { key: "home", label: "홈", icon: "🏠", href: "/home", state: "visible" },
+    { key: "me", label: "내 교적", icon: "📇", href: "/me", state: "visible" },
+  ];
+  if (modules.has("verse")) {
+    my.push({ key: "verse", label: "말씀 암송", icon: "📖", href: "/m/verse", state: "visible" });
+  }
+
+  const work: NavItem[] = [];
+  if (modules.has("attendance")) {
+    work.push({ key: "check", label: "출석 체크", icon: "✅", href: "/check", state: s(attOp) });
+    work.push({ key: "scan", label: "QR 스캔", icon: "📷", href: "/scan", state: s(attOp) });
+  }
+  if (modules.has("verse") && (isChurchStaff || grants["verse"] === "admin" || grants["verse"] === "manager")) {
+    work.push({ key: "verse-admin", label: "말씀 암송 관리", icon: "📖", href: "/m/verse/admin", state: "visible" });
+  }
+
+  const ops: NavItem[] = [
+    // 자격 존재·미보유 → disabled (승급 동선): 담당자·부서담당자에게 잠금 표시
+    { key: "church", label: "교회 관리", icon: "🏛", href: "/church",
+      state: isChurchStaff ? "visible"
+        : (role === "dept_leader" || role === "checker" || Object.keys(grants).length > 0) ? "disabled" : "hidden" },
+    { key: "platform", label: "시스템 관리", icon: "🛠", href: "/platform",
+      state: isPlatformAdmin ? "visible" : role === "superadmin" ? "disabled" : "hidden" },
+  ];
+
+  const sections: NavSection[] = [{ group: "내 공간", items: my }];
+  const workVisible = work.filter((w) => w.state !== "hidden");
+  if (workVisible.length) sections.push({ group: "사역", items: workVisible });
+  const opsVisible = ops.filter((o) => o.state !== "hidden");
+  if (opsVisible.length) sections.push({ group: "운영", items: opsVisible });
+  return sections;
+}

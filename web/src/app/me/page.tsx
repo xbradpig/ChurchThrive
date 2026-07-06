@@ -19,7 +19,7 @@ export default async function MePage() {
     .from("events").select("id, name").eq("active", true).order("sort_order");
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh md:pl-60">
       <AppHeader role={(role as AppRole) ?? "member"} title="내 교적" />
       <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
         {!card ? (

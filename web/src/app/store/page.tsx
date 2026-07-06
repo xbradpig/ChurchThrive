@@ -10,7 +10,7 @@ export default async function StorePage() {
   const { data: church } = await supabase.from("churches").select("name").limit(1).single();
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh md:pl-60">
       <AppHeader role={(role as AppRole) ?? "member"} title="마켓 스토어" />
       <StoreBoard
         isAdmin={role === "superadmin"}

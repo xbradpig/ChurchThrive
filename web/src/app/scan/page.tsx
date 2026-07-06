@@ -13,7 +13,7 @@ export default async function ScanPage() {
     .from("events").select("id, name").eq("active", true).order("sort_order");
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh md:pl-60">
       <AppHeader role={role as AppRole} title="QR 스캔" />
       <Scanner events={events ?? []} />
     </div>
