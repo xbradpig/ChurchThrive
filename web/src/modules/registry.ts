@@ -123,6 +123,7 @@ export function buildNav(ctx: NavCtx): NavSection[] {
   if (modules.has("attendance")) {
     work.push({ key: "check", label: "출석 체크", icon: "✅", href: "/check", state: s(attOp) });
     work.push({ key: "scan", label: "QR 스캔", icon: "📷", href: "/scan", state: s(attOp) });
+    work.push({ key: "invites", label: "교인 초대", icon: "📲", href: "/invites", state: s(attOp) });
   }
   if (modules.has("verse") && (isChurchStaff || grants["verse"] === "admin" || grants["verse"] === "manager")) {
     work.push({ key: "verse-admin", label: "말씀 암송 관리", icon: "📖", href: "/m/verse/admin", state: "visible" });
