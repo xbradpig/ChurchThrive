@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
-/* ================= ChungpaAttend Design System =================
+/* ================= ChurchThrive Design System v2 =================
    원칙: 어르신 가독성 우선 (본문 ≥17px, 대비 ≥ WCAG AA, 터치 ≥48px)
    톤: 딥 네이비(신뢰) × 웜 샌드(따뜻함) × 골드(절제된 포인트)
-   ================================================================ */
+   v2: Pretendard 실탑재 · 레이어드 엘리베이션 · 표준 모션 커브 ·
+       shadcn 변수 매핑 (design-adoption-plan D-DS1 기반층)
+   ================================================================== */
 
 @theme {
   /* Brand */
@@ -17,6 +19,7 @@
   --color-brand-700: #253f66;
   --color-brand-800: #1e3350;
   --color-brand-900: #16263c;
+  --color-brand-950: #0e1928;
 
   /* Warm neutrals (paper) */
   --color-sand-50: #fbf9f5;
@@ -27,8 +30,8 @@
   --color-sand-900: #2e2820;
 
   /* Semantic */
-  --color-ink: #21201c;
-  --color-ink-soft: #57534a;
+  --color-ink: #211f1b;
+  --color-ink-soft: #5b564c;
   --color-accent: #b98a1f;          /* gold */
   --color-accent-soft: #f3e8cd;
   --color-positive: #1e7a46;        /* 출석 */
@@ -37,32 +40,56 @@
   --color-caution-soft: #fdeadb;
   --color-danger: #b3261e;
   --color-danger-soft: #f9dedc;
-  --color-auto: #0e6e8c;            /* 자동 감지 배지 */
+  --color-auto: #0e6e8c;
   --color-auto-soft: #dff0f5;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
-    "Pretendard Variable", Pretendard, "Malgun Gothic", "Segoe UI", sans-serif;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
 
   --radius-card: 1rem;
-  --shadow-card: 0 1px 2px rgb(30 51 80 / 0.06), 0 4px 12px rgb(30 51 80 / 0.07);
-  --shadow-card-hover: 0 2px 4px rgb(30 51 80 / 0.08), 0 8px 24px rgb(30 51 80 / 0.12);
+
+  /* 레이어드 엘리베이션 — ambient(넓고 옅게) + key(좁고 진하게) 2겹 */
+  --shadow-card: 0 0 0 1px rgb(30 51 80 / 0.04), 0 1px 2px rgb(30 51 80 / 0.05),
+                 0 8px 24px -8px rgb(30 51 80 / 0.10);
+  --shadow-card-hover: 0 0 0 1px rgb(30 51 80 / 0.05), 0 2px 6px rgb(30 51 80 / 0.07),
+                 0 16px 40px -12px rgb(30 51 80 / 0.18);
+  --shadow-pop: 0 1px 3px rgb(14 25 40 / 0.10), 0 24px 64px -16px rgb(14 25 40 / 0.28);
 }
 
 :root {
   --bg: var(--color-sand-50);
   --surface: #ffffff;
+  --surface-soft: var(--color-sand-100);
   --text: var(--color-ink);
   --text-soft: var(--color-ink-soft);
-  --line: var(--color-sand-200);
+  --line: color-mix(in srgb, var(--color-sand-300) 55%, transparent);
+  --line-strong: var(--color-sand-300);
+
+  /* 표준 모션 — 전 컴포넌트 공용 (일관성이 고급감의 핵심) */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur: 160ms;
+
+  /* shadcn 변수 매핑 (D-DS1 — 컴포넌트 도입 시 무수정 호환) */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --primary: var(--color-brand-700);
+  --primary-foreground: #ffffff;
+  --muted: var(--surface-soft);
+  --muted-foreground: var(--text-soft);
+  --border: var(--line);
+  --ring: var(--color-brand-500);
+  --radius: 0.75rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #15181d;
-    --surface: #1e232b;
-    --text: #edeae4;
-    --text-soft: #a8a297;
-    --line: #323a45;
+    --bg: #14171c;
+    --surface: #1d222a;
+    --surface-soft: #262c36;
+    --text: #ece9e3;
+    --text-soft: #a39d92;
+    --line: rgb(255 255 255 / 0.09);
+    --line-strong: rgb(255 255 255 / 0.16);
   }
 }
 
@@ -75,7 +102,29 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.011em;
+  font-feature-settings: "ss05"; /* Pretendard: 좁은 따옴표 등 본문 최적화 */
+}
+
+h1, h2, h3, .font-black {
+  letter-spacing: -0.025em;
+}
+
+/* 숫자는 어디서나 고정폭 — 통계·표가 흔들리지 않음 */
+.tabular, table, .stat-strip {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 키보드 포커스 링 — 접근성 + 마감 품질 */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-brand-500) 22%, transparent);
 }
 
 /* ---------- 공통 컴포넌트 ---------- */
@@ -85,6 +134,11 @@ body {
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--line);
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.card-hover:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
 }
 
 .btn {
@@ -97,41 +151,72 @@ body {
   border-radius: 0.75rem;
   font-weight: 700;
   font-size: 1rem;
-  transition: transform 0.06s ease, box-shadow 0.15s ease, background 0.15s ease;
+  letter-spacing: -0.01em;
+  transition: transform 90ms var(--ease), box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              opacity var(--dur) var(--ease);
   cursor: pointer;
   border: none;
+  white-space: nowrap;
 }
 .btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-.btn-primary { background: var(--color-brand-700); color: #fff; }
-.btn-primary:hover { background: var(--color-brand-800); }
+.btn-primary {
+  background: linear-gradient(180deg, var(--color-brand-600), var(--color-brand-700));
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 1px 2px rgb(30 51 80 / 0.25);
+}
+.btn-primary:hover {
+  background: linear-gradient(180deg, var(--color-brand-700), var(--color-brand-800));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.10), 0 3px 10px -2px rgb(30 51 80 / 0.4);
+}
+
 .btn-ghost {
   background: transparent; color: var(--color-brand-700);
-  border: 1.5px solid var(--color-brand-300);
+  border: 1.5px solid var(--line-strong);
 }
-.btn-positive { background: var(--color-positive); color: #fff; }
+.btn-ghost:hover {
+  border-color: var(--color-brand-300);
+  background: color-mix(in srgb, var(--color-brand-50) 60%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  .btn-ghost { color: var(--color-brand-200); }
+  .btn-ghost:hover { background: rgb(255 255 255 / 0.06); }
+}
+
+.btn-positive {
+  background: var(--color-positive); color: #fff;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
+}
+.btn-positive:hover { filter: brightness(1.07); }
 .btn-danger-soft { background: var(--color-danger-soft); color: var(--color-danger); }
+.btn-danger-soft:hover { filter: brightness(0.97); }
 
 .input {
   min-height: 3rem;
   width: 100%;
   padding: 0.625rem 0.875rem;
   border-radius: 0.75rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   background: var(--surface);
   color: var(--text);
   font-size: 1.05rem;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
+.input:hover { border-color: color-mix(in srgb, var(--color-brand-400) 55%, var(--line-strong)); }
 .input:focus {
   outline: none;
   border-color: var(--color-brand-500);
-  box-shadow: 0 0 0 3px rgb(61 101 156 / 0.18);
+  box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--color-brand-500) 16%, transparent);
 }
+.input::placeholder { color: color-mix(in srgb, var(--text-soft) 70%, transparent); }
 
 .badge {
   display: inline-flex; align-items: center; gap: 0.25rem;
   padding: 0.2rem 0.6rem; border-radius: 999px;
   font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0;
 }
 
 /* ---------- 출석 카드 ---------- */
@@ -149,10 +234,15 @@ body {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.12s ease;
+  transition: transform 110ms var(--ease), box-shadow var(--dur) var(--ease),
+              border-color var(--dur) var(--ease), background var(--dur) var(--ease);
   min-height: 6.5rem;
 }
-.member-card:hover { box-shadow: var(--shadow-card-hover); }
+.member-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-brand-200);
+  transform: translateY(-1px);
+}
 .member-card:active { transform: scale(0.96); }
 
 .member-card.present {
@@ -171,6 +261,7 @@ body {
   font-weight: 800; font-size: 1.15rem;
   overflow: hidden;
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgb(30 51 80 / 0.08);
 }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -191,8 +282,8 @@ body {
   position: sticky; top: 0; z-index: 30;
   display: flex; gap: 0.25rem; overflow-x: auto;
   padding: 0.6rem 1rem;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(14px) saturate(1.4);
   border-bottom: 1px solid var(--line);
   scrollbar-width: none;
 }
@@ -205,11 +296,19 @@ body {
   font-weight: 800; font-size: 1.05rem;
   color: var(--color-brand-700);
   background: var(--surface);
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   cursor: pointer; flex-shrink: 0;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease), transform 90ms var(--ease);
 }
+.chosung-chip:hover { border-color: var(--color-brand-300); }
+.chosung-chip:active { transform: scale(0.94); }
 .chosung-chip.active {
   background: var(--color-brand-700); color: #fff; border-color: var(--color-brand-700);
+  box-shadow: 0 2px 8px -2px rgb(30 51 80 / 0.45);
+}
+@media (prefers-color-scheme: dark) {
+  .chosung-chip { color: var(--color-brand-200); }
 }
 
 .section-anchor { scroll-margin-top: 8.5rem; }
@@ -220,12 +319,29 @@ body {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
   display: flex; align-items: center; gap: 1rem;
   padding: 0.8rem 1.25rem calc(0.8rem + env(safe-area-inset-bottom));
-  background: var(--color-brand-900);
+  background: color-mix(in srgb, var(--color-brand-900) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgb(255 255 255 / 0.08);
   color: #fff;
 }
 
+/* ---------- 표 ---------- */
+
+table tbody tr {
+  transition: background var(--dur) var(--ease);
+}
+table tbody tr:hover {
+  background: color-mix(in srgb, var(--surface-soft) 55%, transparent);
+}
+
+/* ---------- 모션 ---------- */
+
 @keyframes pop-in {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px) scale(0.995); }
   to { opacity: 1; transform: none; }
 }
-.pop-in { animation: pop-in 0.25s ease both; }
+.pop-in { animation: pop-in 0.3s var(--ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
