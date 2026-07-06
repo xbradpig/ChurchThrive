@@ -1,0 +1,233 @@
+{
+  "main": {
+    "id": "4b678269fcc855d2",
+    "type": "split",
+    "children": [
+      {
+        "id": "dad73b3bfa56b419",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0513622de240a9ca",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.11.7"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.11.7"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ee4a2274c6002a38",
+    "type": "split",
+    "children": [
+      {
+        "id": "aab8c4194679a77b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "202edd119e72ea61",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "3ca3655c1d47f36f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "검색"
+            }
+          },
+          {
+            "id": "b95cc849d11e0e65",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "5e737dbd74ce4368",
+    "type": "split",
+    "children": [
+      {
+        "id": "9e825351d1245c48",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "37cf0a1e47c8023e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "310.시작_가이드/교회_지식관리_3Layer_완벽_가이드.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 교회_지식관리_3Layer_완벽_가이드"
+            }
+          },
+          {
+            "id": "749f5ec9afe68e6b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "310.시작_가이드/교회_지식관리_3Layer_완벽_가이드.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from 교회_지식관리_3Layer_완벽_가이드"
+            }
+          },
+          {
+            "id": "b7cb7ae28eb93816",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "9a2808fe2f087887",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "6992b548792a621e",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "310.시작_가이드/교회_지식관리_3Layer_완벽_가이드.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 교회_지식관리_3Layer_완벽_가이드"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "0513622de240a9ca",
+  "lastOpenFiles": [
+    "Church_Thrive/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd 2",
+    "Church_Thrive/node_modules/esbuild/bin/esbuild 2",
+    "Church_Thrive/docs/reports/daily/2026-02-07_daily_report.md",
+    "Church_Thrive/docs/reports/daily",
+    "Church_Thrive/docs/reports",
+    "Church_Thrive/docs",
+    "Church_Thrive/supabase/migrations/00019_add_superadmin_role.sql",
+    "Church_Thrive/app/tsconfig.tsbuildinfo",
+    "Church_Thrive/app/src/app/(marketing)/privacy/page.tsx",
+    "Church_Thrive/app/src/app/(marketing)/privacy",
+    "Church_Thrive/app/src/app/(marketing)/terms/page.tsx",
+    "Church_Thrive/app/src/app/(marketing)/terms",
+    "docs/Church_Thrive/Dev_Plan/Design/07_접근성_감사.md",
+    "Church_Thrive/node_modules/expo-device/node_modules/ua-parser-js/license.md",
+    "Church_Thrive/node_modules/expo-device/node_modules/ua-parser-js/readme.md",
+    "Church_Thrive/node_modules/expo-device/CHANGELOG.md",
+    "Church_Thrive/node_modules/expo-device/README.md",
+    "Church_Thrive/node_modules/@react-native-community/netinfo/README.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/stylesheetRequestFailed.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/stylesheetLateImport.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/propertyRuleIssue.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/sharedArrayBuffer.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/propertyRuleInvalidNameIssue.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/mixedContent.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormLabelHasNeitherForNorNestedInput.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/heavyAd.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormLabelForNameError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericResponseWasBlockedByORB.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormLabelForMatchesNonExistingIdError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormInputWithNoLabelError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormInputHasWrongButWellIntendedAutocompleteValueError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormInputAssignedAutocompleteValueToIdOrNameAttributeError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormEmptyIdAndNameAttributesForInputError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormDuplicateIdForInputError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/federatedAuthUserInfoRequestNotSignedInWithIdp.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/models/issues_manager/descriptions/genericFormAutocompleteAttributeEmptyError.md",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPhone5-portrait.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/google-nexus-5x-vertical-keyboard-2x.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPhone6Plus-portrait.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPhone6Plus-landscape.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPhone6-landscape.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPhone6-portrait.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPhone5-landscape.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPad-portrait.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/iPad-landscape.avif",
+    "Church_Thrive/node_modules/@react-native/community-cli-plugin/node_modules/@react-native/debugger-frontend/dist/third-party/front_end/emulated_devices/optimized/google-nexus-5x-vertical-navigation-2x.avif"
+  ]
+}

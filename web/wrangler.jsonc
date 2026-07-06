@@ -1,0 +1,18 @@
+{
+  // ChurchThrive — Next.js 15 on Cloudflare Workers (OpenNext)
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "churchthrive",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "routes": [
+    { "pattern": "church.havrutaproject.org", "custom_domain": true }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://fcnbbumpjqhycpbhlyfk.supabase.co"
+  }
+}

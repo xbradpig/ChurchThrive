@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "installed_at": "2026-07-06T06:09:59.294Z",
+  "recorder": "scripts/learning/run-recorder.mjs",
+  "wrapper_commands": [
+    "arete codex",
+    "arete claude",
+    "arete gemini"
+  ],
+  "workspace_collector_root": "/Users/xbradpig/aretevision",
+  "discord": {
+    "category_webhooks": "ARETE_DISCORD_WEBHOOK_COLLECTION|SECURITY|SKILL|PROPOSAL|PROMOTION|SYSTEM"
+  }
+}

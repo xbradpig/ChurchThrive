@@ -1,0 +1,474 @@
+{
+  "version": 3,
+  "routes": [
+    {
+      "src": "^(?:/((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+))/$",
+      "headers": {
+        "Location": "/$1"
+      },
+      "status": 308,
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "continue": true
+    },
+    {
+      "src": "^(?:/((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+))$",
+      "headers": {
+        "Location": "/$1/"
+      },
+      "status": 308,
+      "continue": true
+    },
+    {
+      "src": "/_next/__private/trace",
+      "dest": "/404",
+      "status": 404,
+      "continue": true
+    },
+    {
+      "src": "/_next/data/(.*)",
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-nextjs-data"
+          },
+          "args": "1"
+        }
+      ],
+      "continue": true
+    },
+    {
+      "src": "/404/?",
+      "status": 404,
+      "continue": true,
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-prerender-revalidate"
+        }
+      ]
+    },
+    {
+      "src": "/500",
+      "status": 500,
+      "continue": true
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/(.*).json",
+      "dest": "/$1/",
+      "override": true,
+      "continue": true,
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ]
+    },
+    {
+      "src": "^/index(?:/)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/",
+      "override": true,
+      "continue": true
+    },
+    {
+      "continue": true,
+      "src": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!_next\\/static|_next\\/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*))(.json)?[\\/#\\?]?$",
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-prerender-revalidate",
+          "value": "b971b179a42da927b747cb91d946365d"
+        }
+      ],
+      "middlewarePath": "src/middleware",
+      "middlewareRawSrc": [
+        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"
+      ],
+      "override": true
+    },
+    {
+      "src": "^/$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/UdsNW_oT6bA_agz-AlUIQ/index.json",
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/((?!_next/)(?:.*[^/]|.*))/?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/UdsNW_oT6bA_agz-AlUIQ/$1.json",
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/?",
+      "has": [
+        {
+          "type": "header",
+          "key": "rsc",
+          "value": "1"
+        }
+      ],
+      "dest": "/index.rsc",
+      "headers": {
+        "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/((?!.+\\.rsc).+?)(?:/)?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "rsc",
+          "value": "1"
+        }
+      ],
+      "dest": "/$1.rsc",
+      "headers": {
+        "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/(.*).json",
+      "dest": "/$1/",
+      "continue": true,
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ]
+    },
+    {
+      "src": "^/index(?:/)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/",
+      "continue": true
+    },
+    {
+      "src": "/index(\\.action|\\.rsc)",
+      "dest": "/",
+      "continue": true
+    },
+    {
+      "src": "/\\.prefetch\\.rsc$",
+      "dest": "/__index.prefetch.rsc",
+      "check": true
+    },
+    {
+      "src": "/(.+)/\\.prefetch\\.rsc$",
+      "dest": "/$1.prefetch.rsc",
+      "check": true
+    },
+    {
+      "src": "/\\.rsc$",
+      "dest": "/index.rsc",
+      "check": true
+    },
+    {
+      "src": "/(.+)/\\.rsc$",
+      "dest": "/$1.rsc",
+      "check": true
+    },
+    {
+      "handle": "resource"
+    },
+    {
+      "src": "/.*",
+      "status": 404
+    },
+    {
+      "handle": "miss"
+    },
+    {
+      "src": "/_next/static/.+",
+      "status": 404,
+      "check": true,
+      "dest": "/_next/static/not-found.txt",
+      "headers": {
+        "content-type": "text/plain; charset=utf-8"
+      }
+    },
+    {
+      "handle": "rewrite"
+    },
+    {
+      "src": "^/$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/UdsNW_oT6bA_agz-AlUIQ/index.json",
+      "continue": true
+    },
+    {
+      "src": "^/((?!_next/)(?:.*[^/]|.*))/?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/UdsNW_oT6bA_agz-AlUIQ/$1.json",
+      "continue": true
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/admin/announcements/(?<nxtPannouncementId>[^/]+?)(?:/)?.json$",
+      "dest": "/admin/announcements/[announcementId]?nxtPannouncementId=$nxtPannouncementId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/admin/announcements/(?<nxtPannouncementId>[^/]+?)/edit(?:/)?.json$",
+      "dest": "/admin/announcements/[announcementId]/edit?nxtPannouncementId=$nxtPannouncementId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/admin/cell\\-groups/(?<nxtPgroupId>[^/]+?)(?:/)?.json$",
+      "dest": "/admin/cell-groups/[groupId]?nxtPgroupId=$nxtPgroupId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/admin/organizations/(?<nxtPorgId>[^/]+?)(?:/)?.json$",
+      "dest": "/admin/organizations/[orgId]?nxtPorgId=$nxtPorgId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/members/(?<nxtPmemberId>[^/]+?)(?:/)?.json$",
+      "dest": "/members/[memberId]?nxtPmemberId=$nxtPmemberId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/members/(?<nxtPmemberId>[^/]+?)/edit(?:/)?.json$",
+      "dest": "/members/[memberId]/edit?nxtPmemberId=$nxtPmemberId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/notes/sermons/(?<nxtPsermonId>[^/]+?)(?:/)?.json$",
+      "dest": "/notes/sermons/[sermonId]?nxtPsermonId=$nxtPsermonId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/notes/(?<nxtPnoteId>[^/]+?)(?:/)?.json$",
+      "dest": "/notes/[noteId]?nxtPnoteId=$nxtPnoteId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/notes/(?<nxtPnoteId>[^/]+?)/edit(?:/)?.json$",
+      "dest": "/notes/[noteId]/edit?nxtPnoteId=$nxtPnoteId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/qr/(?<nxtPchurchId>[^/]+?)(?:/)?.json$",
+      "dest": "/qr/[churchId]?nxtPchurchId=$nxtPchurchId"
+    },
+    {
+      "src": "^/admin/announcements/(?<nxtPannouncementId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/admin/announcements/[announcementId].rsc?nxtPannouncementId=$nxtPannouncementId"
+    },
+    {
+      "src": "^/admin/announcements/(?<nxtPannouncementId>[^/]+?)(?:/)?$",
+      "dest": "/admin/announcements/[announcementId]?nxtPannouncementId=$nxtPannouncementId"
+    },
+    {
+      "src": "^/admin/announcements/(?<nxtPannouncementId>[^/]+?)/edit(?:\\.rsc)(?:/)?$",
+      "dest": "/admin/announcements/[announcementId]/edit.rsc?nxtPannouncementId=$nxtPannouncementId"
+    },
+    {
+      "src": "^/admin/announcements/(?<nxtPannouncementId>[^/]+?)/edit(?:/)?$",
+      "dest": "/admin/announcements/[announcementId]/edit?nxtPannouncementId=$nxtPannouncementId"
+    },
+    {
+      "src": "^/admin/cell\\-groups/(?<nxtPgroupId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/admin/cell-groups/[groupId].rsc?nxtPgroupId=$nxtPgroupId"
+    },
+    {
+      "src": "^/admin/cell\\-groups/(?<nxtPgroupId>[^/]+?)(?:/)?$",
+      "dest": "/admin/cell-groups/[groupId]?nxtPgroupId=$nxtPgroupId"
+    },
+    {
+      "src": "^/admin/organizations/(?<nxtPorgId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/admin/organizations/[orgId].rsc?nxtPorgId=$nxtPorgId"
+    },
+    {
+      "src": "^/admin/organizations/(?<nxtPorgId>[^/]+?)(?:/)?$",
+      "dest": "/admin/organizations/[orgId]?nxtPorgId=$nxtPorgId"
+    },
+    {
+      "src": "^/members/(?<nxtPmemberId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/members/[memberId].rsc?nxtPmemberId=$nxtPmemberId"
+    },
+    {
+      "src": "^/members/(?<nxtPmemberId>[^/]+?)(?:/)?$",
+      "dest": "/members/[memberId]?nxtPmemberId=$nxtPmemberId"
+    },
+    {
+      "src": "^/members/(?<nxtPmemberId>[^/]+?)/edit(?:\\.rsc)(?:/)?$",
+      "dest": "/members/[memberId]/edit.rsc?nxtPmemberId=$nxtPmemberId"
+    },
+    {
+      "src": "^/members/(?<nxtPmemberId>[^/]+?)/edit(?:/)?$",
+      "dest": "/members/[memberId]/edit?nxtPmemberId=$nxtPmemberId"
+    },
+    {
+      "src": "^/notes/sermons/(?<nxtPsermonId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/notes/sermons/[sermonId].rsc?nxtPsermonId=$nxtPsermonId"
+    },
+    {
+      "src": "^/notes/sermons/(?<nxtPsermonId>[^/]+?)(?:/)?$",
+      "dest": "/notes/sermons/[sermonId]?nxtPsermonId=$nxtPsermonId"
+    },
+    {
+      "src": "^/notes/(?<nxtPnoteId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/notes/[noteId].rsc?nxtPnoteId=$nxtPnoteId"
+    },
+    {
+      "src": "^/notes/(?<nxtPnoteId>[^/]+?)(?:/)?$",
+      "dest": "/notes/[noteId]?nxtPnoteId=$nxtPnoteId"
+    },
+    {
+      "src": "^/notes/(?<nxtPnoteId>[^/]+?)/edit(?:\\.rsc)(?:/)?$",
+      "dest": "/notes/[noteId]/edit.rsc?nxtPnoteId=$nxtPnoteId"
+    },
+    {
+      "src": "^/notes/(?<nxtPnoteId>[^/]+?)/edit(?:/)?$",
+      "dest": "/notes/[noteId]/edit?nxtPnoteId=$nxtPnoteId"
+    },
+    {
+      "src": "^/qr/(?<nxtPchurchId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/qr/[churchId].rsc?nxtPchurchId=$nxtPchurchId"
+    },
+    {
+      "src": "^/qr/(?<nxtPchurchId>[^/]+?)(?:/)?$",
+      "dest": "/qr/[churchId]?nxtPchurchId=$nxtPchurchId"
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/(.*).json",
+      "headers": {
+        "x-nextjs-matched-path": "/$1"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/_next/data/UdsNW_oT6bA_agz\\-AlUIQ/(.*).json",
+      "dest": "__next_data_catchall"
+    },
+    {
+      "handle": "hit"
+    },
+    {
+      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media|UdsNW_oT6bA_agz\\-AlUIQ)/.+",
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "src": "/index(?:/)?",
+      "headers": {
+        "x-matched-path": "/"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "src": "/((?!index$).*?)(?:/)?",
+      "headers": {
+        "x-matched-path": "/$1"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "handle": "error"
+    },
+    {
+      "src": "/.*",
+      "dest": "/404",
+      "status": 404,
+      "headers": {
+        "x-next-error-status": "404"
+      }
+    },
+    {
+      "src": "/.*",
+      "dest": "/500",
+      "status": 500,
+      "headers": {
+        "x-next-error-status": "500"
+      }
+    }
+  ],
+  "overrides": {
+    "404.html": {
+      "path": "404",
+      "contentType": "text/html; charset=utf-8"
+    },
+    "500.html": {
+      "path": "500",
+      "contentType": "text/html; charset=utf-8"
+    },
+    "_app.rsc.json": {
+      "path": "_app.rsc",
+      "contentType": "application/json"
+    },
+    "_error.rsc.json": {
+      "path": "_error.rsc",
+      "contentType": "application/json"
+    },
+    "_document.rsc.json": {
+      "path": "_document.rsc",
+      "contentType": "application/json"
+    },
+    "404.rsc.json": {
+      "path": "404.rsc",
+      "contentType": "application/json"
+    },
+    "__next_data_catchall.json": {
+      "path": "__next_data_catchall",
+      "contentType": "application/json"
+    },
+    "_next/static/not-found.txt": {
+      "contentType": "text/plain"
+    }
+  },
+  "framework": {
+    "version": "14.2.35"
+  },
+  "crons": []
+}
