@@ -77,8 +77,21 @@ let bAdmin, bChurchId;
     uid = data.user.id;
   }
   bAdmin = await login(email, "verify-b-2026!");
-  const { data: cid, error } = await bAdmin.rpc("create_church", { p_name: "검증테스트교회", p_slug: "verify-test" });
+  const { data: cid, error } = await bAdmin.rpc("create_church", {
+    p_name: "검증테스트교회", p_slug: "verify-test",
+    p_denomination: "대한예수교장로회(통합)", p_pastor: "테스트 목사", p_phone: "02-000-0000",
+  });
   bChurchId = cid;
+
+  // 승인제: 등록 직후 pending → 모듈 차단 → 플랫폼 승인 → 사용 가능
+  const { data: st0 } = await bAdmin.rpc("my_church_status");
+  const { data: modOff } = await bAdmin.rpc("module_enabled", { p_module: "attendance" });
+  check("P1-a 등록 직후 pending + 모듈 잠김", st0 === "pending" && modOff === false, `status=${st0}, mod=${modOff}`);
+  await svc.rpc("platform_set_church_status", { p_church: cid, p_status: "active" }).then(async r => {
+    if (r.error) await svc.from("churches").update({ status: "active" }).eq("id", cid);
+  });
+  const { data: modOn } = await bAdmin.rpc("module_enabled", { p_module: "attendance" });
+  check("P1-b 플랫폼 승인 후 모듈 열림", modOn === true, `mod=${modOn}`);
   const [{ count: ev }, { count: dept }, { data: mods }] = await Promise.all([
     svc.from("events").select("*", { count: "exact", head: true }).eq("church_id", cid),
     svc.from("departments").select("*", { count: "exact", head: true }).eq("church_id", cid),

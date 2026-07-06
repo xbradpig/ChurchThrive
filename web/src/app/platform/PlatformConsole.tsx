@@ -11,9 +11,22 @@ type Overview = {
 };
 
 /** 별도 공간: 자체 헤더 + 운영 모드 배너 (교회 네비와 섞이지 않음 — D2) */
-export default function PlatformConsole({ overview }: { overview: Overview }) {
+type Pending = { id: string; name: string; slug: string; denomination: string | null;
+  pastor_name: string | null; contact_phone: string | null; address: string | null;
+  member_size: string | null; intro: string | null; created_at: string };
+
+export default function PlatformConsole({ overview, pending }: { overview: Overview; pending: Pending[] }) {
+  const [queue, setQueue] = useState(pending);
   const supabase = useMemo(() => createClient(), []);
   const [rows, setRows] = useState(overview.churches);
+
+  async function review(id: string, approve: boolean) {
+    const note = approve ? null : (prompt("거절 사유 (신청자에게 표시됩니다)") ?? "등록 정보를 확인할 수 없습니다");
+    const { error } = await supabase.rpc("platform_set_church_status",
+      { p_church: id, p_status: approve ? "active" : "rejected", p_note: note });
+    if (error) return alert(error.message);
+    setQueue((q) => q.filter((c) => c.id !== id));
+  }
 
   async function setStatus(id: string, status: string) {
     const next = status === "active" ? "suspended" : "active";
@@ -53,6 +66,34 @@ export default function PlatformConsole({ overview }: { overview: Overview }) {
             </div>
           ))}
         </div>
+
+        {/* 교회 등록 심사 큐 */}
+        {queue.length > 0 && (
+          <div className="card p-5" style={{ borderColor: "var(--color-caution)" }} data-widget="review-queue">
+            <h3 className="font-black mb-3" style={{ color: "var(--color-caution)" }}>
+              🔍 등록 심사 대기 {queue.length}건
+            </h3>
+            {queue.map((c) => (
+              <div key={c.id} className="py-3 border-t border-[var(--line)]">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <b className="text-lg">{c.name}</b>
+                  <span className="badge" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>
+                    {c.denomination ?? "교단 미기재"}
+                  </span>
+                  <span className="text-sm text-[var(--text-soft)]">{c.member_size}</span>
+                  <span className="ml-auto flex gap-2">
+                    <button className="btn btn-positive !min-h-9 text-sm" onClick={() => review(c.id, true)}>승인</button>
+                    <button className="btn btn-danger-soft !min-h-9 text-sm" onClick={() => review(c.id, false)}>거절</button>
+                  </span>
+                </div>
+                <p className="text-sm text-[var(--text-soft)] mt-1">
+                  담임 {c.pastor_name ?? "—"} · {c.contact_phone ?? "—"} · {c.address || "주소 미기재"}
+                  {c.intro && <span className="block">📝 {c.intro}</span>}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* 교회 목록 */}
         <div className="card p-5">

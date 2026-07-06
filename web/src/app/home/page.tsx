@@ -10,11 +10,13 @@ export default async function HomePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: role }, { data: church }, { data: verseEnabled }] = await Promise.all([
+  const [{ data: role }, { data: church }, { data: verseEnabled }, { data: churchStatus }] = await Promise.all([
     supabase.rpc("my_role"),
     supabase.from("churches").select("name").limit(1).maybeSingle(),
     supabase.rpc("module_enabled", { p_module: "verse" }),
+    supabase.rpc("my_church_status"),
   ]);
+  if (churchStatus && churchStatus !== "active") redirect("/pending");   // 승인 전 사용 차단
   const r = (role as AppRole) ?? "member";
   const isStaffRole = r !== "member";
   const isChurchStaff = r === "superadmin" || r === "pastor";
