@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import QRCode from "qrcode";
 
 type Row = { member_id: string; name: string; name_suffix: string; phone: string | null;
   joined: boolean; invited: boolean; invite_token: string | null };
@@ -15,6 +16,19 @@ export default function InviteBoard() {
   const [bulk, setBulk] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [qr, setQr] = useState<{ name: string; dataUrl: string } | null>(null);
+
+  async function showQr(r: Row) {
+    let token = r.invite_token;
+    if (!token) {
+      const { data, error } = await supabase.rpc("create_member_invite", { p_member: r.member_id });
+      if (error) return alert(error.message);
+      token = data as string;
+      load();
+    }
+    const dataUrl = await QRCode.toDataURL(linkOf(token), { width: 560, margin: 2 });
+    setQr({ name: r.name + r.name_suffix, dataUrl });
+  }
 
   const load = useCallback(async () => {
     const { data } = await supabase.rpc("invite_board");
@@ -60,6 +74,21 @@ export default function InviteBoard() {
 
   return (
     <div className="flex flex-col gap-4">
+      {qr && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6"
+             style={{ background: "rgba(15,23,42,.75)" }} onClick={() => setQr(null)}>
+          <div className="card p-8 text-center flex flex-col items-center gap-4 max-w-sm w-full"
+               onClick={(e) => e.stopPropagation()} data-qr-modal>
+            <b className="text-2xl">{qr.name} 님 초대장</b>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={qr.dataUrl} alt="초대 QR" className="w-full rounded-2xl" data-qr-img />
+            <p className="text-[var(--text-soft)] leading-relaxed">
+              어르신 폰의 <b>카메라</b>로 이 화면을 비추면<br />초대장이 열립니다 📷
+            </p>
+            <button className="btn btn-primary w-full" onClick={() => setQr(null)}>닫기</button>
+          </div>
+        </div>
+      )}
       <div className="card p-4">
         <p className="text-sm text-[var(--text-soft)]">
           가입 완료 <b className="text-[var(--color-positive)]">{joinedCount}명</b> ·
@@ -97,6 +126,9 @@ export default function InviteBoard() {
             {r.invited && <span className="badge" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>초대장 있음</span>}
             <button className="btn btn-ghost !min-h-9 text-sm" onClick={() => inviteOne(r)}>
               {copied === r.member_id ? "✅ 복사됨" : "🔗 링크"}
+            </button>
+            <button className="btn btn-ghost !min-h-9 text-sm" onClick={() => showQr(r)} data-qr-btn>
+              📱 QR
             </button>
             {r.invite_token && r.phone && (
               <a className="btn btn-ghost !min-h-9 text-sm" href={smsHref(r, linkOf(r.invite_token))}>💬</a>

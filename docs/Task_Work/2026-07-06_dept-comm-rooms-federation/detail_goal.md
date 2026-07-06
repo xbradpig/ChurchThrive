@@ -64,7 +64,9 @@ create table mod_rooms.reading_progress (     -- bookclub 전용
 - 부서방: 부서 생성 트리거로 자동 생성(room_type='department'), `department_members` 동기화로 자동 참여, 부서장=manager.
 - 일반 모임방(group): 개설 신청 status='pending' → 승인권자(승인 정책: 부서장→자기 부서 스코프, 교역자/관리자→교회 전체) 승인 시 active. `church_approval`(00014) 패턴 재사용.
 - 도서모임(bookclub): group과 동일 워크플로우 + 책 지정 + reading_progress. 완독 확정(본인 체크 또는 리더 일괄) 시 `bookclub.completed` outbox 적재 (멤버별 1건).
-- 실시간: Supabase Realtime 채널 구독 (`messages` INSERT). RLS: room_members만 select/insert.
+- 실시간: Supabase Realtime 채널 구독 (`messages` INSERT). RLS: room_members만 select/insert. **착수 전 스파이크: Realtime + RLS 조합 동작 확인** (구독이 RLS를 타는 방식 검증 — 알려진 함정 영역, 실패 시 broadcast 채널 + 서버 검증으로 대체).
+- **모더레이션 (4주차 필수 포함)**: 메시지 신고(`message_reports` 테이블: message_id, reporter, reason, status) + 방 관리자/교역자의 메시지 소프트 삭제 + 멤버 강퇴. 미성년 부서(교회학교) 방은 부서장·교역자가 항상 멤버로 포함되는 정책(자동 참여 유지, 나가기 불가). 교회는 분쟁 민감도가 높아 운영 도구가 도입 성패를 가름.
+- 알림 fan-out 성능: 전 교인 공지 시 `notifications` 대량 INSERT — **배치 INSERT(단일 statement)** 로 처리하고, 1천 명 초과 교회는 Edge Function에서 청크 분할. 읽기 시점 fan-out(공지는 1 row, 읽음만 개인화)은 v2 최적화 후보로 기록.
 - 모듈 등록: `registry.ts`에 `rooms` 추가, `web/src/app/m/rooms/` Board 컴포넌트.
 
 ## 4. 연합 참여 기반 (루트 Phase 0/1 이식분)
@@ -72,6 +74,7 @@ create table mod_rooms.reading_progress (     -- bookclub 전용
 - `public.outbox_events` (event_id uuid, event_type, payload jsonb, user_ref, status, attempts, next_retry_at) + 발송 워커(Edge Function cron).
 - webhook 수신: `web/src/app/api/hooks/havruta/route.ts` — HMAC 검증 → 동의 확인 → kind별 처리(교인카드 타임라인 적재, notifications 생성). 검증 실패 시 401 + audit_log.
 - 계정 연결: `user_havruta_links(user_id, havruta_user_id, linked_at)` + 로그인 후 연결 배너.
+- **member↔user 매핑 (루트 detail_goal §11 "교인≠계정")**: 수신 이벤트 해석은 havruta_user_id → user → member 순. member 미연결 계정의 이벤트는 `pending_events`로 보류 후 교적 연결 시 반영. 계정 없는 교인은 연합 이벤트 대상 아님 (교인카드 자체 기록만) — 루트 D13.
 - 교인카드 타임라인: 기존 교적 화면에 `growth_timeline` 뷰 (수료·완독·진단 등 ecosystem 이벤트 + 자체 mod_training 수료 통합 표시, 출처 앱 표기).
 - manna 헌금 연동: `offering.recorded` 수신 → 동의 ON 교인의 mod_giving 기록과 대사(금액 등급만, 원본 금액은 manna 소유 — 루트 개인정보 원칙).
 
