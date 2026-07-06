@@ -8,7 +8,7 @@
  */
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buildNav, type NavSection, type NavCtx } from "@/modules/registry";
 import type { AppRole } from "@/lib/roles";
@@ -16,6 +16,7 @@ import type { AppRole } from "@/lib/roles";
 export default function AppHeader({ role, title }: { role: AppRole; title: string }) {
   const supabase = useMemo(() => createClient(), []);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [nav, setNav] = useState<NavSection[]>([]);
   const [churchName, setChurchName] = useState("");
@@ -74,12 +75,32 @@ export default function AppHeader({ role, title }: { role: AppRole; title: strin
               <div className="flex flex-col gap-0.5">
                 {sec.items.map((item) =>
                   item.state === "visible" ? (
-                    <Link key={item.key} href={item.href} data-nav={item.key} data-nav-state="visible"
-                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg font-bold text-[15px] ${
-                            pathname.startsWith(item.href) && item.href !== "/home" || pathname === item.href
-                              ? "bg-white/15" : "opacity-75 hover:opacity-100 hover:bg-white/5"}`}>
-                      <span>{item.icon}</span>{item.label}
-                    </Link>
+                    <div key={item.key}>
+                      <Link href={item.href} data-nav={item.key} data-nav-state="visible"
+                            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg font-bold text-[15px] ${
+                              pathname.startsWith(item.href) && item.href !== "/home" || pathname === item.href
+                                ? "bg-white/15" : "opacity-75 hover:opacity-100 hover:bg-white/5"}`}>
+                        <span>{item.icon}</span>{item.label}
+                      </Link>
+                      {item.sub && pathname.startsWith(item.href.split("?")[0]) && (
+                        <div className="ml-6 mt-0.5 flex flex-col gap-0.5 border-l border-white/15 pl-2.5">
+                          {item.sub.map((su) => {
+                            const [suPath, suQuery] = su.href.split("?");
+                            const suTab = new URLSearchParams(suQuery ?? "").get("tab");
+                            const curTab = searchParams.get("tab") ?? "overview";
+                            const isActive = suPath === pathname && (suTab ? curTab === suTab : true);
+                            return (
+                              <Link key={su.key} href={su.href} data-nav={su.key}
+                                    data-nav-state={isActive ? "active" : "visible"}
+                                    className={`px-2.5 py-1.5 rounded-md text-[13.5px] font-bold ${
+                                      isActive ? "bg-white/15" : "opacity-60 hover:opacity-100 hover:bg-white/5"}`}>
+                                {su.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <button key={item.key} data-nav={item.key} data-nav-state="disabled"
                             onClick={() => setLocked(item.label)}

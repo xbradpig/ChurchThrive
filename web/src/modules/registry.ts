@@ -92,7 +92,8 @@ export const getModule = (key: string) => MODULES.find((m) => m.key === key);
    누적 스택: 상위 등급이 하위 메뉴를 잃지 않음 (D1) */
 
 export type NavState = "visible" | "disabled" | "hidden";
-export type NavItem = { key: string; label: string; icon: string; href: string; state: NavState };
+export type NavSubItem = { key: string; label: string; href: string };
+export type NavItem = { key: string; label: string; icon: string; href: string; state: NavState; sub?: NavSubItem[] };
 export type NavSection = { group: string; items: NavItem[] };
 
 export type NavCtx = {
@@ -136,7 +137,15 @@ export function buildNav(ctx: NavCtx): NavSection[] {
     // 자격 존재·미보유 → disabled (승급 동선): 담당자·부서담당자에게 잠금 표시
     { key: "church", label: "교회 관리", icon: "🏛", href: "/church",
       state: isChurchStaff ? "visible"
-        : (role === "dept_leader" || role === "checker" || Object.keys(grants).length > 0) ? "disabled" : "hidden" },
+        : (role === "dept_leader" || role === "checker" || Object.keys(grants).length > 0) ? "disabled" : "hidden",
+      sub: isChurchStaff ? [
+        { key: "church-overview", label: "현황", href: "/church?tab=overview" },
+        { key: "church-absentees", label: "미출석", href: "/church?tab=absentees" },
+        { key: "church-permissions", label: "권한·담당자", href: "/church?tab=permissions" },
+        { key: "church-events", label: "이벤트", href: "/church?tab=events" },
+        { key: "church-import", label: "교인 일괄 등록", href: "/church/import" },
+        { key: "church-export", label: "내보내기", href: "/church?tab=export" },
+      ] : undefined },
     { key: "platform", label: "시스템 관리", icon: "🛠", href: "/platform",
       state: isPlatformAdmin ? "visible" : role === "superadmin" ? "disabled" : "hidden" },
   ];

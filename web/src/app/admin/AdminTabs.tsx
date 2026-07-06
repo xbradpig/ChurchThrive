@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppRole } from "@/lib/roles";
@@ -18,14 +19,19 @@ const TABS = [
 type TabKey = (typeof TABS)[number]["key"];
 
 export default function AdminTabs({ role }: { role: AppRole }) {
-  const [tab, setTab] = useState<TabKey>("overview");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlTab = (searchParams.get("tab") as TabKey | null) ?? "overview";
+  const [tab, setTabState] = useState<TabKey>(urlTab);
+  useEffect(() => { setTabState(urlTab); }, [urlTab]);   // 사이드 네비 클릭 반영
+  const setTab = (t: TabKey) => { setTabState(t); router.replace(`/church?tab=${t}`, { scroll: false }); };
   const visibleTabs = role === "dept_leader"
     ? TABS.filter((t) => ["overview", "absentees"].includes(t.key))
     : TABS;
 
   return (
     <main className="max-w-3xl mx-auto p-4 flex flex-col gap-4">
-      <div className="flex gap-1.5 overflow-x-auto">
+      <div className="flex gap-1.5 overflow-x-auto md:hidden">
         {visibleTabs.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`chosung-chip !min-w-fit !px-4 ${tab === t.key ? "active" : ""}`}>
