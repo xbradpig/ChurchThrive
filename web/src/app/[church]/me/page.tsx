@@ -5,6 +5,8 @@ import MemberCard from "@/components/MemberCard";
 import ConsentPanel from "./ConsentPanel";
 import SelfCheckin from "./SelfCheckin";
 import MyQR from "./MyQR";
+import RegisterCard from "./RegisterCard";
+import type { EditRequest } from "@/components/MemberCard";
 
 export default async function MePage() {
   const supabase = await createClient();
@@ -14,6 +16,9 @@ export default async function MePage() {
   const card = myMemberId
     ? (await supabase.rpc("get_member_card", { p_member_id: myMemberId })).data
     : null;
+  const editRequest = myMemberId
+    ? ((await supabase.rpc("my_edit_request")).data as EditRequest[] | null)?.[0] ?? null
+    : null;
 
   const { data: events } = await supabase
     .from("events").select("id, name").eq("active", true).order("sort_order");
@@ -22,13 +27,11 @@ export default async function MePage() {
     <AppFrame title="내 교적" isStaff={role !== "member"}>
       <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
         {!card ? (
-          <div className="card p-8 text-center text-[var(--text-soft)]">
-            아직 교적이 연결되지 않았습니다.<br />교회 사무실에 문의해주세요.
-          </div>
+          <RegisterCard />
         ) : (
           <>
             <SelfCheckin events={events ?? []} />
-            <MemberCard card={card} editable />
+            <MemberCard card={card} editable editRequest={editRequest} />
             <MyQR memberId={myMemberId} name={`${card.name}${card.name_suffix ?? ""}`} />
             <ConsentPanel memberId={myMemberId} />
           </>

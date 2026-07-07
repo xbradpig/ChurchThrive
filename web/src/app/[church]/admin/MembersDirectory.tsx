@@ -14,6 +14,15 @@ type Row = {
   departments: Dept[]; birthday: string | null;
 };
 type JoinReq = { id: string; applicant_name: string; email: string; note: string | null; requested_at: string };
+type EditReq = {
+  id: string; member_id: string; member_name: string;
+  changes: Record<string, string | null>; current: Record<string, string | null>;
+  note: string | null; requested_at: string;
+};
+
+const EDIT_FIELD_LABEL: Record<string, string> = {
+  name: "이름", phone: "연락처", birthday: "생년월일", address: "주소", family_note: "가족",
+};
 
 const STATUS_LABEL: Record<string, string> = {
   active: "활동", inactive: "장기결석", moved: "전출", deceased: "소천",
@@ -34,6 +43,7 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [depts, setDepts] = useState<Dept[]>([]);
   const [joinReqs, setJoinReqs] = useState<JoinReq[]>([]);
+  const [editReqs, setEditReqs] = useState<EditReq[]>([]);
   const [q, setQ] = useState("");
   const [deptF, setDeptF] = useState("");
   const [statusF, setStatusF] = useState("");
@@ -41,13 +51,14 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
   const [loaded, setLoaded] = useState(false);
 
   const load = useCallback(async () => {
-    const [{ data: m }, { data: d }, { data: j }] = await Promise.all([
+    const [{ data: m }, { data: d }, { data: j }, { data: er }] = await Promise.all([
       supabase.rpc("admin_list_members", {
         p_search: q || null, p_dept: deptF || null, p_status: statusF || null }),
       supabase.rpc("admin_list_departments"),
       supabase.rpc("admin_list_join_requests"),
+      supabase.rpc("member_edit_requests_list"),
     ]);
-    setRows(m ?? []); setDepts(d ?? []); setJoinReqs(j ?? []); setLoaded(true);
+    setRows(m ?? []); setDepts(d ?? []); setJoinReqs(j ?? []); setEditReqs(er ?? []); setLoaded(true);
   }, [supabase, q, deptF, statusF]);
   useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
 
@@ -71,6 +82,20 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
     load();
   }
 
+  async function decideEdit(r: EditReq, ok: boolean) {
+    const diffText = Object.entries(r.changes)
+      .map(([k, v]) => `${EDIT_FIELD_LABEL[k] ?? k}: ${r.current[k] ?? "—"} → ${v ?? "삭제"}`).join("\n");
+    if (!(await confirm({
+      title: ok ? `${r.member_name} 님 교적 수정 승인` : "수정 요청 반려",
+      body: diffText + (r.note ? `\n메모: ${r.note}` : ""),
+      danger: !ok, confirmLabel: ok ? "승인 · 반영" : "반려",
+    }))) return;
+    const { error } = await supabase.rpc("member_edit_decide", { p_id: r.id, p_approve: ok, p_note: null });
+    if (error) return toast("error", error.message);
+    toast("success", ok ? "교적에 반영했습니다." : "요청을 반려했습니다.");
+    load();
+  }
+
   const active = rows.filter((r) => r.status === "active").length;
   const joined = rows.filter((r) => r.joined).length;
 
@@ -88,6 +113,32 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
                 <button className="btn btn-positive !min-h-9 text-sm" onClick={() => decideJoin(r, true)}>승인</button>
                 <button className="btn btn-danger-soft !min-h-9 text-sm" onClick={() => decideJoin(r, false)}>거절</button>
               </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 교적 수정 요청 큐 (member-card-self-service W3) */}
+      {editReqs.length > 0 && (
+        <div className="card p-4" style={{ borderColor: "var(--color-auto)" }} data-widget="edit-request-queue">
+          <b style={{ color: "var(--color-auto)" }}>📇 교적 수정 요청 {editReqs.length}건</b>
+          {editReqs.map((r) => (
+            <div key={r.id} className="py-2 border-t border-[var(--line)] mt-2 flex flex-col gap-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <b>{r.member_name}</b>
+                {r.note && <span className="text-sm text-[var(--text-soft)]">“{r.note}”</span>}
+                <span className="ml-auto flex gap-2">
+                  <button className="btn btn-positive !min-h-9 text-sm" onClick={() => decideEdit(r, true)}>승인</button>
+                  <button className="btn btn-danger-soft !min-h-9 text-sm" onClick={() => decideEdit(r, false)}>반려</button>
+                </span>
+              </div>
+              <div className="text-sm text-[var(--text-soft)] flex flex-col gap-0.5">
+                {Object.entries(r.changes).map(([k, v]) => (
+                  <span key={k}>
+                    {EDIT_FIELD_LABEL[k] ?? k}: <s>{r.current[k] ?? "—"}</s> → <b className="text-[var(--text)]">{v ?? "삭제"}</b>
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
         </div>

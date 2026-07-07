@@ -90,6 +90,13 @@ export const MODULES: ModuleDef[] = [
     home: "/m/bulletin", memberVisible: true,
     scopes: ["주보 (읽기·쓰기)"], priceLabel: "무료 (파일럿)",
   },
+  {
+    key: "note", name: "말씀노트", icon: "📝",
+    tagline: "주일 말씀을 나만의 기록으로",
+    description: "설교를 들으며 노트를 남깁니다. 내용은 본인만 볼 수 있고, 교회에는 작성 여부만 통계로 집계됩니다.",
+    home: "/m/note", memberVisible: true,
+    scopes: ["노트 (본인 한정 읽기·쓰기)", "작성 여부 (익명 집계)"], priceLabel: "무료 (파일럿)",
+  },
 ];
 
 export const getModule = (key: string) => MODULES.find((m) => m.key === key);
@@ -108,6 +115,7 @@ export type NavCtx = {
   grants: Record<string, string>;          // module → level
   modules: Set<string>;                    // enabled modules
   isPlatformAdmin: boolean;
+  canGiving?: boolean;                     // 재정 열람 자격 (can_view_giving RPC — 담임목사·grant·superadmin)
   base?: string;                           // 교회 경로 접두 "/{slug}" (church-url-tenancy)
 };
 
@@ -147,12 +155,23 @@ export function buildNav(ctx: NavCtx): NavSection[] {
   }
 
   const ops: NavItem[] = [
+    // 교회 현황 — 통계 인사이트 허브 (church-stats-upgrade). 재정은 열람 자격자에게만 노출
+    { key: "stats", label: "교회 현황", icon: "📊", href: `${b}/stats`,
+      state: s(isChurchStaff || role === "dept_leader" || role === "checker"),
+      sub: (isChurchStaff || role === "dept_leader") ? [
+        { key: "stats-overview", label: "오버뷰", href: `${b}/stats` },
+        { key: "stats-attendance", label: "출석 현황", href: `${b}/stats/attendance` },
+        ...(modules.has("verse") ? [{ key: "stats-verse", label: "말씀 암송", href: `${b}/stats/verse` }] : []),
+        ...(modules.has("note") ? [{ key: "stats-notes", label: "말씀노트", href: `${b}/stats/notes` }] : []),
+        ...(modules.has("giving") && ctx.canGiving
+          ? [{ key: "stats-giving", label: "재정 현황", href: `${b}/stats/giving` }] : []),
+        { key: "stats-members", label: "교적 현황", href: `${b}/stats/members` },
+      ] : undefined },
     // 자격 존재·미보유 → disabled (승급 동선): 담당자·부서담당자에게 잠금 표시
     { key: "church", label: "교회 관리", icon: "🏛", href: `${b}/church`,
       state: isChurchStaff ? "visible"
         : (role === "dept_leader" || role === "checker" || Object.keys(grants).length > 0) ? "disabled" : "hidden",
       sub: isChurchStaff ? [
-        { key: "church-overview", label: "현황", href: `${b}/church?tab=overview` },
         { key: "church-members", label: "교인 명부", href: `${b}/church?tab=members` },
         { key: "church-departments", label: "부서 관리", href: `${b}/church?tab=departments` },
         { key: "church-absentees", label: "미출석·케어", href: `${b}/church?tab=absentees` },

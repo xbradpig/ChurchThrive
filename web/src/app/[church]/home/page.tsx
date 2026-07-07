@@ -15,6 +15,7 @@ type Feed = {
   join_pending: number | null;
   selfcheck_pending: number | null;
   visit_requested: number | null;
+  edit_pending: number | null;
 };
 
 const DOW = ["일", "월", "화", "수", "목", "금", "토"];
@@ -59,6 +60,7 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
   if ((feed.join_pending ?? 0) > 0) todos.push({ icon: "🙋", label: "가입 신청 승인", href: `${base}/church?tab=members`, n: feed.join_pending! });
   if ((feed.selfcheck_pending ?? 0) > 0) todos.push({ icon: "✋", label: "출석 본인 인증 확인", href: `${base}/check`, n: feed.selfcheck_pending! });
   if ((feed.visit_requested ?? 0) > 0) todos.push({ icon: "🏠", label: "심방 요청 배정", href: `${base}/m/visitation`, n: feed.visit_requested! });
+  if ((feed.edit_pending ?? 0) > 0) todos.push({ icon: "📇", label: "교적 수정 요청 승인", href: `${base}/church?tab=members`, n: feed.edit_pending! });
 
   return (
     <AppFrame title="홈" isStaff={isStaffRole} wide>

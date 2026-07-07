@@ -31,17 +31,19 @@ export default function AppHeader({ role, title }: { role: AppRole; title: strin
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const [{ data: mods }, { data: grants }, { data: church }, { data: isPa }] = await Promise.all([
+      const [{ data: mods }, { data: grants }, { data: church }, { data: isPa }, { data: canGiving }] = await Promise.all([
         supabase.from("church_modules").select("module, enabled"),
         supabase.from("module_grants").select("module, level").eq("user_id", user.id),
         supabase.from("churches").select("name").limit(1).maybeSingle(),
         supabase.rpc("is_platform_admin"),
+        supabase.rpc("can_view_giving"),
       ]);
       const ctx: NavCtx = {
         role,
         grants: Object.fromEntries((grants ?? []).map((g) => [g.module, g.level])),
         modules: new Set((mods ?? []).filter((m) => m.enabled).map((m) => m.module)),
         isPlatformAdmin: !!isPa,
+        canGiving: !!canGiving,
         base,
       };
       setNav(buildNav(ctx));

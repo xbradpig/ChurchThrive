@@ -5,9 +5,14 @@ import AppHeader from "@/components/AppHeader";
 import AdminTabs from "../admin/AdminTabs";
 
 /** 교회 관리 (ui-upgrade U3 — 기존 /admin 승격, /admin은 리다이렉트 유지) */
-export default async function ChurchAdminPage({ params }: { params: Promise<{ church: string }> }) {
+export default async function ChurchAdminPage({ params, searchParams }: {
+  params: Promise<{ church: string }>;
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const { church } = await params;
+  const { tab } = await searchParams;
   const base = `/${church}`; // 교회 경로 접두 (church-url-tenancy)
+  if (tab === "overview") redirect(`${base}/stats`); // 현황 탭 → 교회 현황으로 승격 (church-stats-upgrade)
   const supabase = await createClient();
   const { data: role } = await supabase.rpc("my_role");
   if (!role || role === "member" || role === "checker") redirect(`${base}/home`);

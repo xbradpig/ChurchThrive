@@ -63,4 +63,79 @@ for (const s of settings ?? []) {
     }
   }
 }
+/* ===== 주간 현황 다이제스트 (kind: stats_digest — church-stats-upgrade §2-④) ===== */
+const { data: statSettings } = await svc.from("notification_settings")
+  .select("user_id, send_dow, send_time, enabled")
+  .eq("enabled", true).eq("kind", "stats_digest").eq("send_dow", dow);
+
+for (const s of statSettings ?? []) {
+  const [h, m] = s.send_time.split(":").map(Number);
+  if (Math.abs(h * 60 + m - nowMin) > 30) continue;
+
+  const { data: d, error } = await svc.rpc("stats_digest_for", { p_user_id: s.user_id });
+  if (error || !d) { if (error) console.error("[stats-digest] 실패:", error.message); continue; }
+
+  const parts = [`주일 출석 ${d.sunday_att}명`, `새가족 ${d.new_families}명`, `3주 미출석 ${d.absentees_3w}명`];
+  if (d.giving_week != null) parts.push(`주간 헌금 ${Number(d.giving_week).toLocaleString("ko-KR")}원`); // 열람 자격자만
+
+  const { data: subs } = await svc.from("push_subscriptions")
+    .select("endpoint, keys_json").eq("user_id", s.user_id);
+  const payload = JSON.stringify({ title: "📊 주간 교회 현황", body: parts.join(" · "), url: "/stats" });
+
+  for (const sub of subs ?? []) {
+    try {
+      await webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys_json }, payload);
+      sent++;
+    } catch (e) {
+      if (e.statusCode === 404 || e.statusCode === 410) {
+        await svc.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+      }
+    }
+  }
+}
+
+/* ===== 교적 수정 요청 즉시 통지 (member-card-self-service W5) =====
+   매시 실행 시 미통지(pending & notified_at null) 요청을 교회별 집계 →
+   해당 교회 승인권자(superadmin/pastor)에게 발송. 발송 성공 후에만 notified_at 마킹
+   (실패 시 null 유지 → 다음 크론 자동 재시도) */
+const { data: editReqs } = await svc.from("member_edit_requests")
+  .select("id, church_id").eq("status", "pending").is("notified_at", null);
+
+const byChurch = new Map();
+for (const r of editReqs ?? []) {
+  if (!byChurch.has(r.church_id)) byChurch.set(r.church_id, []);
+  byChurch.get(r.church_id).push(r.id);
+}
+
+for (const [churchId, ids] of byChurch) {
+  const { data: approvers } = await svc.from("church_roles")
+    .select("user_id, role").eq("church_id", churchId).in("role", ["superadmin", "pastor"]);
+  const userIds = (approvers ?? []).map((a) => a.user_id);
+  if (!userIds.length) continue;
+
+  const { data: subs } = await svc.from("push_subscriptions")
+    .select("endpoint, keys_json").in("user_id", userIds);
+  const payload = JSON.stringify({
+    title: `📇 교적 수정 요청 ${ids.length}건`,
+    body: "교인이 교적 수정을 요청했습니다. 확인 후 승인해주세요.",
+    url: "/church?tab=members",
+  });
+
+  let delivered = 0;
+  for (const sub of subs ?? []) {
+    try {
+      await webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys_json }, payload);
+      sent++; delivered++;
+    } catch (e) {
+      if (e.statusCode === 404 || e.statusCode === 410) {
+        await svc.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+      }
+    }
+  }
+  // 구독자가 없으면 마킹하지 않음 — 구독 등록 후 다음 크론에서 통지
+  if (delivered > 0) {
+    await svc.from("member_edit_requests").update({ notified_at: new Date().toISOString() }).in("id", ids);
+  }
+}
+
 console.log(`[digest] ${new Date().toISOString()} — ${sent}건 발송`);

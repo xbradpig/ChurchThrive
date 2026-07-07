@@ -5,7 +5,6 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppRole } from "@/lib/roles";
-import TrendChart, { type TrendPoint } from "./TrendChart";
 import NotificationSetup from "./NotificationSetup";
 import StaffManager from "./StaffManager";
 import MembersDirectory from "./MembersDirectory";
@@ -14,7 +13,7 @@ import ChurchSettings from "./ChurchSettings";
 import { notify } from "@/components/ui/AppDialog";
 
 const TABS = [
-  { key: "overview", label: "현황" },
+  // 현황 탭은 /stats(교회 현황)로 승격 — church-stats-upgrade
   { key: "members", label: "교인 명부" },
   { key: "departments", label: "부서" },
   { key: "absentees", label: "미출석" },
@@ -30,12 +29,12 @@ export default function AdminTabs({ role }: { role: AppRole }) {
   const base = routeParams.church ? `/${routeParams.church}` : ""; // 교회 경로 접두 (church-url-tenancy)
   const router = useRouter();
   const searchParams = useSearchParams();
-  const urlTab = (searchParams.get("tab") as TabKey | null) ?? "overview";
+  const urlTab = (searchParams.get("tab") as TabKey | null) ?? "members";
   const [tab, setTabState] = useState<TabKey>(urlTab);
   useEffect(() => { setTabState(urlTab); }, [urlTab]);   // 사이드 네비 클릭 반영
   const setTab = (t: TabKey) => { setTabState(t); router.replace(`${base}/church?tab=${t}`, { scroll: false }); };
   const visibleTabs = role === "dept_leader"
-    ? TABS.filter((t) => ["overview", "members", "absentees"].includes(t.key))
+    ? TABS.filter((t) => ["members", "absentees"].includes(t.key))
     : TABS;
 
   return (
@@ -48,50 +47,14 @@ export default function AdminTabs({ role }: { role: AppRole }) {
           </button>
         ))}
       </div>
-      {tab === "overview" && <Overview />}
-      {tab === "members" && <MembersDirectory canEdit={role === "superadmin" || role === "pastor"} />}
+      {tab === "members" && (<><JoinQueue /><MembersDirectory canEdit={role === "superadmin" || role === "pastor"} /></>)}
       {tab === "departments" && <DepartmentsPanel />}
       {tab === "settings" && <ChurchSettings canEdit={role === "superadmin"} />}
       {tab === "absentees" && (<><NotificationSetup /><Absentees /></>)}
-      {tab === "permissions" && (<><StaffManager /><ModuleGrants /><Permissions /></>)}
+      {tab === "permissions" && (<><StaffManager /><LeaderQueue /><ModuleGrants /><Permissions /></>)}
       {tab === "events" && <EventsAdmin />}
       {tab === "export" && <ExportPanel />}
     </main>
-  );
-}
-
-/* ---------- 현황 ---------- */
-function Overview() {
-  const supabase = useMemo(() => createClient(), []);
-  const [trend, setTrend] = useState<TrendPoint[]>([]);
-  const [stats, setStats] = useState({ total: 0, todayCnt: 0, pendingLeaders: 0 });
-
-  useEffect(() => {
-    (async () => {
-      const [{ data: t }, { count: total }, { data: today }, { count: pending }] = await Promise.all([
-        supabase.rpc("attendance_trend", { p_weeks: 8 }),
-        supabase.from("members").select("*", { count: "exact", head: true }).eq("status", "active"),
-        supabase.from("attendances").select("id").eq("event_date", new Date().toISOString().slice(0, 10)),
-        supabase.from("department_leaders").select("*", { count: "exact", head: true }).eq("status", "pending"),
-      ]);
-      setTrend((t ?? []) as TrendPoint[]);
-      setStats({ total: total ?? 0, todayCnt: today?.length ?? 0, pendingLeaders: pending ?? 0 });
-    })();
-  }, [supabase]);
-
-  const eventNames = useMemo(() => [...new Set(trend.map((t) => t.event_name))], [trend]);
-
-  return (
-    <>
-      <div className="grid grid-cols-3 gap-3">
-        <Stat label="등록 교인" value={`${stats.total}명`} />
-        <Stat label="오늘 출석" value={`${stats.todayCnt}명`} accent />
-        <Stat label="담당자 승인 대기" value={`${stats.pendingLeaders}건`} warn={stats.pendingLeaders > 0} />
-      </div>
-      <TrendChart data={trend} events={eventNames} />
-      <JoinQueue />
-      <LeaderQueue />
-    </>
   );
 }
 
@@ -141,18 +104,6 @@ function JoinQueue() {
           <button className="btn btn-danger-soft !min-h-9 text-sm" onClick={() => decide(r.id, false)}>거절</button>
         </div>
       ))}
-    </div>
-  );
-}
-
-function Stat({ label, value, accent, warn }: { label: string; value: string; accent?: boolean; warn?: boolean }) {
-  return (
-    <div className="card p-4 text-center">
-      <p className="text-sm font-bold text-[var(--text-soft)]">{label}</p>
-      <p className="text-2xl font-black mt-1"
-         style={{ color: warn ? "var(--color-caution)" : accent ? "var(--color-positive)" : "var(--text)" }}>
-        {value}
-      </p>
     </div>
   );
 }
