@@ -101,54 +101,56 @@ export type NavCtx = {
   grants: Record<string, string>;          // module → level
   modules: Set<string>;                    // enabled modules
   isPlatformAdmin: boolean;
+  base?: string;                           // 교회 경로 접두 "/{slug}" (church-url-tenancy)
 };
 
 export function buildNav(ctx: NavCtx): NavSection[] {
   const { role, grants, modules, isPlatformAdmin } = ctx;
+  const b = ctx.base ?? "";                // 테넌트 라우트만 접두 — /platform은 루트 유지
   const isChurchStaff = role === "superadmin" || role === "pastor";
   const attOp = isChurchStaff || role === "dept_leader" || role === "checker" || !!grants["attendance"];
   const s = (cond: boolean, elseState: NavState = "hidden"): NavState => (cond ? "visible" : elseState);
 
   const my: NavItem[] = [
-    { key: "home", label: "홈", icon: "🏠", href: "/home", state: "visible" },
-    { key: "me", label: "내 교적", icon: "📇", href: "/me", state: "visible" },
+    { key: "home", label: "홈", icon: "🏠", href: `${b}/home`, state: "visible" },
+    { key: "me", label: "내 교적", icon: "📇", href: `${b}/me`, state: "visible" },
   ];
   // 설치된 교인용 모듈은 자동으로 내 공간에 (registry 단일 소스)
   for (const m of MODULES) {
     if (!m.core && m.memberVisible && modules.has(m.key)) {
-      my.push({ key: m.key, label: m.name, icon: m.icon, href: m.home, state: "visible" });
+      my.push({ key: m.key, label: m.name, icon: m.icon, href: `${b}${m.home}`, state: "visible" });
     }
   }
 
   const work: NavItem[] = [];
   if (modules.has("attendance")) {
-    work.push({ key: "check", label: "출석 체크", icon: "✅", href: "/check", state: s(attOp) });
-    work.push({ key: "scan", label: "QR 스캔", icon: "📷", href: "/scan", state: s(attOp) });
-    work.push({ key: "invites", label: "교인 초대", icon: "📲", href: "/invites", state: s(attOp) });
+    work.push({ key: "check", label: "출석 체크", icon: "✅", href: `${b}/check`, state: s(attOp) });
+    work.push({ key: "scan", label: "QR 스캔", icon: "📷", href: `${b}/scan`, state: s(attOp) });
+    work.push({ key: "invites", label: "교인 초대", icon: "📲", href: `${b}/invites`, state: s(attOp) });
   }
   if (modules.has("verse") && (isChurchStaff || grants["verse"] === "admin" || grants["verse"] === "manager")) {
-    work.push({ key: "verse-admin", label: "말씀 암송 관리", icon: "📖", href: "/m/verse/admin", state: "visible" });
+    work.push({ key: "verse-admin", label: "말씀 암송 관리", icon: "📖", href: `${b}/m/verse/admin`, state: "visible" });
   }
   if (modules.has("newcomer") && (isChurchStaff || !!grants["newcomer"])) {
-    work.push({ key: "newcomer", label: "새가족 관리", icon: "🌱", href: "/m/newcomer", state: "visible" });
+    work.push({ key: "newcomer", label: "새가족 관리", icon: "🌱", href: `${b}/m/newcomer`, state: "visible" });
   }
 
   const ops: NavItem[] = [
     // 자격 존재·미보유 → disabled (승급 동선): 담당자·부서담당자에게 잠금 표시
-    { key: "church", label: "교회 관리", icon: "🏛", href: "/church",
+    { key: "church", label: "교회 관리", icon: "🏛", href: `${b}/church`,
       state: isChurchStaff ? "visible"
         : (role === "dept_leader" || role === "checker" || Object.keys(grants).length > 0) ? "disabled" : "hidden",
       sub: isChurchStaff ? [
-        { key: "church-overview", label: "현황", href: "/church?tab=overview" },
-        { key: "church-members", label: "교인 명부", href: "/church?tab=members" },
-        { key: "church-departments", label: "부서 관리", href: "/church?tab=departments" },
-        { key: "church-absentees", label: "미출석·케어", href: "/church?tab=absentees" },
-        { key: "church-permissions", label: "권한·담당자", href: "/church?tab=permissions" },
-        { key: "church-events", label: "이벤트", href: "/church?tab=events" },
-        { key: "church-store", label: "모듈 스토어", href: "/store" },
-        { key: "church-import", label: "교인 일괄 등록", href: "/church/import" },
-        { key: "church-export", label: "내보내기", href: "/church?tab=export" },
-        { key: "church-settings", label: "교회 설정", href: "/church?tab=settings" },
+        { key: "church-overview", label: "현황", href: `${b}/church?tab=overview` },
+        { key: "church-members", label: "교인 명부", href: `${b}/church?tab=members` },
+        { key: "church-departments", label: "부서 관리", href: `${b}/church?tab=departments` },
+        { key: "church-absentees", label: "미출석·케어", href: `${b}/church?tab=absentees` },
+        { key: "church-permissions", label: "권한·담당자", href: `${b}/church?tab=permissions` },
+        { key: "church-events", label: "이벤트", href: `${b}/church?tab=events` },
+        { key: "church-store", label: "모듈 스토어", href: `${b}/store` },
+        { key: "church-import", label: "교인 일괄 등록", href: `${b}/church/import` },
+        { key: "church-export", label: "내보내기", href: `${b}/church?tab=export` },
+        { key: "church-settings", label: "교회 설정", href: `${b}/church?tab=settings` },
       ] : undefined },
     { key: "platform", label: "시스템 관리", icon: "🛠", href: "/platform",
       state: isPlatformAdmin ? "visible" : role === "superadmin" ? "disabled" : "hidden" },

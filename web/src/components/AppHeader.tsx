@@ -8,7 +8,7 @@
  */
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import FontScale from "@/components/ui/FontScale";
 import BottomNav from "@/components/ui/BottomNav";
 import GlobalSearch from "@/components/ui/GlobalSearch";
@@ -18,6 +18,8 @@ import type { AppRole } from "@/lib/roles";
 
 export default function AppHeader({ role, title }: { role: AppRole; title: string }) {
   const supabase = useMemo(() => createClient(), []);
+  const params = useParams<{ church?: string }>();
+  const base = params.church ? `/${params.church}` : ""; // 교회 경로 접두 (church-url-tenancy)
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -40,11 +42,12 @@ export default function AppHeader({ role, title }: { role: AppRole; title: strin
         grants: Object.fromEntries((grants ?? []).map((g) => [g.module, g.level])),
         modules: new Set((mods ?? []).filter((m) => m.enabled).map((m) => m.module)),
         isPlatformAdmin: !!isPa,
+        base,
       };
       setNav(buildNav(ctx));
       setChurchName(church?.name ?? "");
     })();
-  }, [supabase, role]);
+  }, [supabase, role, base]);
 
   async function logout() {
     await supabase.auth.signOut();
@@ -55,18 +58,18 @@ export default function AppHeader({ role, title }: { role: AppRole; title: strin
     <>
       {/* 모바일 상단 바 */}
       <header className="md:hidden flex items-center gap-3 px-4 py-3 bg-[var(--color-brand-900)] text-white">
-        <Link href="/home" className="flex items-center gap-2 mr-auto">
+        <Link href={`${base}/home`} className="flex items-center gap-2 mr-auto">
           <span className="text-[var(--color-accent)] font-black">✝</span>
           <h1 className="font-black text-lg">{title}</h1>
         </Link>
-        <Link href="/home" className="px-3 py-1.5 rounded-lg text-sm font-bold bg-white/10">홈</Link>
+        <Link href={`${base}/home`} className="px-3 py-1.5 rounded-lg text-sm font-bold bg-white/10">홈</Link>
         <button onClick={logout} className="px-3 py-1.5 rounded-lg text-sm font-bold opacity-60">나가기</button>
       </header>
 
       {/* 데스크톱 사이드바 */}
       <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-60 flex-col z-40 bg-[var(--color-brand-900)] text-white"
              data-testid="sidebar">
-        <Link href="/home" className="flex items-center gap-2 px-5 py-5">
+        <Link href={`${base}/home`} className="flex items-center gap-2 px-5 py-5">
           <span className="text-[var(--color-accent)] text-xl font-black">✝</span>
           <b className="text-lg">ChurchThrive</b>
         </Link>
@@ -85,7 +88,7 @@ export default function AppHeader({ role, title }: { role: AppRole; title: strin
                     <div key={item.key}>
                       <Link href={item.href} data-nav={item.key} data-nav-state="visible"
                             className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg font-bold text-[15px] ${
-                              pathname.startsWith(item.href) && item.href !== "/home" || pathname === item.href
+                              pathname.startsWith(item.href) && item.href !== `${base}/home` || pathname === item.href
                                 ? "bg-white/15" : "opacity-75 hover:opacity-100 hover:bg-white/5"}`}>
                         <span>{item.icon}</span>{item.label}
                       </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppRole } from "@/lib/roles";
@@ -26,12 +26,14 @@ const TABS = [
 type TabKey = (typeof TABS)[number]["key"];
 
 export default function AdminTabs({ role }: { role: AppRole }) {
+  const routeParams = useParams<{ church?: string }>();
+  const base = routeParams.church ? `/${routeParams.church}` : ""; // 교회 경로 접두 (church-url-tenancy)
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlTab = (searchParams.get("tab") as TabKey | null) ?? "overview";
   const [tab, setTabState] = useState<TabKey>(urlTab);
   useEffect(() => { setTabState(urlTab); }, [urlTab]);   // 사이드 네비 클릭 반영
-  const setTab = (t: TabKey) => { setTabState(t); router.replace(`/church?tab=${t}`, { scroll: false }); };
+  const setTab = (t: TabKey) => { setTabState(t); router.replace(`${base}/church?tab=${t}`, { scroll: false }); };
   const visibleTabs = role === "dept_leader"
     ? TABS.filter((t) => ["overview", "members", "absentees"].includes(t.key))
     : TABS;
@@ -192,6 +194,8 @@ function LeaderQueue() {
 
 /* ---------- 미출석 ---------- */
 function Absentees() {
+  const routeParams = useParams<{ church?: string }>();
+  const base = routeParams.church ? `/${routeParams.church}` : ""; // 교회 경로 접두 (church-url-tenancy)
   const supabase = useMemo(() => createClient(), []);
   const [weeks, setWeeks] = useState(2);
   const [rows, setRows] = useState<{ member_id: string; name: string; name_suffix: string; care_target: boolean; last_attended: string | null; weeks_absent: number }[]>([]);
@@ -212,7 +216,7 @@ function Absentees() {
       </div>
       <div className="flex flex-col">
         {careFirst.map((r) => (
-          <Link key={r.member_id} href={`/members/${r.member_id}`}
+          <Link key={r.member_id} href={`${base}/members/${r.member_id}`}
                 className="flex items-center gap-2 py-2.5 border-t border-[var(--line)] hover:bg-[var(--color-sand-100)] rounded-lg px-2 -mx-2">
             <b>{r.name}{r.name_suffix}</b>
             {r.care_target && (

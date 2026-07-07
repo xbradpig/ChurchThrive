@@ -42,7 +42,7 @@ export default function ChurchSettings({ canEdit }: { canEdit: boolean }) {
             {p.status === "active" ? "승인됨" : p.status}
           </span>
           <span className="text-xs text-[var(--text-soft)] ml-auto">
-            등록 {p.created_at.slice(0, 10)} · 주소 {p.slug}
+            등록 {p.created_at.slice(0, 10)} · 교회 주소 <b>/{p.slug}</b> (등록 시 확정 · 변경 불가)
           </span>
         </div>
         <label className="flex flex-col gap-1"><span className="text-sm font-bold">교회 이름</span>

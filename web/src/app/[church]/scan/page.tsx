@@ -4,10 +4,12 @@ import type { AppRole } from "@/lib/roles";
 import AppHeader from "@/components/AppHeader";
 import Scanner from "./Scanner";
 
-export default async function ScanPage() {
+export default async function ScanPage({ params }: { params: Promise<{ church: string }> }) {
+  const { church } = await params;
+  const base = `/${church}`; // 교회 경로 접두 (church-url-tenancy)
   const supabase = await createClient();
   const { data: role } = await supabase.rpc("my_role");
-  if (!role || role === "member") redirect("/me");
+  if (!role || role === "member") redirect(`${base}/me`);
 
   const { data: events } = await supabase
     .from("events").select("id, name").eq("active", true).order("sort_order");

@@ -1,12 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 /** 교회 검색(church_public 최소 공개 뷰) → 가입 신청 (P0-3) */
 export default function JoinPage() {
+  return (
+    <Suspense>
+      <JoinInner />
+    </Suspense>
+  );
+}
+
+function JoinInner() {
   const supabase = useMemo(() => createClient(), []);
+  const searchParams = useSearchParams();
   const [q, setQ] = useState("");
   const [results, setResults] = useState<{ id: string; name: string; slug: string }[]>([]);
   const [selected, setSelected] = useState<{ name: string; slug: string } | null>(null);
@@ -14,6 +24,15 @@ export default function JoinPage() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // /{slug} 접근 → 비소속 리다이렉트로 온 경우 해당 교회를 미리 선택 (church-url-tenancy)
+  const presetSlug = searchParams.get("church");
+  useEffect(() => {
+    if (!presetSlug || selected) return;
+    supabase.from("church_public").select("name, slug").eq("slug", presetSlug).maybeSingle()
+      .then(({ data }) => { if (data) setSelected(data); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presetSlug, supabase]);
 
   async function search() {
     const { data } = await supabase.from("church_public").select("id, name, slug")

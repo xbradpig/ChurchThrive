@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAppDialog } from "@/components/ui/AppDialog";
 import ListSkeleton from "@/components/ui/ListSkeleton";
@@ -26,6 +27,8 @@ const STATUS_COLOR: Record<string, [string, string]> = {
 
 /** 교인 명부 — 교회 관리의 중심축 (검색·필터·신규·상태·부서·가입 승인) */
 export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
+  const routeParams = useParams<{ church?: string }>();
+  const base = routeParams.church ? `/${routeParams.church}` : ""; // 교회 경로 접두 (church-url-tenancy)
   const supabase = useMemo(() => createClient(), []);
   const { confirm, toast } = useAppDialog();
   const [rows, setRows] = useState<Row[]>([]);
@@ -136,7 +139,7 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
               <span className="badge" style={{ background: STATUS_COLOR[r.status]?.[0], color: STATUS_COLOR[r.status]?.[1] }}>
                 {STATUS_LABEL[r.status] ?? r.status}
               </span>
-              <Link href={`/members/${r.id}`} className="btn btn-ghost !min-h-9 !px-2.5 text-sm">교적</Link>
+              <Link href={`${base}/members/${r.id}`} className="btn btn-ghost !min-h-9 !px-2.5 text-sm">교적</Link>
               {canEdit && (
                 <button className="btn btn-ghost !min-h-9 !px-2.5 text-sm" onClick={() => setEditing(r)}>수정</button>
               )}

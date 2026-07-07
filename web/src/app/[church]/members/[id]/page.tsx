@@ -5,11 +5,12 @@ import AppHeader from "@/components/AppHeader";
 import MemberCard from "@/components/MemberCard";
 import InviteButton from "@/components/InviteButton";
 
-export default async function MemberDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function MemberDetailPage({ params }: { params: Promise<{ church: string; id: string }> }) {
+  const { church, id } = await params;
+  const base = `/${church}`; // 교회 경로 접두 (church-url-tenancy)
   const supabase = await createClient();
   const { data: role } = await supabase.rpc("my_role");
-  if (!role || role === "member") redirect("/me");
+  if (!role || role === "member") redirect(`${base}/me`);
 
   const { data: card } = await supabase.rpc("get_member_card", { p_member_id: id });
 

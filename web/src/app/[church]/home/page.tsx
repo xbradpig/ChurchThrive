@@ -19,7 +19,9 @@ type Feed = {
 const DOW = ["일", "월", "화", "수", "목", "금", "토"];
 
 /** 웹 홈 = 3-Zone 대시보드 (web-home-proposal) · 모바일 = 동일 위젯 1열 (웹/앱 분리 원칙) */
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ church: string }> }) {
+  const { church } = await params;
+  const base = `/${church}`; // 교회 경로 접두 (church-url-tenancy)
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -50,9 +52,9 @@ export default async function HomePage() {
   const today = new Date();
   const dday = Math.max(0, Math.ceil((new Date(feed.next_sunday + "T00:00:00").getTime() - today.getTime()) / 864e5));
   const todos: { icon: string; label: string; href: string; n: number }[] = [];
-  if ((feed.join_pending ?? 0) > 0) todos.push({ icon: "🙋", label: "가입 신청 승인", href: "/church?tab=members", n: feed.join_pending! });
-  if ((feed.selfcheck_pending ?? 0) > 0) todos.push({ icon: "✋", label: "출석 본인 인증 확인", href: "/check", n: feed.selfcheck_pending! });
-  if ((feed.visit_requested ?? 0) > 0) todos.push({ icon: "🏠", label: "심방 요청 배정", href: "/m/visitation", n: feed.visit_requested! });
+  if ((feed.join_pending ?? 0) > 0) todos.push({ icon: "🙋", label: "가입 신청 승인", href: `${base}/church?tab=members`, n: feed.join_pending! });
+  if ((feed.selfcheck_pending ?? 0) > 0) todos.push({ icon: "✋", label: "출석 본인 인증 확인", href: `${base}/check`, n: feed.selfcheck_pending! });
+  if ((feed.visit_requested ?? 0) > 0) todos.push({ icon: "🏠", label: "심방 요청 배정", href: `${base}/m/visitation`, n: feed.visit_requested! });
 
   return (
     <AppFrame title="홈" isStaff={isStaffRole} wide>
@@ -68,7 +70,7 @@ export default async function HomePage() {
             {dday === 0 ? "오늘은 주일 ⛪" : `주일까지 D-${dday}`}
           </span>
           {currentVerse && (
-            <Link href="/m/verse" className="text-sm text-[var(--text-soft)] truncate min-w-0 flex-1 text-right hidden sm:block">
+            <Link href={`${base}/m/verse`} className="text-sm text-[var(--text-soft)] truncate min-w-0 flex-1 text-right hidden sm:block">
               📖 {currentVerse.reference} — &ldquo;{currentVerse.body.slice(0, 30)}…&rdquo;
             </Link>
           )}
@@ -111,7 +113,7 @@ export default async function HomePage() {
                     </p>
                   )) : <p className="text-sm text-[var(--text-soft)]">등록된 정기 모임이 없습니다.</p>}
                   {feed.bulletin && (
-                    <Link href="/m/bulletin" className="btn btn-ghost !min-h-9 text-sm mt-2">
+                    <Link href={`${base}/m/bulletin`} className="btn btn-ghost !min-h-9 text-sm mt-2">
                       📰 {feed.bulletin.title} 주보 보기
                     </Link>
                   )}
@@ -119,7 +121,7 @@ export default async function HomePage() {
                 <div>
                   <p className="text-xs font-black uppercase tracking-wider text-[var(--text-soft)] mb-1.5">공지</p>
                   {feed.notices?.length ? feed.notices.map((n) => (
-                    <Link key={n.id} href="/m/notice" className="flex items-center gap-2 py-1 text-[15px]">
+                    <Link key={n.id} href={`${base}/m/notice`} className="flex items-center gap-2 py-1 text-[15px]">
                       <span className="text-xs text-[var(--text-soft)] tabular">{n.created_at}</span>
                       <span className="font-bold truncate">{n.title}</span>
                     </Link>
@@ -130,7 +132,7 @@ export default async function HomePage() {
 
             {/* E. 사역 현황 (교역자·부서장·관리자) */}
             {absentees.data && (
-              <Link href="/church?tab=absentees" data-widget="absentee" className="card card-hover p-5 flex items-center gap-3">
+              <Link href={`${base}/church?tab=absentees`} data-widget="absentee" className="card card-hover p-5 flex items-center gap-3">
                 <span className="text-3xl">🔔</span>
                 <span>
                   <b>2주 이상 미출석 {absentees.data.length}명</b>
@@ -147,7 +149,7 @@ export default async function HomePage() {
 
             {/* B. 나의 신앙 */}
             {currentVerse && (
-              <Link href="/m/verse" data-widget="verse" className="card card-hover overflow-hidden">
+              <Link href={`${base}/m/verse`} data-widget="verse" className="card card-hover overflow-hidden">
                 <div className="px-5 py-3 text-white text-sm font-bold" style={{ background: "var(--color-brand-800)" }}>
                   📖 이번 주 암송 — {currentVerse.reference} {currentVerse.checked && "✓"}
                 </div>
@@ -170,7 +172,7 @@ export default async function HomePage() {
               ) : (
                 <p className="text-sm text-[var(--text-soft)] mt-1">아직 출석 기록이 없습니다.</p>
               )}
-              <Link href="/me" className="btn btn-ghost w-full mt-3 !min-h-10 text-sm">내 교적 · 내 QR</Link>
+              <Link href={`${base}/me`} className="btn btn-ghost w-full mt-3 !min-h-10 text-sm">내 교적 · 내 QR</Link>
             </div>
 
             {/* 연합 슬롯 (하브루타 생태계 — Phase 1 활성 예정) */}
@@ -186,7 +188,7 @@ export default async function HomePage() {
               <div className="card p-5" data-widget="quick-actions">
                 <b className="text-[var(--color-brand-700)]">바로 가기</b>
                 <div className="mt-2 flex flex-col gap-1.5">
-                  <Link href="/check" data-widget="work-shortcut"
+                  <Link href={`${base}/check`} data-widget="work-shortcut"
                         className="btn !justify-start !min-h-11 text-sm !bg-[var(--color-brand-800)] text-white">
                     ✅ 오늘 출석 체크
                     {(feed.selfcheck_pending ?? 0) > 0 && (
@@ -195,12 +197,12 @@ export default async function HomePage() {
                       </span>
                     )}
                   </Link>
-                  <Link href="/invites" className="btn btn-ghost !justify-start !min-h-11 text-sm">📲 교인 초대</Link>
+                  <Link href={`${base}/invites`} className="btn btn-ghost !justify-start !min-h-11 text-sm">📲 교인 초대</Link>
                   {isChurchStaff && (
-                    <Link href="/church" className="btn btn-ghost !justify-start !min-h-11 text-sm">🏛 교회 관리</Link>
+                    <Link href={`${base}/church`} className="btn btn-ghost !justify-start !min-h-11 text-sm">🏛 교회 관리</Link>
                   )}
                   {r === "superadmin" && (
-                    <Link href="/store" data-widget="store" className="btn btn-ghost !justify-start !min-h-11 text-sm">
+                    <Link href={`${base}/store`} data-widget="store" className="btn btn-ghost !justify-start !min-h-11 text-sm">
                       🏪 마켓 스토어
                     </Link>
                   )}
