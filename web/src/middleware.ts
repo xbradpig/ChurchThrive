@@ -39,6 +39,9 @@ export async function middleware(request: NextRequest) {
   const isPublic = path === "/" || PUBLIC_PATHS.some((p) => path.startsWith(p));
 
   if (isPublic) return response;
+  // 공개 행사 공유 페이지: 비로그인·비소속 열람 허용, active_church 동기화도 생략
+  // (콘텐츠는 public_event RPC가 visibility='public'만 반환 — calendar-events-module W6)
+  if (/^\/[a-z0-9][a-z0-9_-]{1,62}\/events\//.test(path)) return response;
   if (!user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";

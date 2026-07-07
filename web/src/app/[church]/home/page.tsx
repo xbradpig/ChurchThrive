@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import type { AppRole } from "@/lib/roles";
 import AppFrame from "@/components/AppFrame";
 import InstallBanner from "@/components/InstallBanner";
+import { dday as eventDday, fmtRange, type CalEvent } from "../m/calendar/format";
 
 type Feed = {
   church_name: string | null;
@@ -26,9 +27,10 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: role }, { data: verseEnabled }, { data: churchStatus }, { data: feedRaw }] = await Promise.all([
+  const [{ data: role }, { data: verseEnabled }, { data: calEnabled }, { data: churchStatus }, { data: feedRaw }] = await Promise.all([
     supabase.rpc("my_role"),
     supabase.rpc("module_enabled", { p_module: "verse" }),
+    supabase.rpc("module_enabled", { p_module: "calendar" }),
     supabase.rpc("my_church_status"),
     supabase.rpc("home_feed"),
   ]);
@@ -38,11 +40,13 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
   const isStaffRole = r !== "member";
   const isChurchStaff = r === "superadmin" || r === "pastor";
 
-  const [{ data: myId }, verse, absentees] = await Promise.all([
+  const [{ data: myId }, verse, absentees, upcoming] = await Promise.all([
     supabase.rpc("my_member_id"),
     verseEnabled ? supabase.rpc("verse_current") : Promise.resolve({ data: null }),
     isChurchStaff || r === "dept_leader" ? supabase.rpc("absentee_list", { p_weeks: 2 }) : Promise.resolve({ data: null }),
+    calEnabled ? supabase.rpc("calendar_upcoming", { p_limit: 4 }) : Promise.resolve({ data: null }),
   ]);
+  const events = (upcoming.data ?? []) as CalEvent[];
   const currentVerse = (verse.data as { reference: string; body: string; checked: boolean }[] | null)?.[0];
   const myAtt = myId
     ? (await supabase.from("attendances").select("event_date").eq("member_id", myId)
@@ -129,6 +133,35 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
                 </div>
               </div>
             </div>
+
+            {/* C-2. 다가오는 행사 (calendar-events-module W5) */}
+            {events.length > 0 && (
+              <div className="card p-5" data-widget="upcoming-events">
+                <div className="flex items-center mb-1">
+                  <b className="text-[var(--color-brand-700)] mr-auto">📅 다가오는 행사</b>
+                  <Link href={`${base}/m/calendar`} className="text-sm font-bold text-[var(--text-soft)]">더보기 →</Link>
+                </div>
+                <div className="flex flex-col divide-y divide-[var(--line)]">
+                  {events.map((e) => {
+                    const d = eventDday(e.starts_at);
+                    return (
+                      <Link key={e.id} href={`${base}/m/calendar`} className="flex items-center gap-2.5 py-2">
+                        <span className="badge shrink-0" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>
+                          {d === 0 ? "오늘" : d > 0 ? `D-${d}` : "진행 중"}
+                        </span>
+                        <b className="truncate">{e.title}</b>
+                        {e.department_name && (
+                          <span className="badge shrink-0" style={{ background: "var(--color-positive-soft)", color: "var(--color-positive)" }}>
+                            {e.department_name}
+                          </span>
+                        )}
+                        <span className="ml-auto text-sm text-[var(--text-soft)] shrink-0">{fmtRange(e)}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* E. 사역 현황 (교역자·부서장·관리자) */}
             {absentees.data && (

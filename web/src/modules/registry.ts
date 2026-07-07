@@ -42,6 +42,13 @@ export const MODULES: ModuleDef[] = [
     priceLabel: "무료 (파일럿)",
   },
   {
+    key: "calendar", name: "행사·일정", icon: "📅",
+    tagline: "교회 행사 · 부서 일정 · 공유 링크",
+    description: "날짜 기반 행사를 등록하면 홈과 행사 화면에 D-day로 표시됩니다. 부서 지정 시 해당 부서에게만, 공개 행사는 링크로 교회 밖에도 공유됩니다.",
+    home: "/m/calendar", adminHome: "/m/calendar/admin", memberVisible: true,
+    scopes: ["교인 부서 (읽기)", "행사 (읽기·쓰기)"], priceLabel: "무료 (파일럿)",
+  },
+  {
     key: "notice", name: "공지·소통", icon: "📢",
     tagline: "교회 소식을 한 곳에서",
     description: "공지사항을 발행하면 교인 홈과 소식 화면에 바로 나타납니다. 부서별 대상 지정 가능.",
@@ -131,6 +138,10 @@ export function buildNav(ctx: NavCtx): NavSection[] {
   if (modules.has("verse") && (isChurchStaff || grants["verse"] === "admin" || grants["verse"] === "manager")) {
     work.push({ key: "verse-admin", label: "말씀 암송 관리", icon: "📖", href: `${b}/m/verse/admin`, state: "visible" });
   }
+  if (modules.has("calendar") && (isChurchStaff || role === "dept_leader"
+      || grants["calendar"] === "admin" || grants["calendar"] === "manager")) {
+    work.push({ key: "calendar-admin", label: "행사 관리", icon: "📅", href: `${b}/m/calendar/admin`, state: "visible" });
+  }
   if (modules.has("newcomer") && (isChurchStaff || !!grants["newcomer"])) {
     work.push({ key: "newcomer", label: "새가족 관리", icon: "🌱", href: `${b}/m/newcomer`, state: "visible" });
   }
@@ -146,7 +157,7 @@ export function buildNav(ctx: NavCtx): NavSection[] {
         { key: "church-departments", label: "부서 관리", href: `${b}/church?tab=departments` },
         { key: "church-absentees", label: "미출석·케어", href: `${b}/church?tab=absentees` },
         { key: "church-permissions", label: "권한·담당자", href: `${b}/church?tab=permissions` },
-        { key: "church-events", label: "이벤트", href: `${b}/church?tab=events` },
+        { key: "church-events", label: "예배·모임 규칙", href: `${b}/church?tab=events` },
         { key: "church-store", label: "모듈 스토어", href: `${b}/store` },
         { key: "church-import", label: "교인 일괄 등록", href: `${b}/church/import` },
         { key: "church-export", label: "내보내기", href: `${b}/church?tab=export` },
