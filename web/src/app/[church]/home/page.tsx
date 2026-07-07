@@ -6,6 +6,7 @@ import AppFrame from "@/components/AppFrame";
 import InstallBanner from "@/components/InstallBanner";
 import { dday as eventDday, fmtRange, type CalEvent } from "../m/calendar/format";
 import DeptCard, { type DeptHome } from "./DeptCard";
+import NewcomerFunnel from "./NewcomerFunnel";
 
 type Feed = {
   church_name: string | null;
@@ -17,7 +18,12 @@ type Feed = {
   selfcheck_pending: number | null;
   visit_requested: number | null;
   edit_pending: number | null;
+  newcomer_active: number | null;
+  dept_pending: number | null;
+  today_service: string | null;
 };
+
+type Funnel = { s1: number; s2: number; s3: number; s4: number; active: number } | null;
 
 const DOW = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -42,15 +48,17 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
   const isStaffRole = r !== "member";
   const isChurchStaff = r === "superadmin" || r === "pastor";
 
-  const [{ data: myId }, verse, absentees, upcoming, deptRaw] = await Promise.all([
+  const [{ data: myId }, verse, absentees, upcoming, deptRaw, funnelRaw] = await Promise.all([
     supabase.rpc("my_member_id"),
     verseEnabled ? supabase.rpc("verse_current") : Promise.resolve({ data: null }),
     isChurchStaff || r === "dept_leader" ? supabase.rpc("absentee_list", { p_weeks: 2 }) : Promise.resolve({ data: null }),
     calEnabled ? supabase.rpc("calendar_upcoming", { p_limit: 4 }) : Promise.resolve({ data: null }),
     supabase.rpc("dept_home"),
+    supabase.rpc("newcomer_funnel"),
   ]);
   const events = (upcoming.data ?? []) as CalEvent[];
   const deptHome = (deptRaw.data ?? null) as DeptHome;
+  const funnel = (funnelRaw.data ?? null) as Funnel;
   const currentVerse = (verse.data as { reference: string; body: string; checked: boolean }[] | null)?.[0];
   const myAtt = myId
     ? (await supabase.from("attendances").select("event_date").eq("member_id", myId)
@@ -64,6 +72,8 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
   if ((feed.selfcheck_pending ?? 0) > 0) todos.push({ icon: "✋", label: "출석 본인 인증 확인", href: `${base}/check`, n: feed.selfcheck_pending! });
   if ((feed.visit_requested ?? 0) > 0) todos.push({ icon: "🏠", label: "심방 요청 배정", href: `${base}/m/visitation`, n: feed.visit_requested! });
   if ((feed.edit_pending ?? 0) > 0) todos.push({ icon: "📇", label: "교적 수정 요청 승인", href: `${base}/church?tab=members`, n: feed.edit_pending! });
+  if ((feed.dept_pending ?? 0) > 0) todos.push({ icon: "🧑‍🏫", label: "부서장 승인 대기", href: `${base}/church?tab=permissions`, n: feed.dept_pending! });
+  if ((feed.newcomer_active ?? 0) > 0) todos.push({ icon: "🌱", label: "새가족 정착 관리", href: `${base}/m/newcomer`, n: feed.newcomer_active! });
 
   return (
     <AppFrame title="홈" isStaff={isStaffRole} wide>
@@ -184,6 +194,9 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
                 <span className="ml-auto text-[var(--text-soft)]">→</span>
               </Link>
             )}
+
+            {/* F. 새가족 정착 퍼널 (role-work-dashboard W2 · 새가족 담당·교역자) */}
+            <NewcomerFunnel data={funnel} base={base} />
           </div>
 
           <div className="md:col-span-4 flex flex-col gap-4">
@@ -231,7 +244,7 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
                 <div className="mt-2 flex flex-col gap-1.5">
                   <Link href={`${base}/check`} data-widget="work-shortcut"
                         className="btn !justify-start !min-h-11 text-sm !bg-[var(--color-brand-800)] text-white">
-                    ✅ 오늘 출석 체크
+                    ✅ 오늘 출석 체크{feed.today_service ? ` · ${feed.today_service}` : ""}
                     {(feed.selfcheck_pending ?? 0) > 0 && (
                       <span className="badge ml-auto" style={{ background: "var(--color-accent)", color: "#fff" }}>
                         인증 대기 {feed.selfcheck_pending}
