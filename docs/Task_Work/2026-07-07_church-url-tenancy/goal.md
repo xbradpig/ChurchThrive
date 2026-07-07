@@ -22,7 +22,10 @@
 - [x] 기존 URL(`/home`, `/m/verse` 등) → 활성 교회 slug URL로 307 리다이렉트 (북마크·PWA 하위호환)
 - [x] slug 예약어 제약 (`churches_slug_reserved` CHECK) + **slug 불변 트리거** (`churches_slug_immutable`) — 사용자 확정: 등록 시 1회 입력, ID처럼 변경 불가
 - [x] `npm run typecheck` + `next build` 통과 (2026-07-07)
-- [ ] 런타임 시나리오 검증 (W5 표) — 마이그레이션 00026 DB 적용 후 수행
+- [x] 런타임 시나리오 검증 (W5 표) — 00026 적용(+이력 드리프트 00005~26 복구) 후 배포 검증 (2026-07-07)
+  - 비로그인: `/`·`/login`·`/manifest.json` 200, `/home`·`/chungpa21/home`·`/chungpa21` → 307 `/login` (로컬 3120 + 프로덕션 동일)
+  - slug 불변 트리거 동작 확인 (UPDATE 시도 → 에러), slug 개명 chungpa → chungpa21 완료
+  - 로그인 시나리오(②③④⑤: 레거시 slug 접두 리다이렉트·쿠키 동기화·비소속 /join 안내)는 실사용 로그인으로 확인 예정
 
 ## 비범위 (Non-Goals)
 
