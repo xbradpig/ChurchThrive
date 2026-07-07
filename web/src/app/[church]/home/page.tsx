@@ -5,6 +5,7 @@ import type { AppRole } from "@/lib/roles";
 import AppFrame from "@/components/AppFrame";
 import InstallBanner from "@/components/InstallBanner";
 import { dday as eventDday, fmtRange, type CalEvent } from "../m/calendar/format";
+import DeptCard, { type DeptHome } from "./DeptCard";
 
 type Feed = {
   church_name: string | null;
@@ -41,13 +42,15 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
   const isStaffRole = r !== "member";
   const isChurchStaff = r === "superadmin" || r === "pastor";
 
-  const [{ data: myId }, verse, absentees, upcoming] = await Promise.all([
+  const [{ data: myId }, verse, absentees, upcoming, deptRaw] = await Promise.all([
     supabase.rpc("my_member_id"),
     verseEnabled ? supabase.rpc("verse_current") : Promise.resolve({ data: null }),
     isChurchStaff || r === "dept_leader" ? supabase.rpc("absentee_list", { p_weeks: 2 }) : Promise.resolve({ data: null }),
     calEnabled ? supabase.rpc("calendar_upcoming", { p_limit: 4 }) : Promise.resolve({ data: null }),
+    supabase.rpc("dept_home"),
   ]);
   const events = (upcoming.data ?? []) as CalEvent[];
+  const deptHome = (deptRaw.data ?? null) as DeptHome;
   const currentVerse = (verse.data as { reference: string; body: string; checked: boolean }[] | null)?.[0];
   const myAtt = myId
     ? (await supabase.from("attendances").select("event_date").eq("member_id", myId)
@@ -135,6 +138,9 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
                 </div>
               </div>
             </div>
+
+            {/* C-1. 내 부서 (dept-home-card W3) */}
+            <DeptCard data={deptHome} base={base} />
 
             {/* C-2. 다가오는 행사 (calendar-events-module W5) */}
             {events.length > 0 && (
