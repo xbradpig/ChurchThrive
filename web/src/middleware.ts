@@ -12,6 +12,17 @@ const ROOT_PRIVATE = new Set(["start", "join", "pending", "platform", "api", "re
 const LEGACY_TENANT = new Set(["home", "church", "admin", "check", "scan", "me", "menu", "members", "invites", "m", "store"]);
 const SLUG_RE = /^[a-z0-9][a-z0-9_-]{1,62}$/;
 const CHURCH_COOKIE = "ct-church";
+// 기본 도메인 (그 외 Host는 교회 커스텀 도메인 — custom-domain 6단계)
+const BASE_HOSTS = new Set(["church.havrutaproject.org", "localhost", "127.0.0.1", "0.0.0.0"]);
+
+/** rewrite 응답에 누적 쿠키(세션·ct-church) 전달 */
+function rewriteTo(request: NextRequest, response: NextResponse, pathname: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  const r = NextResponse.rewrite(url);
+  response.cookies.getAll().forEach((c) => r.cookies.set(c));
+  return r;
+}
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -37,6 +48,41 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
   const isPublic = path === "/" || PUBLIC_PATHS.some((p) => path.startsWith(p));
+
+  // ── 0) 커스텀 도메인: Host가 기본 도메인이 아니면 slug를 Host로 고정하고 rewrite ──
+  const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (host && !BASE_HOSTS.has(host)) {
+    const { data } = await supabase.rpc("church_slug_by_domain", { p_host: host });
+    const cSlug = typeof data === "string" && SLUG_RE.test(data) ? data : null;
+    if (!cSlug) {
+      // 미등록/비active 커스텀 도메인 → 기본 도메인으로
+      return NextResponse.redirect(new URL(path + request.nextUrl.search, "https://church.havrutaproject.org"));
+    }
+    const seg0 = path.split("/")[1] ?? "";
+    // 루트 라우트(login·api·signup 등)는 그대로
+    if (PUBLIC_PATHS.some((p) => path.startsWith(p)) || ROOT_PRIVATE.has(seg0)) return response;
+    // 공개 행사(/events/{id})는 인증 없이 rewrite
+    if (seg0 === "events") return rewriteTo(request, response, `/${cSlug}${path}`);
+    // 그 외 테넌트 경로: 인증 필요
+    if (!user) {
+      const url = request.nextUrl.clone(); url.pathname = "/login"; url.search = "";
+      return NextResponse.redirect(url);
+    }
+    // active_church 동기화 (쿠키 불일치 시)
+    const ck = request.cookies.get(CHURCH_COOKIE)?.value;
+    if (ck !== cSlug) {
+      const { data: cid } = await supabase.rpc("set_active_church_by_slug", { p_slug: cSlug });
+      if (!cid) { // 이 교회 비소속
+        const url = request.nextUrl.clone(); url.pathname = "/join"; url.search = `church=${encodeURIComponent(cSlug)}`;
+        return NextResponse.redirect(url);
+      }
+      response.cookies.set(CHURCH_COOKIE, cSlug, { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
+    }
+    const target = path === "/" ? `/${cSlug}/home`
+      : (path === `/${cSlug}` || path.startsWith(`/${cSlug}/`)) ? path
+      : `/${cSlug}${path}`;
+    return rewriteTo(request, response, target);
+  }
 
   if (isPublic) return response;
   // 공개 행사 공유 페이지: 비로그인·비소속 열람 허용, active_church 동기화도 생략
