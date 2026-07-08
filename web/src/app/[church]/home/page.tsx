@@ -50,7 +50,7 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
 
   const [{ data: myId }, verse, absentees, upcoming, deptRaw, funnelRaw] = await Promise.all([
     supabase.rpc("my_member_id"),
-    verseEnabled ? supabase.rpc("verse_current") : Promise.resolve({ data: null }),
+    verseEnabled ? supabase.rpc("verse_home") : Promise.resolve({ data: null }),
     isChurchStaff || r === "dept_leader" ? supabase.rpc("absentee_list", { p_weeks: 2 }) : Promise.resolve({ data: null }),
     calEnabled ? supabase.rpc("calendar_upcoming", { p_limit: 4 }) : Promise.resolve({ data: null }),
     supabase.rpc("dept_home"),
@@ -59,7 +59,10 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
   const events = (upcoming.data ?? []) as CalEvent[];
   const deptHome = (deptRaw.data ?? null) as DeptHome;
   const funnel = (funnelRaw.data ?? null) as Funnel;
-  const currentVerse = (verse.data as { reference: string; body: string; checked: boolean }[] | null)?.[0];
+  const currentVerse = (verse.data ?? null) as {
+    reference: string; body: string; guide: string | null; checked: boolean;
+    dept_name: string | null; streak: number; check_count: number; target_count: number;
+  } | null;
   const myAtt = myId
     ? (await supabase.from("attendances").select("event_date").eq("member_id", myId)
         .order("event_date", { ascending: false }).limit(8)).data
@@ -204,12 +207,29 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
             {/* B. 나의 신앙 */}
             {currentVerse && (
               <Link href={`${base}/m/verse`} data-widget="verse" className="card card-hover overflow-hidden">
-                <div className="px-5 py-3 text-white text-sm font-bold" style={{ background: "var(--color-brand-800)" }}>
-                  📖 이번 주 암송 — {currentVerse.reference} {currentVerse.checked && "✓"}
+                <div className="px-5 py-3 text-white text-sm font-bold flex items-center gap-2 flex-wrap" style={{ background: "var(--color-brand-800)" }}>
+                  <span>📖 이번 주 암송 — {currentVerse.reference} {currentVerse.checked && "✓"}</span>
+                  {currentVerse.dept_name && (
+                    <span className="badge" style={{ background: "var(--color-accent)", color: "#fff" }}>{currentVerse.dept_name}</span>
+                  )}
+                  {currentVerse.streak > 1 && (
+                    <span className="badge ml-auto" style={{ background: "rgba(255,255,255,.15)", color: "#fff" }}>🔥 {currentVerse.streak}주 연속</span>
+                  )}
                 </div>
-                <p className="px-5 py-4 font-bold leading-relaxed">
-                  &ldquo;{currentVerse.body.slice(0, 60)}{currentVerse.body.length > 60 ? "…" : ""}&rdquo;
-                </p>
+                <div className="px-5 py-4">
+                  <p className="font-bold leading-relaxed">
+                    &ldquo;{currentVerse.body.slice(0, 60)}{currentVerse.body.length > 60 ? "…" : ""}&rdquo;
+                  </p>
+                  {currentVerse.guide && (
+                    <p className="mt-2 text-sm text-[var(--text-soft)] truncate">💡 {currentVerse.guide}</p>
+                  )}
+                  {isStaffRole && currentVerse.target_count > 0 && (
+                    <p className="mt-2 text-xs font-bold" style={{ color: "var(--color-positive)" }}>
+                      암송 완료 {currentVerse.check_count}/{currentVerse.target_count}명
+                      ({Math.round((currentVerse.check_count / currentVerse.target_count) * 100)}%)
+                    </p>
+                  )}
+                </div>
               </Link>
             )}
 

@@ -6,7 +6,7 @@ import { notify } from "@/components/ui/AppDialog";
 
 type Assignment = {
   id: string; week_start: string; reference: string; body: string; guide: string | null;
-  checked: boolean; check_count: number; target_count: number;
+  checked: boolean; check_count: number; target_count: number; dept_name: string | null;
 };
 
 export default function VerseBoard() {
@@ -38,7 +38,12 @@ export default function VerseBoard() {
       ) : (
         <div className="card overflow-hidden pop-in">
           <div className="p-6 text-white" style={{ background: "var(--color-brand-800)" }}>
-            <p className="text-sm opacity-75 font-bold">{current.week_start} 주간 암송</p>
+            <p className="text-sm opacity-75 font-bold flex items-center gap-2">
+              {current.week_start} 주간 암송
+              {current.dept_name && (
+                <span className="badge" style={{ background: "var(--color-accent)", color: "#fff" }}>{current.dept_name} 부서</span>
+              )}
+            </p>
             <h2 className="text-2xl font-black" style={{ color: "var(--color-accent)" }}>{current.reference}</h2>
           </div>
           <div className="p-6">
