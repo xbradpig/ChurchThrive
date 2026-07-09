@@ -21,7 +21,7 @@ export default function LoginPage() {
       if (t) {
         fetch("/api/havruta/sso", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: t }) })
           .then((r) => r.json())
-          .then((j) => { if (j.ok) window.location.replace(j.redirect ?? "/home"); else setError("하브루타 로그인에 실패했습니다."); });
+          .then((j) => { if (j.ok) window.location.replace(j.redirect ?? "/"); else setError("하브루타 로그인에 실패했습니다."); });
         return;
       }
     }
@@ -38,14 +38,14 @@ export default function LoginPage() {
               welcome = localStorage.getItem("ct_welcome_pending") === "1";
               localStorage.removeItem("ct_welcome_pending");
             } catch { /* noop */ }
-            window.location.replace(welcome ? "/welcome" : "/home");
+            window.location.replace(welcome ? "/welcome" : "/");
           }
         });
         return;
       }
     }
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace("/home");
+      if (data.session) router.replace("/");
     });
   }, [router]);
 
