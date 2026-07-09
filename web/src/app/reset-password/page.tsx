@@ -15,14 +15,12 @@ function ResetForm() {
 
   useEffect(() => {
     (async () => {
-      // createBrowserClient가 URL의 code를 자동 교환하므로 세션을 먼저 확인하고,
-      // 없을 때만 수동 교환을 시도한다 (이중 교환 방지)
-      let { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        const code = params.get("code");
-        if (code) await supabase.auth.exchangeCodeForSession(code).catch(() => {});
-        ({ data: { session } } = await supabase.auth.getSession());
-      }
+      // PKCE(스캔 안전): code가 있으면 기존 로그인 세션과 무관하게 먼저 교환 →
+      // 다른 계정으로 로그인돼 있어도 '재설정 대상' 사용자로 세션이 잡힌다.
+      const code = params.get("code");
+      if (code) await supabase.auth.exchangeCodeForSession(code).catch(() => {});
+      // (implicit recovery 해시 #access_token은 createBrowserClient가 자동 감지)
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setError("링크가 만료되었거나 유효하지 않습니다. 다시 요청해주세요."); return; }
       setReady(true);
     })();
