@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 import AppDialogProvider from "@/components/ui/AppDialog";
+import RecoveryRedirect from "@/components/RecoveryRedirect";
 
 export const metadata: Metadata = {
   title: "ChurchThrive — 교회 관리 플랫폼",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `try{var f=+localStorage.getItem("font-scale")||0;if(f>0)document.documentElement.style.fontSize=[17,19,21][f]+"px";}catch(e){}` }} />
       </head>
       <body>
+        <RecoveryRedirect />
         <AppDialogProvider>{children}</AppDialogProvider>
         <script
           dangerouslySetInnerHTML={{
