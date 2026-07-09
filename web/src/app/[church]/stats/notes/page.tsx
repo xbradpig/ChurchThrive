@@ -16,7 +16,7 @@ export default async function StatsNotesPage({ params }: { params: Promise<{ chu
   return (
     <div className="min-h-dvh md:pl-60">
       <AppHeader role={role as AppRole} title="말씀노트 현황" />
-      <main className="max-w-3xl mx-auto p-4 flex flex-col gap-4">
+      <main className="max-w-6xl mx-auto p-4 flex flex-col gap-4">
         <StatsNav role={role} />
         <NotesClient />
       </main>

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type { AppRole } from "@/lib/roles";
 import AppFrame from "@/components/AppFrame";
+import AccountSetupBanner from "@/components/AccountSetupBanner";
 import MemberCard from "@/components/MemberCard";
 import ConsentPanel from "./ConsentPanel";
 import SelfCheckin from "./SelfCheckin";
@@ -10,6 +11,7 @@ import type { EditRequest } from "@/components/MemberCard";
 
 export default async function MePage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const { data: role } = await supabase.rpc("my_role");
   const { data: myMemberId } = await supabase.rpc("my_member_id");
 
@@ -25,18 +27,17 @@ export default async function MePage() {
 
   return (
     <AppFrame title="내 교적" isStaff={role !== "member"}>
-      <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
-        {!card ? (
-          <RegisterCard />
-        ) : (
-          <>
-            <SelfCheckin events={events ?? []} />
-            <MemberCard card={card} editable editRequest={editRequest} />
-            <MyQR memberId={myMemberId} name={`${card.name}${card.name_suffix ?? ""}`} />
-            <ConsentPanel memberId={myMemberId} />
-          </>
-        )}
-      </main>
+      <AccountSetupBanner email={user?.email} />
+      {!card ? (
+        <RegisterCard />
+      ) : (
+        <>
+          <SelfCheckin events={events ?? []} />
+          <MemberCard card={card} editable editRequest={editRequest} />
+          <MyQR memberId={myMemberId} name={`${card.name}${card.name_suffix ?? ""}`} />
+          <ConsentPanel memberId={myMemberId} />
+        </>
+      )}
     </AppFrame>
   );
 }

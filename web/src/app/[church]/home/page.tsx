@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import type { AppRole } from "@/lib/roles";
 import AppFrame from "@/components/AppFrame";
 import InstallBanner from "@/components/InstallBanner";
+import AccountSetupBanner from "@/components/AccountSetupBanner";
 import { dday as eventDday, fmtRange, type CalEvent } from "../m/calendar/format";
 import DeptCard, { type DeptHome } from "./DeptCard";
 import NewcomerFunnel from "./NewcomerFunnel";
@@ -82,6 +83,7 @@ export default async function HomePage({ params }: { params: Promise<{ church: s
     <AppFrame title="홈" isStaff={isStaffRole} wide>
       <div data-testid="widget-home" className="flex flex-col gap-4">
         <InstallBanner />
+        <AccountSetupBanner email={user.email} />
 
         {/* 헤더 스트립 */}
         <div className="card px-5 py-4 flex items-center gap-3 flex-wrap" data-widget="header-strip">

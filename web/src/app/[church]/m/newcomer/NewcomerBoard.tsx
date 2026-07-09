@@ -31,7 +31,7 @@ export default function NewcomerBoard() {
   }
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <p className="text-sm text-[var(--text-soft)] px-1">
         출석 체크의 &ldquo;신규 등록&rdquo;으로 들어온 분들입니다. 단계를 탭해 정착 과정을 기록하세요.
       </p>
@@ -60,6 +60,6 @@ export default function NewcomerBoard() {
           </div>
         </div>
       ))}
-    </main>
+    </div>
   );
 }

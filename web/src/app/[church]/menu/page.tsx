@@ -66,11 +66,12 @@ export default async function MenuPage() {
 
   return (
     <AppFrame title="전체 메뉴" isStaff={r !== "member"}>
-      <main className="max-w-lg mx-auto p-4 flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <p className="text-[var(--text-soft)] px-1">
           <b>{church?.name}</b> · {ROLE_LABEL[r]}
           {myGrants.size > 0 && ` · 담당 ${[...myGrants.keys()].length}개 기능`}
         </p>
+        <div className="grid gap-3 md:grid-cols-2">
         {items.map((m, i) => (
           <Link key={i} href={m.href}
                 className="card p-5 flex items-center gap-4 hover:shadow-[var(--shadow-card-hover)] transition-shadow">
@@ -85,11 +86,13 @@ export default async function MenuPage() {
             <span className="ml-auto text-[var(--color-brand-300)] text-xl">›</span>
           </Link>
         ))}
+        </div>
         {opsItems.length > 0 && (
           <>
             <p className="text-xs font-black uppercase tracking-wider text-[var(--text-soft)] px-1 mt-4">
               운영 도구 — 관리 화면으로 전환
             </p>
+            <div className="grid gap-3 md:grid-cols-2">
             {opsItems.map((m, i) => (
               <Link key={"ops" + i} href={m.href}
                     className="card p-5 flex items-center gap-4 hover:shadow-[var(--shadow-card-hover)] transition-shadow"
@@ -102,10 +105,11 @@ export default async function MenuPage() {
                 <span className="ml-auto text-[var(--color-brand-300)] text-xl">›</span>
               </Link>
             ))}
+            </div>
           </>
         )}
         <LogoutButton />
-      </main>
+      </div>
     </AppFrame>
   );
 }

@@ -23,7 +23,7 @@ export default function StoreBoard({
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-4 flex flex-col gap-3">
+    <main className="max-w-2xl md:max-w-4xl mx-auto p-4 flex flex-col gap-3">
       <p className="text-[var(--text-soft)] px-1">
         <b>{churchName}</b>에 필요한 기능을 골라 설치하세요. 해지해도 데이터는 보존됩니다.
       </p>

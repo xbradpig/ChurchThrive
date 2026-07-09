@@ -67,7 +67,7 @@ export default function NoteBoard() {
   }, [mine, week]);
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="card p-5">
         <div className="flex items-center gap-2 mb-1">
           <h3 className="font-black text-[var(--color-brand-700)] mr-auto">이번 주 노트 · {week}</h3>
@@ -105,6 +105,6 @@ export default function NoteBoard() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }

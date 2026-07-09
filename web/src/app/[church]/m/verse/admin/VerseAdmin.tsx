@@ -48,7 +48,7 @@ export default function VerseAdmin() {
   }
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="card p-5">
         <h3 className="font-black text-[var(--color-brand-700)] mb-3">이번 주 구절 등록</h3>
         <div className="flex flex-col gap-2">
@@ -96,6 +96,6 @@ export default function VerseAdmin() {
           );
         })}
       </div>
-    </main>
+    </div>
   );
 }

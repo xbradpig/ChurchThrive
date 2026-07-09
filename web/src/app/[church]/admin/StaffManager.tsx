@@ -47,11 +47,11 @@ export default function StaffManager() {
   }
 
   return (
-    <div className="card p-5 mb-4" data-widget="staff">
-      <h3 className="font-black mb-1">👥 담당자·권한 관리</h3>
+    <div className="card p-5" data-widget="staff">
+      <h3 className="font-black mb-1">👥 이메일로 직접 권한 부여</h3>
       <p className="text-sm text-[var(--text-soft)] mb-3">
-        인수인계: 후임자가 회원가입한 뒤, 이메일로 <b>관리자</b> 권한을 부여하세요.
-        (마지막 관리자는 해제할 수 없습니다)
+        이미 가입한 계정의 이메일로 즉시 권한을 부여합니다 (인수인계용).
+        명부의 교인을 임명하려면 위 <b>명부에서 담당자 임명</b>을 이용하세요. (마지막 관리자는 해제할 수 없습니다)
       </p>
       <form onSubmit={grant} className="flex gap-2 flex-wrap mb-3">
         <input className="input flex-1 !min-w-48" type="email" required placeholder="후임자 이메일"

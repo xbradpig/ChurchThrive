@@ -50,7 +50,7 @@ export default function TrainingBoard({ canManage, isAdmin }: { canManage: boole
   }
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       {isAdmin && (
         <div className="card p-5 flex gap-2" data-widget="training-admin">
           <input className="input flex-1" placeholder="새 과정 이름 (예: 제자훈련 1기)" value={newName}
@@ -97,6 +97,6 @@ export default function TrainingBoard({ canManage, isAdmin }: { canManage: boole
           </div>
         );
       })}
-    </main>
+    </div>
   );
 }

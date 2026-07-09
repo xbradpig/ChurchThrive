@@ -16,7 +16,7 @@ export default async function StatsPage({ params }: { params: Promise<{ church: 
   return (
     <div className="min-h-dvh md:pl-60">
       <AppHeader role={role as AppRole} title="교회 현황" />
-      <main className="max-w-3xl mx-auto p-4 flex flex-col gap-4" data-print-root>
+      <main className="max-w-6xl mx-auto p-4 flex flex-col gap-4" data-print-root>
         <StatsNav role={role} />
         <OverviewClient role={role} />
       </main>

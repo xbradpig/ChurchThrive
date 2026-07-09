@@ -40,7 +40,7 @@ export default function BulletinBoard({ canManage }: { canManage: boolean }) {
   const current = rows.find((r) => r.published) ?? rows[0];
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       {canManage && (
         <div className="card p-5" data-widget="bulletin-admin">
           <h3 className="font-black text-[var(--color-brand-700)] mb-2">주보 작성·발행</h3>
@@ -76,6 +76,6 @@ export default function BulletinBoard({ canManage }: { canManage: boolean }) {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

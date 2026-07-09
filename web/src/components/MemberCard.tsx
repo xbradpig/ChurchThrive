@@ -9,7 +9,8 @@ type Card = {
   id: string; name: string; name_suffix: string; photo_url: string | null;
   position: string; member_type: string; status: string;
   departments: { id: string; name: string }[];
-  phone?: string | null; birthday?: string | null; address?: string | null;
+  phone?: string | null; email?: string | null; email_verified?: boolean;
+  birthday?: string | null; address?: string | null;
   family_note?: string | null;
   care_target?: boolean; guardian_name?: string | null; guardian_phone?: string | null;
   has_wander_device?: boolean; dementia_center_registered?: boolean;
@@ -23,7 +24,7 @@ export type EditRequest = {
 };
 
 const FIELD_LABEL: Record<string, string> = {
-  name: "이름", phone: "연락처", birthday: "생년월일", address: "주소", family_note: "가족",
+  name: "이름", phone: "연락처", birthday: "생년월일", address: "주소", family_note: "가족", email: "이메일",
 };
 
 export default function MemberCard({ card, editable, editRequest }:
@@ -33,7 +34,7 @@ export default function MemberCard({ card, editable, editRequest }:
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
-    name: card.name, phone: card.phone ?? "", birthday: card.birthday ?? "",
+    name: card.name, phone: card.phone ?? "", email: card.email ?? "", birthday: card.birthday ?? "",
     address: card.address ?? "", family_note: card.family_note ?? "", note: "",
   });
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -43,7 +44,7 @@ export default function MemberCard({ card, editable, editRequest }:
   async function submitRequest() {
     setBusy(true);
     const { error } = await supabase.rpc("request_my_card_edit", {
-      p: { name: form.name, phone: form.phone, birthday: form.birthday || null,
+      p: { name: form.name, phone: form.phone, email: form.email, birthday: form.birthday || null,
            address: form.address, family_note: form.family_note },
       p_note: form.note || null,
     });
@@ -99,6 +100,21 @@ export default function MemberCard({ card, editable, editRequest }:
           <Field label="연락처">
             {editing ? <input className="input" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
               : <a href={`tel:${card.phone}`} className="font-bold text-[var(--color-brand-600)]">{card.phone || "—"}</a>}
+          </Field>
+        )}
+        {"email" in card && (
+          <Field label="이메일">
+            {editing ? <input className="input" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
+              : card.email ? (
+                <span className="inline-flex items-center gap-1.5 flex-wrap">
+                  <a href={`mailto:${card.email}`} className="font-bold text-[var(--color-brand-600)] break-all">{card.email}</a>
+                  <span className="badge" style={card.email_verified
+                    ? { background: "var(--color-positive-soft)", color: "var(--color-positive)" }
+                    : { background: "var(--color-caution-soft)", color: "var(--color-caution)" }}>
+                    {card.email_verified ? "인증됨" : "미인증"}
+                  </span>
+                </span>
+              ) : "—"}
           </Field>
         )}
         {"birthday" in card && (

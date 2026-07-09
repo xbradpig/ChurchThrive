@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { AppRole } from "@/lib/roles";
 import NotificationSetup from "./NotificationSetup";
 import StaffManager from "./StaffManager";
+import RoleAppointments from "./RoleAppointments";
 import MembersDirectory from "./MembersDirectory";
 import DepartmentsPanel from "./DepartmentsPanel";
 import ChurchSettings from "./ChurchSettings";
@@ -38,7 +39,7 @@ export default function AdminTabs({ role }: { role: AppRole }) {
     : TABS;
 
   return (
-    <main className="max-w-3xl mx-auto p-4 flex flex-col gap-4">
+    <main className="max-w-3xl lg:max-w-5xl mx-auto p-4 flex flex-col gap-4">
       <div className="flex gap-1.5 overflow-x-auto md:hidden">
         {visibleTabs.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)}
@@ -51,7 +52,15 @@ export default function AdminTabs({ role }: { role: AppRole }) {
       {tab === "departments" && <DepartmentsPanel />}
       {tab === "settings" && <ChurchSettings canEdit={role === "superadmin"} />}
       {tab === "absentees" && (<><NotificationSetup /><Absentees /></>)}
-      {tab === "permissions" && (<><StaffManager /><LeaderQueue /><ModuleGrants /><Permissions /></>)}
+      {tab === "permissions" && (
+        <div className="grid gap-4 lg:grid-cols-2 items-start">
+          <RoleAppointments role={role} />
+          <StaffManager />
+          <LeaderQueue />
+          <ModuleGrants />
+          <Permissions />
+        </div>
+      )}
       {tab === "events" && <EventsAdmin />}
       {tab === "export" && <ExportPanel />}
     </main>

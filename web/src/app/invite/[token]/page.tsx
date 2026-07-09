@@ -22,7 +22,8 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
     const res = await fetch(`/api/invite/${token}`, { method: "POST" });
     const data = await res.json();
     if (!res.ok) { setBusy(false); return setError(data.error); }
-    window.location.href = data.action_link;   // 매직링크 → 세션 성립 → 홈
+    try { localStorage.setItem("ct_welcome_pending", "1"); } catch { /* 프라이빗 모드 등 — 홈 배너로 대체 */ }
+    window.location.href = data.action_link;   // 매직링크 → 세션 성립 → 계정 설정(/welcome)
   }
 
   return (

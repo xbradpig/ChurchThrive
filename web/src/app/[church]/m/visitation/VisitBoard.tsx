@@ -51,7 +51,7 @@ export default function VisitBoard({ canManage }: { canManage: boolean }) {
   }
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="card p-5 flex items-center gap-3">
         {requested
           ? <p className="font-bold" style={{ color: "var(--color-positive)" }}>✓ 심방 요청이 접수되었습니다.</p>
@@ -82,6 +82,6 @@ export default function VisitBoard({ canManage }: { canManage: boolean }) {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

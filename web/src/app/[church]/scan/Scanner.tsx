@@ -74,7 +74,7 @@ export default function Scanner({ events }: { events: { id: string; name: string
   }
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <main className="max-w-lg md:max-w-2xl mx-auto p-4 flex flex-col gap-4">
       <select className="input font-bold" value={eventId} onChange={(e) => setEventId(e.target.value)}>
         {events.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
       </select>

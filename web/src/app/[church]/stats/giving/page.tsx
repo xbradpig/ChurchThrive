@@ -21,7 +21,7 @@ export default async function StatsGivingPage({ params }: { params: Promise<{ ch
   return (
     <div className="min-h-dvh md:pl-60">
       <AppHeader role={role as AppRole} title="재정 현황" />
-      <main className="max-w-3xl mx-auto p-4 flex flex-col gap-4">
+      <main className="max-w-6xl mx-auto p-4 flex flex-col gap-4">
         <StatsNav role={role} />
         <GivingClient role={role} />
       </main>

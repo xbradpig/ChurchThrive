@@ -15,7 +15,8 @@ export default async function AppFrame({ title, wide = false, children }:
   return (
     <div className="min-h-dvh md:pl-60" data-frame="web">
       <AppHeader role={r} title={title} />
-      <main className={`${wide ? "max-w-6xl" : "max-w-lg"} mx-auto p-4 flex flex-col gap-4`}>{children}</main>
+      {/* 데스크톱은 웹 폭으로 확장 — 폰 폭(max-w-lg) 고정은 모바일 뷰포트에서만 */}
+      <main className={`${wide ? "max-w-6xl" : "max-w-lg md:max-w-3xl xl:max-w-4xl"} mx-auto p-4 flex flex-col gap-4`}>{children}</main>
     </div>
   );
 }

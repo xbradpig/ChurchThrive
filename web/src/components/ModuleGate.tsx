@@ -8,7 +8,7 @@ export default function ModuleGate({ moduleName, isAdmin }: { moduleName: string
   const params = useParams<{ church?: string }>();
   const base = params.church ? `/${params.church}` : ""; // 교회 경로 접두 (church-url-tenancy)
   return (
-    <main className="max-w-lg mx-auto p-6">
+    <div className="mx-auto max-w-lg p-6">
       <div className="card p-8 text-center flex flex-col gap-3 items-center">
         <span className="text-4xl">🏪</span>
         <b className="text-lg">{moduleName} 기능이 아직 설치되지 않았습니다</b>
@@ -18,6 +18,6 @@ export default function ModuleGate({ moduleName, isAdmin }: { moduleName: string
           <p className="text-[var(--text-soft)] text-sm">교회 관리자에게 설치를 요청해주세요.</p>
         )}
       </div>
-    </main>
+    </div>
   );
 }

@@ -46,7 +46,7 @@ export default function NoticeBoard({ canManage }: { canManage: boolean }) {
   }
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       {canPublish && (
         <div className="card p-5" data-widget="notice-admin">
           <h3 className="font-black text-[var(--color-brand-700)] mb-2">공지 발행</h3>
@@ -78,6 +78,6 @@ export default function NoticeBoard({ canManage }: { canManage: boolean }) {
           {open === n.id && <p className="mt-3 whitespace-pre-wrap leading-relaxed">{n.body}</p>}
         </button>
       ))}
-    </main>
+    </div>
   );
 }

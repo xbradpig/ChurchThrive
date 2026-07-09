@@ -30,7 +30,7 @@ export default function VerseBoard() {
   const history = rows.slice(1);
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       {!current ? (
         <div className="card p-8 text-center text-[var(--text-soft)]">
           아직 등록된 암송 구절이 없습니다.
@@ -88,6 +88,6 @@ export default function VerseBoard() {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

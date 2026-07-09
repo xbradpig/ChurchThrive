@@ -46,7 +46,7 @@ export default function GivingBoard({ canManage }: { canManage: boolean }) {
     .reduce((s, r) => s + r.amount, 0);
 
   return (
-    <main className="max-w-lg mx-auto p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <p className="badge w-full justify-center py-2"
          style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}>
         🔒 헌금 내역은 본인과 재정 담당자만 볼 수 있습니다
@@ -89,6 +89,6 @@ export default function GivingBoard({ canManage }: { canManage: boolean }) {
           </div>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
-const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password", "/register-intro", "/apply", "/api/apply", "/set-password", "/invite", "/api/invite", "/manifest.json", "/sw.js", "/icons"];
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password", "/register-intro", "/apply", "/api/apply", "/set-password", "/invite", "/api/invite", "/api/havruta", "/manifest.json", "/sw.js", "/icons"];
 
 /** 경로 기반 테넌시 (church-url-tenancy W2) */
 // 로그인 필요 + 테넌트 무관 루트 라우트 (slug로 오인 금지)

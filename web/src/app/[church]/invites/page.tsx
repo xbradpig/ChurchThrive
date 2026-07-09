@@ -15,7 +15,7 @@ export default async function InvitesPage({ params }: { params: Promise<{ church
   return (
     <div className="min-h-dvh md:pl-60">
       <AppHeader role={role as AppRole} title="교인 초대" />
-      <main className="max-w-3xl mx-auto p-4">
+      <main className="max-w-5xl mx-auto p-4">
         <InviteBoard />
       </main>
     </div>

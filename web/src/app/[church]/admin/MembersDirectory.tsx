@@ -12,6 +12,7 @@ type Row = {
   id: string; name: string; name_suffix: string; phone: string | null; position: string | null;
   status: string; member_type: string; joined: boolean; photo_url: string | null;
   departments: Dept[]; birthday: string | null;
+  email: string | null; email_verified: boolean;
 };
 type JoinReq = { id: string; applicant_name: string; email: string; note: string | null; requested_at: string };
 type EditReq = {
@@ -21,7 +22,7 @@ type EditReq = {
 };
 
 const EDIT_FIELD_LABEL: Record<string, string> = {
-  name: "이름", phone: "연락처", birthday: "생년월일", address: "주소", family_note: "가족",
+  name: "이름", phone: "연락처", birthday: "생년월일", address: "주소", family_note: "가족", email: "이메일",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -183,6 +184,7 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
               <span className="block text-xs text-[var(--text-soft)] truncate">
                 {r.departments.map((d) => d.name).join(" · ") || "부서 미배정"}
                 {r.phone && ` · ${r.phone}`}
+                {r.email && ` · ✉ ${r.email}${r.email_verified ? " ✓" : ""}`}
               </span>
             </span>
             <span className="ml-auto flex items-center gap-1.5 shrink-0">
@@ -217,6 +219,7 @@ function MemberEditSheet({ member, depts, onClose }:
   const [f, setF] = useState({
     name: member.name ?? "", suffix: member.name_suffix ?? "", phone: member.phone ?? "",
     birthday: member.birthday ?? "", position: member.position ?? "", status: member.status ?? "active",
+    email: member.email ?? "",
   });
   const [memberDepts, setMemberDepts] = useState<Set<string>>(new Set((member.departments ?? []).map((d) => d.id)));
   const [busy, setBusy] = useState(false);
@@ -228,6 +231,7 @@ function MemberEditSheet({ member, depts, onClose }:
       p_id: member.id ?? null, p_name: f.name, p_suffix: f.suffix,
       p_phone: f.phone || null, p_birthday: f.birthday || null,
       p_position: f.position || null, p_status: f.status,
+      p_email: f.email.trim(), // 빈 문자열 = 이메일 삭제 (null은 유지)
     });
     if (error) { setBusy(false); return toast("error", error.message); }
     // 부서 배정 반영
@@ -263,6 +267,23 @@ function MemberEditSheet({ member, depts, onClose }:
             <label className="flex flex-col gap-1"><span className="text-sm font-bold">생년월일</span>
               <input className="input" type="date" value={f.birthday ?? ""} onChange={(e) => set("birthday", e.target.value)} /></label>
           </div>
+          <label className="flex flex-col gap-1">
+            <span className="text-sm font-bold">
+              이메일
+              {member.email && f.email === member.email && (
+                <span className="badge ml-1.5" style={member.email_verified
+                  ? { background: "var(--color-positive-soft)", color: "var(--color-positive)" }
+                  : { background: "var(--color-caution-soft)", color: "var(--color-caution)" }}>
+                  {member.email_verified ? "인증됨" : "미인증"}
+                </span>
+              )}
+            </span>
+            <input className="input" type="email" value={f.email}
+                   onChange={(e) => set("email", e.target.value)} placeholder="member@example.com" />
+            <span className="text-xs text-[var(--text-soft)]">
+              본인 이메일로 가입한 계정과 연결되면 자동으로 인증 처리됩니다.
+            </span>
+          </label>
           <div className="grid grid-cols-2 gap-2">
             <label className="flex flex-col gap-1"><span className="text-sm font-bold">직분</span>
               <input className="input" value={f.position} onChange={(e) => set("position", e.target.value)} placeholder="집사·권사·장로…" /></label>
