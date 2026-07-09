@@ -25,7 +25,29 @@ const VALUES = [
   { title: "섬김의 마음", desc: "교회의 본질은 섬김입니다. 기술로 목회자와 성도의 섬김을 돕습니다." },
   { title: "지혜로운 혁신", desc: "전통의 가치를 존중하며, 시대에 맞는 지혜로운 변화를 추구합니다." },
   { title: "투명한 운영", desc: "모든 기록이 남고, 언제든 데이터를 내보낼 수 있습니다." },
+  { title: "함께하는 성장", desc: "혼자가 아닌 함께, 개인의 성공이 공동체의 성공이 됩니다." },
 ];
+
+const MISSION = "교회가 본질에 집중할 수 있도록 기술로 섬기는 것. 행정 부담을 줄이고, 목회와 양육에 더 많은 시간을 쓸 수 있게 돕습니다.";
+const VISION = "규모와 관계없이 한국의 모든 교회가 효과적인 도구로 건강하게 성장하는 세상을 만듭니다.";
+
+// 협업자(파트너) 모집 — "직원이 아닌 파트너" 기여 기반 협력 모델
+const RECRUIT = [
+  { icon: "⚖️", title: "기여도 기반 보상", desc: "고정 급여가 아닌, 창출한 가치에 비례하는 공정한 보상 체계를 만들어갑니다." },
+  { icon: "💰", title: "수익 공유", desc: "서비스가 수익을 창출하면, 기여도에 따라 파트너들과 공정하게 배분합니다." },
+  { icon: "🕊️", title: "유연한 참여", desc: "풀타임이 아니어도 괜찮습니다. 본업과 병행하며 자유롭게 기여할 수 있습니다." },
+  { icon: "🔎", title: "투명한 운영", desc: "모든 의사결정과 재정 상황을 파트너들에게 투명하게 공개합니다." },
+];
+
+const FIELDS = [
+  { title: "개발자", desc: "Frontend·Backend·Mobile", tags: ["React/Next.js", "Node.js", "React Native", "TypeScript"] },
+  { title: "UI/UX 디자이너", desc: "경험 설계와 인터페이스", tags: ["Figma", "UI Design", "UX Research"] },
+  { title: "마케팅/홍보", desc: "교회들에게 알리고 성장", tags: ["콘텐츠", "SNS", "교회 네트워크"] },
+  { title: "기획/운영", desc: "서비스 기획과 고객 지원", tags: ["서비스 기획", "고객 지원", "커뮤니티"] },
+];
+
+const CONTACT_EMAIL = "hello@churchthrive.org";
+const PARTNER_EMAIL = "partner@churchthrive.org";
 
 export default function Landing() {
   return (
@@ -34,9 +56,15 @@ export default function Landing() {
       <header className="flex items-center gap-2 px-5 py-4 max-w-5xl mx-auto">
         <span className="text-[var(--color-accent)] text-xl font-black">✝</span>
         <b className="text-lg text-[var(--color-brand-800)]">ChurchThrive</b>
-        <div className="ml-auto flex gap-2">
+        <nav className="ml-auto hidden md:flex items-center gap-5 mr-2 text-sm text-[var(--text-soft)]">
+          <a href="#features" className="hover:text-[var(--color-brand-700)]">기능</a>
+          <a href="#about" className="hover:text-[var(--color-brand-700)]">소개</a>
+          <a href="#pricing" className="hover:text-[var(--color-brand-700)]">요금</a>
+          <a href="#partners" className="hover:text-[var(--color-brand-700)]">함께하기</a>
+        </nav>
+        <div className="md:ml-0 ml-auto flex gap-2">
           <Link href="/login" className="btn btn-ghost !min-h-10 text-sm">로그인</Link>
-          <Link href="/signup" className="btn btn-primary !min-h-10 text-sm">시작하기</Link>
+          <Link href="/register-intro" className="btn btn-primary !min-h-10 text-sm">서비스 시작하기</Link>
         </div>
       </header>
 
@@ -66,7 +94,7 @@ export default function Landing() {
       </section>
 
       {/* 기능 */}
-      <section className="px-5 py-16 max-w-5xl mx-auto">
+      <section id="features" className="px-5 py-16 max-w-5xl mx-auto scroll-mt-16">
         <h2 className="text-2xl font-black text-center text-[var(--color-brand-800)] mb-2">
           교회에 정말 필요한 것만 담았습니다
         </h2>
@@ -101,9 +129,23 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 가치 (ChurchThrive 카피 재활용) */}
-      <section className="px-5 py-16 max-w-4xl mx-auto">
-        <div className="grid sm:grid-cols-3 gap-6 text-center">
+      {/* 소개 — Mission · Vision · Core Values */}
+      <section id="about" className="px-5 py-16 max-w-4xl mx-auto scroll-mt-16">
+        <h2 className="text-2xl font-black text-center text-[var(--color-brand-800)] mb-2">
+          Mission · Vision · Core Values
+        </h2>
+        <p className="text-center text-[var(--text-soft)] mb-10">ChurchThrive가 추구하는 가치와 방향입니다</p>
+        <div className="grid sm:grid-cols-2 gap-4 mb-10">
+          <div className="card p-6">
+            <b className="text-[var(--color-accent-700,var(--color-brand-700))] text-sm">MISSION</b>
+            <p className="mt-2 leading-relaxed text-[var(--color-brand-800)] font-medium">{MISSION}</p>
+          </div>
+          <div className="card p-6">
+            <b className="text-[var(--color-accent-700,var(--color-brand-700))] text-sm">VISION</b>
+            <p className="mt-2 leading-relaxed text-[var(--color-brand-800)] font-medium">{VISION}</p>
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
           {VALUES.map((v) => (
             <div key={v.title}>
               <b className="text-lg text-[var(--color-brand-800)]">{v.title}</b>
@@ -147,7 +189,7 @@ export default function Landing() {
       </section>
 
       {/* 요금 */}
-      <section className="px-5 py-16" style={{ background: "var(--color-sand-100)" }}>
+      <section id="pricing" className="px-5 py-16 scroll-mt-16" style={{ background: "var(--color-sand-100)" }}>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl font-black mb-2">교회 규모에 맞게, 쓰는 만큼만</h2>
           <p className="text-[var(--text-soft)] mb-8">교적·출석 등 핵심 기능은 무료입니다. 필요한 모듈만 골라 더하세요.</p>
@@ -190,6 +232,47 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* 협업자 모집 — 직원이 아닌 파트너 */}
+      <section id="partners" className="px-5 py-16 max-w-5xl mx-auto scroll-mt-16">
+        <div className="text-center mb-10">
+          <span className="badge" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>
+            직원이 아닌 파트너
+          </span>
+          <h2 className="text-2xl font-black text-[var(--color-brand-800)] mt-3 mb-2">함께 만들어갈 동역자를 찾습니다</h2>
+          <p className="text-[var(--text-soft)] leading-relaxed">
+            ChurchThrive는 파트너와 함께 성장합니다. 기여한 만큼 함께 나누는, 공정하고 투명한 협력 모델을 추구합니다.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {RECRUIT.map((r) => (
+            <div key={r.title} className="card p-5">
+              <span className="text-2xl">{r.icon}</span>
+              <b className="block mt-2 text-[var(--color-brand-800)]">{r.title}</b>
+              <p className="mt-1 text-sm text-[var(--text-soft)] leading-relaxed">{r.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {FIELDS.map((f) => (
+            <div key={f.title} className="card p-5">
+              <b className="text-[var(--color-brand-800)]">{f.title}</b>
+              <p className="text-xs text-[var(--text-soft)] mt-0.5">{f.desc}</p>
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {f.tags.map((t) => (
+                  <span key={t} className="badge text-xs" style={{ background: "var(--color-sand-100)", color: "var(--text-soft)" }}>{t}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="text-center mt-8">
+          <a href={`mailto:${PARTNER_EMAIL}`} className="btn btn-primary !px-8">파트너 지원하기</a>
+          <p className="text-sm text-[var(--text-soft)] mt-3">
+            정규직·파트타임·재능 기부 무엇이든 좋습니다. 하브루타 연합 개발 커뮤니티에서도 함께할 수 있어요.
+          </p>
+        </div>
+      </section>
+
       <section className="px-5 py-16 text-center text-white"
                style={{ background: "var(--color-brand-900)" }}>
         <h2 className="text-2xl font-black mb-3">이번 주일부터 시작해보세요</h2>
@@ -201,7 +284,7 @@ export default function Landing() {
       </section>
 
       <footer className="px-5 py-8 text-center text-sm text-[var(--text-soft)]">
-        ✝ ChurchThrive — 교회를 위한 관리 플랫폼 · 문의: hello@churchthrive.kr
+        ✝ ChurchThrive — 교회를 위한 관리 플랫폼 · 문의: {CONTACT_EMAIL}
       </footer>
     </div>
   );

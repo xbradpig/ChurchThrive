@@ -140,9 +140,13 @@ ChurchThrive (church-thrive.org)
 
 ---
 
-## 6. 결정 필요 사항 (사용자 확인)
+## 6. 결정 확정 (2026-07-09)
 
-1. **도메인 전략** — (A·권장) 마케팅=church-thrive.org, 앱=church.havrutaproject.org 유지 / (B) 앱을 `app.church-thrive.org`로 이전해 단일 브랜드
-2. **대표 이메일 도메인** — `@churchthrive.org` vs `@churchthrive.kr` 중 통일
-3. **앱 비로그인 랜딩 처리** — 간결 랜딩 유지 vs church-thrive.org로 301
-4. **church-thrive.org 현재 구현체** — 별도 코드베이스인지(리스킨 대상), 아니면 앱 랜딩 컴포넌트를 이식할지
+1. **도메인 전략 = A** — 마케팅 정문 + 앱 진입. 하나의 통합 페이지에 Mission/Vision/Core Values + 기능 + 협업자 모집을 모두 담고 "서비스 시작하기 → 로그인/앱"으로 진입. 앱은 `church.havrutaproject.org` 유지.
+2. **대표 이메일 = `@churchthrive.org`** (문의 `hello@churchthrive.org`, 파트너 `partner@churchthrive.org`).
+
+## 7. 진행 현황
+
+- **통합 랜딩 1차 구현·배포 완료** — 앱 공개 랜딩(`web/src/components/Landing.tsx`)을 통합 페이지로 확장: Mission·Vision·Core Values(4) 섹션 + 협업자 모집(기여보상·수익공유·유연참여·투명운영 + 모집분야 4종) 섹션 추가, 헤더에 섹션 앵커 내비(기능·소개·요금·함께하기), CTA "서비스 시작하기"→앱 진입, 이메일 `@churchthrive.org` 통일. 배포: `church.havrutaproject.org` (version 1aec1d09).
+- **미해결(인프라)**: `www.church-thrive.org`의 **소스가 워크스페이스에 없음** — `Church_Thrive/`엔 Vercel 빌드 산출물만 존재(별도 Next 앱, `(marketing)(auth)(member)` 라우트). 따라서 church-thrive.org 자체를 직접 편집 불가.
+  - 후속 결정 필요: (a) church-thrive.org 소스를 확보해 동일 통합 콘텐츠로 개편 / (b) church-thrive.org → `church.havrutaproject.org` 통합 랜딩으로 리다이렉트·프록시 / (c) 앱 통합 랜딩을 church-thrive.org 도메인으로도 배포(도메인 연결).
