@@ -14,7 +14,8 @@ type Row = {
   departments: Dept[]; birthday: string | null;
   email: string | null; email_verified: boolean;
 };
-type JoinReq = { id: string; applicant_name: string; email: string; note: string | null; requested_at: string };
+type JoinReq = { id: string; applicant_name: string; email: string; note: string | null; requested_at: string;
+                 matched_member_id: string | null; matched_member_name: string | null };
 type EditReq = {
   id: string; member_id: string; member_name: string;
   changes: Record<string, string | null>; current: Record<string, string | null>;
@@ -65,14 +66,19 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
 
   async function decideJoin(r: JoinReq, ok: boolean) {
     if (ok) {
-      const match = rows.find((m) => (m.name + m.name_suffix) === r.applicant_name && !m.joined);
+      // 신청자가 명부에서 직접 고른 교적(matched_member_id) 우선, 없으면 이름 자동 매칭
+      const auto = rows.find((m) => (m.name + m.name_suffix) === r.applicant_name && !m.joined);
+      const memberId = r.matched_member_id ?? auto?.id ?? null;
+      const label = r.matched_member_name ?? (auto ? `${auto.name}${auto.name_suffix}` : null);
       const proceed = await confirm({
         title: `${r.applicant_name} 님 가입 승인`,
-        body: match ? `교적의 "${match.name}${match.name_suffix}" 님과 자동 연결됩니다.` : "일치하는 교적이 없어 새 교적이 만들어집니다.",
+        body: r.matched_member_id
+          ? `신청자가 명부에서 "${label}" 님을 본인으로 지목했습니다. 이 교적과 연결됩니다.`
+          : label ? `교적의 "${label}" 님과 자동 연결됩니다.` : "일치하는 교적이 없어 새 교적이 만들어집니다.",
         confirmLabel: "승인",
       });
       if (!proceed) return;
-      const { error } = await supabase.rpc("approve_join", { p_request: r.id, p_member_id: match?.id ?? null });
+      const { error } = await supabase.rpc("approve_join", { p_request: r.id, p_member_id: memberId });
       if (error) return toast("error", error.message);
       toast("success", `${r.applicant_name} 님을 승인했습니다.`);
     } else {
@@ -109,6 +115,11 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
           {joinReqs.map((r) => (
             <div key={r.id} className="flex items-center gap-2 flex-wrap py-2 border-t border-[var(--line)] mt-2">
               <b>{r.applicant_name}</b>
+              {r.matched_member_name && (
+                <span className="badge text-xs" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>
+                  🔗 명부 매칭: {r.matched_member_name}
+                </span>
+              )}
               <span className="text-sm text-[var(--text-soft)]">{r.email}{r.note && ` · ${r.note}`}</span>
               <span className="ml-auto flex gap-2">
                 <button className="btn btn-positive !min-h-9 text-sm" onClick={() => decideJoin(r, true)}>승인</button>
