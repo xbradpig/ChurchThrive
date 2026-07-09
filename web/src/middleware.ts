@@ -13,7 +13,7 @@ const LEGACY_TENANT = new Set(["home", "church", "admin", "check", "scan", "me",
 const SLUG_RE = /^[a-z0-9][a-z0-9_-]{1,62}$/;
 const CHURCH_COOKIE = "ct-church";
 // 기본 도메인 (그 외 Host는 교회 커스텀 도메인 — custom-domain 6단계)
-const BASE_HOSTS = new Set(["church.havrutaproject.org", "localhost", "127.0.0.1", "0.0.0.0"]);
+const BASE_HOSTS = new Set(["church.havrutaproject.org", "church-thrive.org", "www.church-thrive.org", "localhost", "127.0.0.1", "0.0.0.0"]);
 
 /** rewrite 응답에 누적 쿠키(세션·ct-church) 전달 */
 function rewriteTo(request: NextRequest, response: NextResponse, pathname: string) {
