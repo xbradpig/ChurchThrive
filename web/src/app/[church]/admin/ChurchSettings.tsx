@@ -157,7 +157,7 @@ export default function ChurchSettings({ canEdit }: { canEdit: boolean }) {
                     ))}
                     <div className="text-sm">
                       <span className="badge mr-2" style={{ background: "var(--color-brand-100)", color: "var(--color-brand-700)" }}>CNAME</span>
-                      <code className="text-xs">{dom.domain}</code> → <code className="text-xs">church.havrutaproject.org</code>
+                      <code className="text-xs">{dom.domain}</code> → <code className="text-xs">church-thrive.org</code>
                     </div>
                   </div>
                 </div>

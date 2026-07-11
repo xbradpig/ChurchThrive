@@ -25,6 +25,14 @@ function rewriteTo(request: NextRequest, response: NextResponse, pathname: strin
 }
 
 export async function middleware(request: NextRequest) {
+  // ── 도메인 정본화: 구 도메인·www → church-thrive.org (경로·쿼리 유지, 세션 조회 전에 처리) ──
+  // 307 유지 — 정착 확인 후 308 승격 (301/308 선적용 시 캐시 비가역)
+  const rawHost = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (rawHost === "church.havrutaproject.org" || rawHost === "www.church-thrive.org") {
+    return NextResponse.redirect(
+      new URL(request.nextUrl.pathname + request.nextUrl.search, "https://church-thrive.org"), 307);
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -56,7 +64,7 @@ export async function middleware(request: NextRequest) {
     const cSlug = typeof data === "string" && SLUG_RE.test(data) ? data : null;
     if (!cSlug) {
       // 미등록/비active 커스텀 도메인 → 기본 도메인으로
-      return NextResponse.redirect(new URL(path + request.nextUrl.search, "https://church.havrutaproject.org"));
+      return NextResponse.redirect(new URL(path + request.nextUrl.search, "https://church-thrive.org"));
     }
     const seg0 = path.split("/")[1] ?? "";
     // 루트 라우트(login·api·signup 등)는 그대로

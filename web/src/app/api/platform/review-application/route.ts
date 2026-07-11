@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     const { data: app } = await svc0.from("church_applications")
       .select("applicant_email, applicant_role, name").eq("id", application_id).eq("status", "pending").maybeSingle();
     if (!app) return NextResponse.json({ error: "대기 중인 신청이 아닙니다" }, { status: 400 });
-    const origin0 = process.env.NEXT_PUBLIC_SITE_URL ?? "https://church.havrutaproject.org";
+    const origin0 = process.env.NEXT_PUBLIC_SITE_URL ?? "https://church-thrive.org";
     let ensured;
     try { ensured = await ensureUser(svc0, app.applicant_email, `${origin0}/set-password`); }
     catch (err) { return NextResponse.json({ error: String(err) }, { status: 500 }); }
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false } }
   );
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "https://church.havrutaproject.org";
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "https://church-thrive.org";
   const email = result.email as string;
   let ensured;
   try { ensured = await ensureUser(svc, email, `${origin}/set-password`); }

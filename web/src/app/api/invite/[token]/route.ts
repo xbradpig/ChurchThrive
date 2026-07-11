@@ -49,7 +49,7 @@ export async function POST(_req: NextRequest, ctx: { params: Promise<{ token: st
   await s.from("member_invites").update({ used_at: new Date().toISOString() }).eq("token", token);
 
   // 매직링크 생성 → 클라이언트가 이동하면 세션 성립
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "https://church.havrutaproject.org";
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "https://church-thrive.org";
   const { data: link, error: le } = await s.auth.admin.generateLink({
     type: "magiclink", email, options: { redirectTo: `${origin}/login` },   // 허용 목록 무관하게 도달 — 로그인 페이지가 토큰 수용
   });
