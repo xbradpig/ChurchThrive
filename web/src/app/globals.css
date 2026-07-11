@@ -303,6 +303,7 @@ h1, h2, h3, .font-black {
 
 .reveal-card__media {
   position: relative;
+  display: block;
   aspect-ratio: var(--reveal-aspect, 3 / 4);
   overflow: hidden;
   background: var(--surface-soft);
@@ -380,6 +381,27 @@ h1, h2, h3, .font-black {
 .reveal-card:focus-within .reveal-card__panel {
   transform: translateY(0);
   opacity: 1;
+}
+
+/* 출석 체크 변형 — 카드 전체가 출석 토글 버튼 (reveal-card-template §1) */
+.reveal-card--check {
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border-width: 2px;
+  padding: 0;
+  transition: transform 110ms var(--ease), box-shadow var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
+}
+.reveal-card--check:active { transform: scale(0.96); }
+.reveal-card--check .reveal-card__fallback { font-size: 2.1rem; }
+.reveal-card--check .check-mark { right: auto; left: 0.5rem; top: 0.5rem; z-index: 4; }
+.reveal-card--check.present { border-color: var(--color-positive); }
+.reveal-card--check.present .check-mark { opacity: 1; transform: scale(1); }
+.reveal-card--check.present .reveal-card__scrim {
+  background: linear-gradient(180deg, transparent 30%,
+              color-mix(in srgb, var(--color-positive) 82%, #062712) 100%);
 }
 
 /* 터치 기기: 롤업 없이 정적 레이아웃 — 웹/앱 분리 원칙 */

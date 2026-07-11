@@ -223,20 +223,42 @@ const METHOD_BADGE: Record<string, { label: string; cls: React.CSSProperties }> 
 function Grid({ rows, onToggle }: { rows: Row[]; onToggle: (r: Row) => void }) {
   if (rows.length === 0) return null;
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2">
       {rows.map((r) => {
         const badge = r.method && r.method !== "manual" ? METHOD_BADGE[r.method] : null;
+        const methodLabel = badge?.label ?? "수동";
         return (
-          <button key={r.member_id} className={`member-card ${r.present ? "present" : ""}`} onClick={() => onToggle(r)}>
+          // 사진 롤업 카드 버튼 변형 (reveal-card--check) — 카드 전체가 출석 토글
+          <button key={r.member_id} className={`reveal-card reveal-card--check ${r.present ? "present" : ""}`}
+                  onClick={() => onToggle(r)}>
             <span className="check-mark">✓</span>
-            <span className="avatar">
-              {r.photo_url ? <img src={r.photo_url} alt="" /> : r.name.charAt(0)}
+            <span className="reveal-card__media">
+              {r.photo_url ? <img src={r.photo_url} alt="" loading="lazy" /> : (
+                <span className="reveal-card__fallback">{r.name.charAt(0)}</span>
+              )}
             </span>
-            <span className="font-bold leading-tight text-center">
-              {r.name}
-              {r.name_suffix && <span className="opacity-60 text-sm">{r.name_suffix}</span>}
+            {badge && (
+              <span className="reveal-card__badge">
+                <span className="badge" style={badge.cls}>{badge.label}{r.approved === false ? "?" : ""}</span>
+              </span>
+            )}
+            <span className="reveal-card__scrim" aria-hidden="true">
+              <span className="font-black leading-tight">
+                {r.name}
+                {r.name_suffix && <span className="opacity-60 text-sm">{r.name_suffix}</span>}
+              </span>
             </span>
-            {badge && <span className="badge" style={badge.cls}>{badge.label}{r.approved === false ? "?" : ""}</span>}
+            <span className="reveal-card__panel">
+              <span className="font-black leading-tight">
+                {r.name}
+                {r.name_suffix && <span className="opacity-60 text-sm">{r.name_suffix}</span>}
+              </span>
+              <span className="text-xs text-[var(--text-soft)]">
+                {r.present
+                  ? `출석 · ${methodLabel}${r.approved === false ? " · 승인 대기" : ""}`
+                  : "미출석 — 탭하여 체크"}
+              </span>
+            </span>
           </button>
         );
       })}
