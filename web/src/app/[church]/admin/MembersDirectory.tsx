@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAppDialog } from "@/components/ui/AppDialog";
 import ListSkeleton from "@/components/ui/ListSkeleton";
+import RevealCard from "@/components/ui/RevealCard";
 
 type Dept = { id: string; name: string };
 type Row = {
@@ -51,6 +52,13 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
   const [statusF, setStatusF] = useState("");
   const [editing, setEditing] = useState<Partial<Row> | null>(null);
   const [loaded, setLoaded] = useState(false);
+  // 보기 모드 — 리스트가 업무 기본값, 카드 그리드는 옵트인 (reveal-card-template §6)
+  const [view, setView] = useState<"list" | "grid">("list");
+  useEffect(() => {
+    const saved = localStorage.getItem("members-view");
+    if (saved === "grid") setView("grid");
+  }, []);
+  const switchView = (v: "list" | "grid") => { setView(v); localStorage.setItem("members-view", v); };
 
   const load = useCallback(async () => {
     const [{ data: m }, { data: d }, { data: j }, { data: er }] = await Promise.all([
@@ -179,10 +187,49 @@ export default function MembersDirectory({ canEdit }: { canEdit: boolean }) {
           <option value="">전체 상태</option>
           {Object.entries(STATUS_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
+        <div className="flex rounded-xl border-[1.5px] border-[var(--line-strong)] overflow-hidden" role="group" aria-label="보기 방식">
+          {([["list", "☰ 목록"], ["grid", "▦ 카드"]] as const).map(([v, label]) => (
+            <button key={v} type="button" aria-pressed={view === v}
+                    className="px-3 min-h-12 text-sm font-bold transition-colors"
+                    style={view === v
+                      ? { background: "var(--color-brand-700)", color: "#fff" }
+                      : { background: "var(--surface)", color: "var(--text-soft)" }}
+                    onClick={() => switchView(v)}>
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* 명부 */}
-      {!loaded ? <ListSkeleton rows={8} /> : (
+      {/* 명부 — 카드 그리드 보기 (RevealCard 공통 템플릿) */}
+      {!loaded ? <ListSkeleton rows={8} /> : view === "grid" ? (
+      <div className="reveal-grid" data-member-list>
+        {rows.map((r) => (
+          <RevealCard key={r.id}
+            photoUrl={r.photo_url} fallbackText={r.name.slice(0, 1)}
+            title={<>{r.name}{r.name_suffix && <sub className="opacity-60 text-[0.7em]">{r.name_suffix}</sub>}</>}
+            subtitle={r.position || undefined}
+            href={`${base}/members/${r.id}`} linkLabel={`${r.name}${r.name_suffix} 교적 보기`}
+            badge={<>
+              {r.joined && <span className="badge" style={{ background: "var(--color-auto-soft)", color: "var(--color-auto)" }}>앱</span>}
+              <span className="badge" style={{ background: STATUS_COLOR[r.status]?.[0], color: STATUS_COLOR[r.status]?.[1] }}>
+                {STATUS_LABEL[r.status] ?? r.status}
+              </span>
+            </>}>
+            <span className="text-sm text-[var(--text-soft)] truncate">
+              {r.departments.map((d) => d.name).join(" · ") || "부서 미배정"}
+            </span>
+            {r.phone && (
+              <a href={`tel:${r.phone}`} className="text-sm font-bold text-[var(--color-brand-600)]">{r.phone}</a>
+            )}
+            {canEdit && (
+              <button className="btn btn-ghost !min-h-9 !px-2.5 text-sm self-start mt-1" onClick={() => setEditing(r)}>수정</button>
+            )}
+          </RevealCard>
+        ))}
+        {rows.length === 0 && <p className="p-8 text-center text-[var(--text-soft)] col-span-full">조건에 맞는 교인이 없습니다.</p>}
+      </div>
+      ) : (
       <div className="card divide-y divide-[var(--line)]" data-member-list>
         {rows.map((r) => (
           <div key={r.id} className="flex items-center gap-3 px-4 py-2.5">
