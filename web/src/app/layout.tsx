@@ -5,9 +5,21 @@ import AppDialogProvider from "@/components/ui/AppDialog";
 import RecoveryRedirect from "@/components/RecoveryRedirect";
 
 export const metadata: Metadata = {
-  title: "ChurchThrive — 교회 관리 플랫폼",
-  description: "출석·교적·말씀 암송 — 교회에 필요한 기능을 골라 쓰는 교회 관리 플랫폼",
+  metadataBase: new URL("https://church-thrive.org"),
+  title: "ChurchThrive — 교회의 건강한 성장을 돕는 통합 관리 플랫폼",
+  description: "출석은 자동으로, 교적은 안전하게, 필요한 기능은 모듈로. ChurchThrive는 교회가 본질에 집중하도록 돕는 통합 교회 관리 플랫폼입니다.",
+  alternates: {
+    canonical: "/",
+  },
   manifest: "/manifest.json",
+  openGraph: {
+    title: "ChurchThrive — 교회의 건강한 성장을 돕는 통합 관리 플랫폼",
+    description: "출석·교적·말씀·케어·행정을 한 곳에서 관리하는 교회 관리 플랫폼입니다.",
+    url: "https://church-thrive.org",
+    siteName: "ChurchThrive",
+    locale: "ko_KR",
+    type: "website",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

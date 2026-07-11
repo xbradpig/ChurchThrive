@@ -3,6 +3,7 @@ import type { AppRole } from "@/lib/roles";
 import AppFrame from "@/components/AppFrame";
 import AccountSetupBanner from "@/components/AccountSetupBanner";
 import MemberCard from "@/components/MemberCard";
+import AccountSettingsCard from "./AccountSettingsCard";
 import ConsentPanel from "./ConsentPanel";
 import SelfCheckin from "./SelfCheckin";
 import MyQR from "./MyQR";
@@ -29,11 +30,15 @@ export default async function MePage() {
     <AppFrame title="내 교적" isStaff={role !== "member"}>
       <AccountSetupBanner email={user?.email} />
       {!card ? (
-        <RegisterCard />
+        <>
+          <RegisterCard />
+          <AccountSettingsCard email={user?.email} />
+        </>
       ) : (
         <>
           <SelfCheckin events={events ?? []} />
           <MemberCard card={card} editable editRequest={editRequest} />
+          <AccountSettingsCard email={user?.email} />
           <MyQR memberId={myMemberId} name={`${card.name}${card.name_suffix ?? ""}`} />
           <ConsentPanel memberId={myMemberId} />
         </>

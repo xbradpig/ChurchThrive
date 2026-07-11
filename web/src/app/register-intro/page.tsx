@@ -36,7 +36,7 @@ export default function RegisterIntroPage() {
           </p>
           <p className="text-xs text-[var(--text-soft)] mt-2">
             승인 전에는 기능이 잠겨 있으며, 등록 정보는 심사 목적으로만 사용됩니다.
-            문의: hello@havrutaproject.org
+            문의: hello@churchthrive.org
           </p>
         </div>
 

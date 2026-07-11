@@ -25,7 +25,7 @@ function SignupForm() {
     setBusy(false);
     if (error) return setError(error.message);
     if (!data.session) {
-      setError("가입 확인 메일을 확인해주세요.");
+      setError("가입 확인 메일을 확인해주세요. 이미 가입한 이메일이면 새 비밀번호로 바뀌지 않으니 로그인 화면의 비밀번호 찾기를 사용해주세요.");
       return;
     }
     router.replace(churchFlow ? "/register-church" : "/start");

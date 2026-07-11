@@ -62,7 +62,7 @@ export default function LoginPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+      setError("ChurchThrive 계정의 이메일 또는 비밀번호가 올바르지 않습니다.");
       setLoading(false);
       return;
     }
@@ -113,8 +113,12 @@ export default function LoginPage() {
           <span className="flex-1 h-px bg-[var(--line)]" />또는<span className="flex-1 h-px bg-[var(--line)]" />
         </div>
         <button type="button" onClick={havrutaLogin} className="btn btn-ghost w-full text-sm">
-          🔗 하브루타로 로그인
+          Havruta Project 계정으로 로그인
         </button>
+        <p className="mt-2 text-center text-xs text-[var(--text-soft)] leading-relaxed">
+          ChurchThrive에서 만든 계정은 위 이메일/비밀번호로 로그인하세요.
+          Havruta Project 계정으로 연동할 때만 이 버튼을 사용합니다.
+        </p>
 
         <p className="mt-6 text-center text-sm text-[var(--text-soft)]">
           교인 계정은 교회 사무실에 문의해주세요.
